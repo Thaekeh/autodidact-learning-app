@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { hash } from "bcryptjs";
+import { compareSync, hash } from "bcryptjs";
 
 export const authOptions = {
   providers: [
@@ -56,7 +56,8 @@ const getUserByCredentials = async ({ email, password }: LoginCredentials) => {
   }
   const client = await MongoClient.connect(process.env.MONGODB_URI);
   const usersCollection = await client.db("learningHub").collection("users");
-  const dbUser = await usersCollection.findOne({
+
+  let dbUser = await usersCollection.findOne({
     email: email,
   });
   if (!dbUser) {
@@ -64,11 +65,14 @@ const getUserByCredentials = async ({ email, password }: LoginCredentials) => {
       email: email,
       password: await hash(password, 12),
     });
-    const dbUser = await usersCollection.findOne({
+    dbUser = await usersCollection.findOne({
       email: email,
     });
+  }
+
+  if (compareSync(password, dbUser?.password)) {
     return dbUser;
   } else {
-    return dbUser;
+    throw Error("password not correct");
   }
 };
