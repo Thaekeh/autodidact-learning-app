@@ -4,17 +4,18 @@ import { InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
 
 export async function getServerSideProps() {
-  try {
-    await clientPromise;
-    return {
-      props: { isConnected: true },
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      props: { isConnected: false },
-    };
-  }
+  return;
+  // try {
+  //   await clientPromise;
+  //   return {
+  //     props: { isConnected: true },
+  //   };
+  // } catch (e) {
+  //   console.error(e);
+  //   return {
+  //     props: { isConnected: false },
+  //   };
+  // }
 }
 
 export default function Home({
