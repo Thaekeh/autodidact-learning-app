@@ -4,9 +4,6 @@ import { InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
 
 export async function getServerSideProps() {
-  return {
-    props: { isConnected: false },
-  };
   // try {
   //   await clientPromise;
   //   return {
@@ -14,9 +11,9 @@ export async function getServerSideProps() {
   //   };
   // } catch (e) {
   //   console.error(e);
-  //   return {
-  //     props: { isConnected: false },
-  //   };
+  return {
+    props: { isConnected: false },
+  };
   // }
 }
 
