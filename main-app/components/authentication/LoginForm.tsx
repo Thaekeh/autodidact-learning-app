@@ -11,6 +11,7 @@ export const LoginForm = () => {
   };
 
   return (
+    <></>
     // TODO(Thaeke) fix it
     // <Form onFinish={onFinish} wrapperCol={{ span: 6 }} layout="horizontal">
     //   <Form.Item required={true} label={"Email"} name={"email"}>
