@@ -20,7 +20,6 @@ export default function Texts() {
   );
 
   const handleTextClick = (event) => {
-    alert(`You clicked "${event.target.innerHTML}"!`);
     console.log(event?.target.innerHTML);
   };
 
