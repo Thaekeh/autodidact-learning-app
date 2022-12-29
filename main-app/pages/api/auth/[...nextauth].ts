@@ -34,6 +34,14 @@ export const authOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      if (session?.user) {
+        session.user["id"] = token && token.sub;
+      }
+      return session;
+    },
+  },
   database: process.env.MONGODB_URI,
   session: {
     jwt: true,
