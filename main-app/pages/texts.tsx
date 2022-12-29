@@ -19,8 +19,8 @@ export default function Texts() {
     "This is some testing text with a longer content"
   );
 
-  const handleTextClick = (event) => {
-    console.log(event?.target.innerHTML);
+  const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+    console.log(event?.currentTarget.innerHTML);
   };
 
   const mappedText = () => {
