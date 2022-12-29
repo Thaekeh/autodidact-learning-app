@@ -1,16 +1,28 @@
-import { AppProps } from "next/app";
+import type { AppProps } from "next/app";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { ReactElement, ReactNode } from "react";
+import { NextPage } from "next";
+import { Layout } from "../components/Layout";
+import { NextUIProvider } from "@nextui-org/react";
 
-export default function App({
-  Component,
-  pageProps,
-}: AppProps<{
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
   session: Session;
-}>) {
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <SessionProvider session={pageProps.session} refetchInterval={0}>
-      <Component {...pageProps} />
+      <NextUIProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </NextUIProvider>
     </SessionProvider>
   );
 }
