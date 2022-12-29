@@ -12,12 +12,15 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
+        console.log("authorizing 1");
         if (!credentials?.password || !credentials?.email) {
           throw Error("no correct credentials");
         }
+        console.log("authorizing 2");
         if (!process.env.MONGODB_URI) {
           throw Error("Could not load the MONGODB_URI");
         }
+        console.log("authorizing 3");
 
         const dbUser = await getUserByCredentials(credentials);
 
@@ -51,6 +54,7 @@ interface LoginCredentials {
 }
 
 const getUserByCredentials = async ({ email, password }: LoginCredentials) => {
+  console.log("start of userByCredentials");
   if (!process.env.MONGODB_URI) {
     throw Error("Could not load the MONGODB_URI");
   }
@@ -73,6 +77,7 @@ const getUserByCredentials = async ({ email, password }: LoginCredentials) => {
   if (compareSync(password, dbUser?.password)) {
     return dbUser;
   } else {
+    console.log("incorrect");
     throw Error("password not correct");
   }
 };
