@@ -30,11 +30,12 @@ export default function Home({
       </Head>
 
       <main>
-        <h1 className="title">
+        <h2 className="title">
           {session?.user
             ? `logged in with email: ${session.user.email}`
             : "not logged in"}
-        </h1>
+        </h2>
+        <h2>username: {session?.user?.name}</h2>
 
         {isConnected ? (
           <h2 className="subtitle">You are connected to MongoDB</h2>
@@ -44,10 +45,6 @@ export default function Home({
             for instructions.
           </h2>
         )}
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
 
         <div className="grid">
           <a href="https://nextjs.org/docs" className="card">
