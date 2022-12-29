@@ -21,7 +21,7 @@ export const ComposedNavbar = () => {
           <NextLink href="/texts">Texts</NextLink>
         </Navbar.Link>
         {data?.user && (
-          <Navbar.Link block>
+          <Navbar.Link as={"span"}>
             <NextLink href="/profile">
               {data.user && <Avatar text={data.user.name || ""} />}
             </NextLink>
