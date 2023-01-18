@@ -7,10 +7,9 @@ import {
   Table,
   Tooltip,
 } from "@nextui-org/react";
-import { getToken } from "next-auth/jwt";
-import { getSession, useSession } from "next-auth/react";
-import { useState } from "react";
-import { Edit, Edit2, Eye, Trash } from "react-feather";
+import { getSession } from "next-auth/react";
+import Link from "next/link";
+import { Edit2, Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
 import { Text } from "./types";
@@ -27,7 +26,7 @@ export default function Texts({ texts }: { texts: Text[] }) {
         <Table.Body>
           {texts.map((text) => {
             return (
-              <Table.Row key={text.id}>
+              <Table.Row key={text._id}>
                 <Table.Cell>{text.name}</Table.Cell>
                 <Table.Cell>{text.updatedAt}</Table.Cell>
 
@@ -35,9 +34,11 @@ export default function Texts({ texts }: { texts: Text[] }) {
                   <Row justify="center" align="center">
                     <Col css={{ d: "flex" }}>
                       <Tooltip content="Open text">
-                        <IconButton>
-                          <Eye />
-                        </IconButton>
+                        <Link href={`/texts/${text._id}`}>
+                          <IconButton>
+                            <Eye />
+                          </IconButton>
+                        </Link>
                       </Tooltip>
                     </Col>
                     <Col css={{ d: "flex" }}>
