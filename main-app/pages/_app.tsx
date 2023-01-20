@@ -5,6 +5,7 @@ import { ReactElement, ReactNode } from "react";
 import { NextPage } from "next";
 import { Layout } from "../components/Layout";
 import { NextUIProvider } from "@nextui-org/react";
+import { SSRProvider } from "@react-aria/ssr";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -17,12 +18,14 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
-    <SessionProvider session={pageProps.session} refetchInterval={0}>
-      <NextUIProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </NextUIProvider>
-    </SessionProvider>
+    <SSRProvider>
+      <SessionProvider session={pageProps.session} refetchInterval={0}>
+        <NextUIProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </NextUIProvider>
+      </SessionProvider>
+    </SSRProvider>
   );
 }

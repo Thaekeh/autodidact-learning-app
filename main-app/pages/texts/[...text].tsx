@@ -1,23 +1,25 @@
-import { css } from "@emotion/react";
 import {
   Button,
   Card,
-  Col,
   Container,
   Grid,
   Row,
-  Text,
   Textarea,
+  Text,
 } from "@nextui-org/react";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
-import styled from "@emotion/styled";
 import { Edit2 } from "react-feather";
+import styled from "@emotion/styled";
 
-export default function Texts() {
+export default function TextPage() {
   const [isInEditMode, setIsInEditMode] = useState(false);
   const [text, setText] = useState<string>(
     "This is some testing text with a longer content"
   );
+
+  const { query } = useRouter();
+  const textId = query.text && query.text[0];
 
   const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     console.log(event?.currentTarget.innerHTML);
@@ -50,9 +52,6 @@ export default function Texts() {
         }}
       >
         <Card>
-          {/* <Button onPress={() => setisInEditMode(!isInEditMode)}>
-            Toggle editmode
-          </Button> */}
           <Card.Body>
             {isInEditMode ? (
               <>
