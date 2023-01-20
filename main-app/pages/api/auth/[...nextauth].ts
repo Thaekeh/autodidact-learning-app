@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync, hash } from "bcryptjs";
 
@@ -35,7 +35,15 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, token, user }) {
+    async session({
+      session,
+      token,
+      user,
+    }: {
+      session: Session;
+      token: any;
+      user: any;
+    }) {
       if (session?.user) {
         session.user["id"] = token && token.sub;
       }

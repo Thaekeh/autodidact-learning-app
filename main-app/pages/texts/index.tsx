@@ -1,22 +1,15 @@
-import {
-  Button,
-  Col,
-  Container,
-  red,
-  Row,
-  Table,
-  Tooltip,
-} from "@nextui-org/react";
+import { Col, Container, red, Row, Table, Tooltip } from "@nextui-org/react";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { Edit2, Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
 import { Text } from "./types";
+import { IncomingMessage } from "http";
 
 export default function Texts({ texts }: { texts: Text[] }) {
   return (
-    <Container>
+    <Container css={{ marginTop: "$18" }}>
       <Table>
         <Table.Header>
           <Table.Column>Name</Table.Column>
@@ -66,7 +59,7 @@ export default function Texts({ texts }: { texts: Text[] }) {
   );
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const session = await getSession({ req });
   const userId = session?.user?.id;
   try {
