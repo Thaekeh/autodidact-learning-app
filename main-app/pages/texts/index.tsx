@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Edit2, Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
-import { Text } from "./types";
+import { Text } from "../../types/Texts";
 import { IncomingMessage } from "http";
 
 export default function Texts({ texts }: { texts: Text[] }) {
