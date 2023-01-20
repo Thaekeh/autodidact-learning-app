@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Avatar } from "@nextui-org/react";
+import { Navbar, Avatar, Link, Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import NextLink from "next/link";
 import { User } from "react-feather";
@@ -21,7 +21,7 @@ export const ComposedNavbar = () => {
         <Navbar.Link as={"span"} isActive>
           <NextLink href="/texts">Texts</NextLink>
         </Navbar.Link>
-        {data?.user && (
+        {data?.user ? (
           <Navbar.Link as={"span"}>
             <NextLink href="/profile">
               {data.user && (
@@ -32,6 +32,10 @@ export const ComposedNavbar = () => {
               )}
             </NextLink>
           </Navbar.Link>
+        ) : (
+          <NextLink href={"/login"}>
+            <Button>Login</Button>
+          </NextLink>
         )}
       </Navbar.Content>
     </Navbar>
