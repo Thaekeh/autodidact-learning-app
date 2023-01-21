@@ -4,10 +4,10 @@ import React from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { ItemCard } from "../../components/cards/ItemCard";
+import { connectToDatabase } from "../../lib/mongodb";
 import { ListType } from "../../types/Lists";
 import { TextType } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
-import { connectToDatabase } from "../../util/mongodb";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 
