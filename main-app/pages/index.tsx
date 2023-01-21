@@ -4,23 +4,7 @@ import { InferGetServerSidePropsType } from "next";
 import { getSession, useSession } from "next-auth/react";
 import styled from "@emotion/styled";
 
-export async function getServerSideProps() {
-  try {
-    await clientPromise;
-    return {
-      props: { isConnected: true },
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      props: { isConnected: false },
-    };
-  }
-}
-
 export default function Home() {
-  const { data: session } = useSession();
-
   return (
     <div className="container">
       <Head>
@@ -34,8 +18,3 @@ export default function Home() {
     </div>
   );
 }
-
-const FlexContainer = styled.div(`
-  display: flex;
-  flex-wrap: wrap;
-`);
