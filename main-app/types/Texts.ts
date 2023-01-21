@@ -1,4 +1,4 @@
-export interface Text {
+export interface TextType {
   _id: string;
   name: string;
   updatedAt: string;
