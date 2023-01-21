@@ -6,6 +6,7 @@ import { NextPage } from "next";
 import { Layout } from "../components/Layout";
 import { NextUIProvider } from "@nextui-org/react";
 import { SSRProvider } from "@react-aria/ssr";
+import Head from "next/head";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -22,6 +23,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <SessionProvider session={pageProps.session} refetchInterval={0}>
         <NextUIProvider>
           <Layout>
+            <Head>
+              <title>Learning Hub</title>
+              <link rel="icon" href="/favicon.ico" />
+            </Head>
             <Component {...pageProps} />
           </Layout>
         </NextUIProvider>
