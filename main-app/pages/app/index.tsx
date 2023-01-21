@@ -9,6 +9,8 @@ import clientPromise from "../../lib/mongodb";
 import { TextType } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
 import { connectToDatabase } from "../../util/mongodb";
+import { getRouteForSingleCardList } from "../../util/routing/cardLists";
+import { getRouteForSingleText } from "../../util/routing/texts";
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const { db } = await connectToDatabase();
@@ -49,7 +51,10 @@ export default function Dashboard({
             {texts &&
               texts.map((text) => (
                 <React.Fragment key={text._id}>
-                  <ItemCard name={text.name} />
+                  <ItemCard
+                    name={text.name}
+                    href={getRouteForSingleText(text._id)}
+                  />
                   <Spacer y={1}></Spacer>
                 </React.Fragment>
               ))}
@@ -68,7 +73,10 @@ export default function Dashboard({
           {lists &&
             lists.map((list) => (
               <React.Fragment key={list._id}>
-                <ItemCard name={list.name} />
+                <ItemCard
+                  name={list.name}
+                  href={getRouteForSingleCardList(list._id)}
+                />
                 <Spacer y={1}></Spacer>
               </React.Fragment>
             ))}
