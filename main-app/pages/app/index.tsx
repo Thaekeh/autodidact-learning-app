@@ -57,7 +57,14 @@ export default function Dashboard({
         </Col>
         <Spacer x={4} />
         <Col>
-          <h2>Cards</h2>
+          <Row align="center" justify="space-between">
+            <h2>Card Lists</h2>
+            <Tooltip content={"Create new list"}>
+              <IconButton>
+                <Plus />
+              </IconButton>
+            </Tooltip>
+          </Row>
           {lists &&
             lists.map((list) => (
               <React.Fragment key={list._id}>
