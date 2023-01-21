@@ -1,11 +1,10 @@
-import { Card, Col, Container, Row, Spacer, Tooltip } from "@nextui-org/react";
+import { Col, Container, Row, Spacer, Tooltip } from "@nextui-org/react";
 import { IncomingMessage } from "http";
-import { stringify } from "querystring";
 import React from "react";
-import { Plus, Trash } from "react-feather";
+import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
-import { ItemCard } from "../../components/cards/itemCard";
-import clientPromise from "../../lib/mongodb";
+import { ItemCard } from "../../components/cards/ItemCard";
+import { ListType } from "../../types/Lists";
 import { TextType } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
 import { connectToDatabase } from "../../util/mongodb";
@@ -31,7 +30,7 @@ export default function Dashboard({
   lists,
 }: {
   texts: TextType[];
-  lists: any;
+  lists: ListType[];
 }) {
   return (
     <Container>
@@ -47,7 +46,6 @@ export default function Dashboard({
             </Tooltip>
           </Row>
           <Col>
-            {/* Add actions to create new text */}
             {texts &&
               texts.map((text) => (
                 <React.Fragment key={text._id}>
