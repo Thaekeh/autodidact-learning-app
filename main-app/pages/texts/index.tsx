@@ -6,6 +6,7 @@ import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
 import { Text } from "../../types/Texts";
 import { IncomingMessage } from "http";
+import { getUserIdFromReq } from "../../util/getUserIdFromReq";
 
 export default function Texts({ texts }: { texts: Text[] }) {
   return (
@@ -60,8 +61,7 @@ export default function Texts({ texts }: { texts: Text[] }) {
 }
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
-  const session = await getSession({ req });
-  const userId = session?.user?.id;
+  const userId = await getUserIdFromReq(req);
   try {
     const client = await clientPromise;
     const textsCollection = await client.db("learningHub").collection("texts");
