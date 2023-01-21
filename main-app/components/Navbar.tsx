@@ -28,12 +28,10 @@ export const ComposedNavbar = () => {
             </Navbar.Link>
             <Navbar.Link as={"span"}>
               <NextLink href="/profile">
-                {data.user && (
-                  <Avatar
-                    text={data.user.name || ""}
-                    icon={data.user.image ? undefined : <User />}
-                  />
-                )}
+                <Avatar
+                  text={data.user.name || ""}
+                  icon={data.user.image ? undefined : <User />}
+                />
               </NextLink>
             </Navbar.Link>
           </>
