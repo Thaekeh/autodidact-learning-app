@@ -4,11 +4,12 @@ import Link from "next/link";
 import { Edit2, Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
-import { Text } from "../../types/Texts";
+import { TextType } from "../../types/Texts";
 import { IncomingMessage } from "http";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
+import { getRouteForSingleText } from "../../util/routing/texts";
 
-export default function Texts({ texts }: { texts: Text[] }) {
+export default function Texts({ texts }: { texts: TextType[] }) {
   return (
     <Container css={{ marginTop: "$18" }}>
       <Table>
@@ -28,7 +29,7 @@ export default function Texts({ texts }: { texts: Text[] }) {
                   <Row justify="center" align="center">
                     <Col css={{ d: "flex" }}>
                       <Tooltip content="Open text">
-                        <Link href={`/texts/${text._id}`}>
+                        <Link href={getRouteForSingleText(text._id)}>
                           <IconButton>
                             <Eye />
                           </IconButton>
