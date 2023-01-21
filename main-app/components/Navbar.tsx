@@ -15,23 +15,28 @@ export const ComposedNavbar = () => {
         </NextLink>
       </Navbar.Brand>
       <Navbar.Content>
-        <Navbar.Link as={"span"}>
-          <NextLink href="/flashcards">Flashcards</NextLink>
-        </Navbar.Link>
-        <Navbar.Link as={"span"} isActive>
-          <NextLink href="/texts">Texts</NextLink>
-        </Navbar.Link>
         {data?.user ? (
-          <Navbar.Link as={"span"}>
-            <NextLink href="/profile">
-              {data.user && (
-                <Avatar
-                  text={data.user.name || ""}
-                  icon={data.user.image ? undefined : <User />}
-                />
-              )}
-            </NextLink>
-          </Navbar.Link>
+          <>
+            <Navbar.Link as={"span"}>
+              <NextLink href="/app">Dashboard</NextLink>
+            </Navbar.Link>
+            <Navbar.Link as={"span"}>
+              <NextLink href="/flashcards">Flashcards</NextLink>
+            </Navbar.Link>
+            <Navbar.Link as={"span"}>
+              <NextLink href="/texts">Texts</NextLink>
+            </Navbar.Link>
+            <Navbar.Link as={"span"}>
+              <NextLink href="/profile">
+                {data.user && (
+                  <Avatar
+                    text={data.user.name || ""}
+                    icon={data.user.image ? undefined : <User />}
+                  />
+                )}
+              </NextLink>
+            </Navbar.Link>
+          </>
         ) : (
           <NextLink href={"/login"}>
             <Button>Login</Button>
