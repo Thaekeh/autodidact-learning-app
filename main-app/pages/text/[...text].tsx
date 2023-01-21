@@ -19,7 +19,6 @@ export default function TextPage() {
   );
 
   const { query } = useRouter();
-  const textId = query.text && query.text[0];
 
   const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     console.log(event?.currentTarget.innerHTML);
