@@ -33,14 +33,6 @@ export async function getServerSideProps({
 
 export default function TextPage({ text }: { text: TextType | null }) {
   const [isInEditMode, setIsInEditMode] = useState(false);
-  // const [text, setText] = useState<string>(
-  //   "This is some testing text with a longer content"
-  // );
-  useEffect(() => {
-    console.log("text in comp", text);
-  });
-
-  const { query } = useRouter();
 
   const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     console.log(event?.currentTarget.innerHTML);
