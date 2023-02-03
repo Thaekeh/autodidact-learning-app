@@ -8,24 +8,39 @@ import {
   Text,
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit2 } from "react-feather";
 import styled from "@emotion/styled";
+import { IncomingMessage } from "http";
+import { getUserIdFromReq } from "../../util";
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import getTextById from "../../util/mongo/getTextById";
+import { TextType } from "../../types/Texts";
 
-export default function TextPage() {
+export async function getServerSideProps({
+  req,
+  params,
+}: {
+  req: IncomingMessage;
+  params: Params;
+}) {
+  const userId = await getUserIdFromReq(req);
+
+  const textId = params.text[0];
+  const text = await getTextById(userId, textId);
+  return { props: { text: text || null } };
+}
+
+export default function TextPage({ text }: { text: TextType | null }) {
   const [isInEditMode, setIsInEditMode] = useState(false);
-  const [text, setText] = useState<string>(
-    "This is some testing text with a longer content"
-  );
-
-  const { query } = useRouter();
 
   const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
     console.log(event?.currentTarget.innerHTML);
   };
 
   const mappedText = () => {
-    const textInArray = text.split(" ");
+    if (!text?.content) return "Empty";
+    const textInArray = text.content.split(" ");
     return textInArray.map((word) => {
       const randomNumber = Math.floor(Math.random() * 100000);
       return (
@@ -36,6 +51,8 @@ export default function TextPage() {
       );
     });
   };
+
+  const setText = (inputText: string) => {};
 
   return (
     <Grid.Container
@@ -57,7 +74,7 @@ export default function TextPage() {
                 <Text h4>Edit your text</Text>
                 <Textarea
                   animated={false}
-                  value={text}
+                  value={text?.content || ""}
                   onChange={(event) => setText(event.target.value)}
                   maxRows={50}
                 ></Textarea>
