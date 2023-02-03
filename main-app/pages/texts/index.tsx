@@ -64,12 +64,14 @@ export default function Texts({ texts }: { texts: TextType[] }) {
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const userId = await getUserIdFromReq(req);
   try {
-    const client = await clientPromise;
-    const textsCollection = await client.db("learningHub").collection("texts");
     if (!userId) {
       console.log("no userId in fetch");
       return;
     } else {
+      const client = await clientPromise;
+      const textsCollection = await client
+        .db("learningHub")
+        .collection("texts");
       const texts = await textsCollection.find({ userId }).toArray();
       console.log(`texts`, texts);
       return {
