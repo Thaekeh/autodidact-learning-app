@@ -8,6 +8,7 @@ import { connectToDatabase } from "../../lib/mongodb";
 import { ListType } from "../../types/Lists";
 import { TextType } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
+import createNewText from "../../util/mongo/createNewText";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 
@@ -32,6 +33,10 @@ export default function Dashboard({
   texts: TextType[];
   lists: ListType[];
 }) {
+  const newTextHandler = () => {
+    createNewText();
+  };
+
   return (
     <Container>
       <Spacer y={2} />
@@ -40,7 +45,7 @@ export default function Dashboard({
           <Row align="center" justify="space-between">
             <h2>Texts</h2>
             <Tooltip content={"Create new text"}>
-              <IconButton>
+              <IconButton onClick={newTextHandler}>
                 <Plus />
               </IconButton>
             </Tooltip>
