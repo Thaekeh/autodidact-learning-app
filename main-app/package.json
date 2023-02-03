@@ -5,6 +5,11 @@
     "build": "next build",
     "start": "next start"
   },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=8.19.2",
+    "yarn": "please-use-npm"
+  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
