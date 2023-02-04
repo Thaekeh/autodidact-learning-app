@@ -3,15 +3,15 @@ import clientPromise from "../../../lib/mongodb";
 import { TextDocument } from "../../../types/Texts";
 
 export default async function getTextById(
-  userId?: string,
-  id?: string
-): Promise<Text | undefined> {
+  userId?: ObjectId,
+  textId?: ObjectId
+): Promise<TextDocument | undefined> {
   try {
     if (!userId) {
       console.log("no userId in fetch");
       return;
     }
-    if (!id) {
+    if (!textId) {
       console.log("no textId in fetch");
       return;
     }
@@ -19,11 +19,11 @@ export default async function getTextById(
     const client = await clientPromise;
     const textsCollection = await client.db("learningHub").collection("texts");
     const text = await textsCollection.findOne<TextDocument>({
-      _id: new ObjectId(id),
+      _id: textId,
       owner: userId,
     });
     if (!text) {
-      throw new Error("text does not exist");
+      throw new Error("text not found");
     }
     if (!text) return undefined;
     return JSON.parse(JSON.stringify(text));

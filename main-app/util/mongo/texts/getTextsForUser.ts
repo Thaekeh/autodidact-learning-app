@@ -1,8 +1,9 @@
+import { ObjectId } from "mongodb";
 import clientPromise from "../../../lib/mongodb";
 import { TextDocument } from "../../../types/Texts";
 import stringifyAndParseResult from "../stringifyAndParseResult";
 
-export default async function getTextsForUser(userId?: string) {
+export default async function getTextsForUser(userId?: ObjectId) {
   if (!userId) {
     console.log("no userId in fetch");
     return;
