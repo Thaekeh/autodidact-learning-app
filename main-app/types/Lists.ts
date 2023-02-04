@@ -1,5 +1,6 @@
-export interface ListType {
-  _id: string;
+import { WithId } from "mongodb";
+
+export interface ListDocument extends WithId<Document> {
   name: string;
   updatedAt: string;
 }

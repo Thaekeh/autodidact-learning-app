@@ -1,3 +1,3 @@
 export * from "./getUserIdFromReq";
-export * from "./mongo/createNewText";
-export * from "./mongo/getTextById";
+export * from "./mongo/texts/createNewText";
+export * from "./mongo/texts/getTextById";
