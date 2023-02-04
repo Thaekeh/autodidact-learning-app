@@ -15,10 +15,9 @@ import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
-  const { db } = await connectToDatabase();
   const userId = await getUserIdFromReq(req);
-  const texts = await getTextsForUser(userId);
 
+  const texts = await getTextsForUser(userId);
   const lists = await getListsForUser(userId);
 
   return { props: { texts, lists } };
