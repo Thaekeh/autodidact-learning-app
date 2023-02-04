@@ -7,7 +7,7 @@ export const LoginForm = () => {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     if (!event) return;
     event.preventDefault();
-    const result = await signIn("credentials", {
+    await signIn("credentials", {
       redirect: false,
       email: formValues.email,
       password: formValues.password,
