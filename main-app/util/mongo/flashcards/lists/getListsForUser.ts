@@ -1,8 +1,9 @@
+import { ObjectId } from "mongodb";
 import clientPromise from "../../../../lib/mongodb";
 import { ListDocument } from "../../../../types/Lists";
 import stringifyAndParseResult from "../../stringifyAndParseResult";
 
-export default async function getListsForUser(userId?: string) {
+export default async function getListsForUser(userId?: ObjectId) {
   if (!userId) {
     console.log("no userId while getting lists");
     return;
