@@ -1,5 +1,6 @@
 import clientPromise from "../../../lib/mongodb";
 import { TextDocument } from "../../../types/Texts";
+import stringifyAndParseResult from "../stringifyAndParseResult";
 
 export default async function getTextsForUser(userId?: string) {
   if (!userId) {
@@ -15,5 +16,5 @@ export default async function getTextsForUser(userId?: string) {
     })
     .toArray();
 
-  return texts;
+  return stringifyAndParseResult(texts);
 }
