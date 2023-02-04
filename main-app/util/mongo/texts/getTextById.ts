@@ -5,7 +5,7 @@ import { TextDocument } from "../../../types/Texts";
 export default async function getTextById(
   userId?: string,
   id?: string
-): Promise<Text | undefined> {
+): Promise<TextDocument | undefined> {
   try {
     if (!userId) {
       console.log("no userId in fetch");
@@ -23,7 +23,7 @@ export default async function getTextById(
       owner: userId,
     });
     if (!text) {
-      throw new Error("text does not exist");
+      throw new Error("text not found");
     }
     if (!text) return undefined;
     return JSON.parse(JSON.stringify(text));

@@ -3,15 +3,15 @@ import clientPromise from "../../../../lib/mongodb";
 import { ListDocument } from "../../../../types/Lists";
 
 export default async function getListById(
-  userId?: string,
-  id?: string
+  userId?: ObjectId,
+  listId?: ObjectId
 ): Promise<ListDocument | undefined> {
   try {
     if (!userId) {
       console.log("no userId in fetch");
       return;
     }
-    if (!id) {
+    if (!listId) {
       console.log("no textId in fetch");
       return;
     }
@@ -21,7 +21,7 @@ export default async function getListById(
       .db("learningHub")
       .collection("flashcardLists");
     const list = await listsCollection.findOne<ListDocument>({
-      _id: new ObjectId(id),
+      _id: listId,
       owner: userId,
     });
     if (!list) {
