@@ -19,7 +19,7 @@ export default async function getFlashcardsForList(
   const flashcards = await flashcardsCollection
     .find<FlashcardDocument>({
       listId: listId,
-      owner: userId?.toString(),
+      owner: userId,
     })
     .toArray();
   return stringifyAndParseResult(flashcards);

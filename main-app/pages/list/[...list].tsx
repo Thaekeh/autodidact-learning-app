@@ -1,4 +1,4 @@
-import { Container } from "@nextui-org/react";
+import { Container, Table } from "@nextui-org/react";
 import React from "react";
 import { IncomingMessage } from "http";
 import { getUserIdFromReq } from "../../util";
@@ -14,12 +14,29 @@ export default function TextPage({
   flashcards,
 }: {
   list: ListDocument | null;
-  flashcards: FlashcardDocument[] | null;
+  flashcards: FlashcardDocument[];
 }) {
   return (
     <Container>
       <div>{list?.name}</div>
-      <div>{flashcards?.length}</div>
+      <Table>
+        <Table.Header>
+          <Table.Column>Name</Table.Column>
+          <Table.Column>Last opened</Table.Column>
+          <Table.Column> </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          {flashcards?.map((flashcard) => {
+            return (
+              <Table.Row>
+                <Table.Cell>test</Table.Cell>
+                <Table.Cell>test</Table.Cell>
+                <Table.Cell>test</Table.Cell>
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table>
     </Container>
   );
 }
@@ -36,5 +53,6 @@ export async function getServerSideProps({
   const list = await getListById(userId, listId);
 
   const flashcards = await getFlashcardsForList(userId, listId);
+  console.log(`flashcards`, flashcards);
   return { props: { list: list || null, flashcards: flashcards } };
 }
