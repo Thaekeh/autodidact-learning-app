@@ -4,7 +4,7 @@ import { FlashcardDocument } from "../../../../types/Flashcards";
 import stringifyAndParseResult from "../../stringifyAndParseResult";
 
 export default async function getFlashcardsForList(
-  userId?: string,
+  userId?: ObjectId,
   listId?: ObjectId
 ): Promise<FlashcardDocument[] | undefined> {
   if (!listId) {
