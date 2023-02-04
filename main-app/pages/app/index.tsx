@@ -8,6 +8,7 @@ import { connectToDatabase } from "../../lib/mongodb";
 import { ListDocument } from "../../types/Lists";
 import { TextDocument } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
+import getListsForUser from "../../util/mongo/flashcards/lists/getListsForUser";
 import createNewText from "../../util/mongo/texts/createNewText";
 import getTextsForUser from "../../util/mongo/texts/getTextsForUser";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
@@ -16,18 +17,11 @@ import { getRouteForSingleText } from "../../util/routing/texts";
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const { db } = await connectToDatabase();
   const userId = await getUserIdFromReq(req);
-  const textsCollection = await db.collection("texts");
   const texts = await getTextsForUser(userId);
-  const textsAsJson = JSON.parse(JSON.stringify(texts));
 
-  const listsCollection = await db.collection("flashcardLists");
-  const lists = await listsCollection
-    .find({ owner: userId })
-    .limit(10)
-    .toArray();
-  const listsAsJson = JSON.parse(JSON.stringify(lists));
+  const lists = await getListsForUser(userId);
 
-  return { props: { texts: textsAsJson, lists: listsAsJson } };
+  return { props: { texts, lists } };
 }
 
 export default function Dashboard({
