@@ -32,9 +32,9 @@ export async function getServerSideProps({
   params: Params;
 }) {
   const userId = await getUserIdFromReq(req);
-  const listId = params.list[0];
+  const listId = new ObjectId(params.list[0]);
   const list = await getListById(userId, listId);
 
-  const flashcards = await getFlashcardsForList(userId, new ObjectId(listId));
+  const flashcards = await getFlashcardsForList(userId, listId);
   return { props: { list: list || null, flashcards: flashcards } };
 }
