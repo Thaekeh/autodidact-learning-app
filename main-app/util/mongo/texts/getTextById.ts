@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import clientPromise from "../../lib/mongodb";
-import { TextDocument } from "../../types/Texts";
+import clientPromise from "../../../lib/mongodb";
+import { TextDocument } from "../../../types/Texts";
 
 export default async function getTextById(
   userId?: string,
@@ -20,7 +20,7 @@ export default async function getTextById(
     const textsCollection = await client.db("learningHub").collection("texts");
     const text = await textsCollection.findOne<TextDocument>({
       _id: new ObjectId(id),
-      userId,
+      owner: userId,
     });
     if (!text) {
       throw new Error("text does not exist");
