@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Edit2, Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import clientPromise from "../../lib/mongodb";
-import { TextType } from "../../types/Texts";
+import { TextDocument } from "../../types/Texts";
 import { IncomingMessage } from "http";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
 import { getRouteForSingleText } from "../../util/routing/texts";
 
-export default function Texts({ texts }: { texts: TextType[] }) {
+export default function Texts({ texts }: { texts: TextDocument[] }) {
   return (
     <Container css={{ marginTop: "$18" }}>
       <Table>
@@ -21,7 +21,7 @@ export default function Texts({ texts }: { texts: TextType[] }) {
         <Table.Body>
           {texts.map((text) => {
             return (
-              <Table.Row key={text._id}>
+              <Table.Row key={text._id.toString()}>
                 <Table.Cell>{text.name}</Table.Cell>
                 <Table.Cell>{text.updatedAt}</Table.Cell>
 
@@ -29,7 +29,7 @@ export default function Texts({ texts }: { texts: TextType[] }) {
                   <Row justify="center" align="center">
                     <Col css={{ d: "flex" }}>
                       <Tooltip content="Open text">
-                        <Link href={getRouteForSingleText(text._id)}>
+                        <Link href={getRouteForSingleText(text._id.toString())}>
                           <IconButton>
                             <Eye />
                           </IconButton>

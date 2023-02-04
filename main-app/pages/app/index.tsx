@@ -5,10 +5,11 @@ import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { ItemCard } from "../../components/cards/ItemCard";
 import { connectToDatabase } from "../../lib/mongodb";
-import { ListType } from "../../types/Lists";
-import { TextType } from "../../types/Texts";
+import { ListDocument } from "../../types/Lists";
+import { TextDocument } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
-import createNewText from "../../util/mongo/createNewText";
+import createNewText from "../../util/mongo/texts/createNewText";
+import getTextsForUser from "../../util/mongo/texts/getTextsForUser";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 
@@ -16,11 +17,14 @@ export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const { db } = await connectToDatabase();
   const userId = await getUserIdFromReq(req);
   const textsCollection = await db.collection("texts");
-  const texts = await textsCollection.find({ userId }).limit(10).toArray();
+  const texts = await getTextsForUser(userId);
   const textsAsJson = JSON.parse(JSON.stringify(texts));
 
   const listsCollection = await db.collection("flashcardLists");
-  const lists = await listsCollection.find({ userId }).limit(10).toArray();
+  const lists = await listsCollection
+    .find({ owner: userId })
+    .limit(10)
+    .toArray();
   const listsAsJson = JSON.parse(JSON.stringify(lists));
 
   return { props: { texts: textsAsJson, lists: listsAsJson } };
@@ -30,8 +34,8 @@ export default function Dashboard({
   texts,
   lists,
 }: {
-  texts: TextType[];
-  lists: ListType[];
+  texts: TextDocument[];
+  lists: ListDocument[];
 }) {
   const newTextHandler = () => {
     createNewText();
@@ -53,10 +57,10 @@ export default function Dashboard({
           <Col>
             {texts &&
               texts.map((text) => (
-                <React.Fragment key={text._id}>
+                <React.Fragment key={text._id.toString()}>
                   <ItemCard
                     name={text.name}
-                    href={getRouteForSingleText(text._id)}
+                    href={getRouteForSingleText(text._id.toString())}
                   />
                   <Spacer y={1}></Spacer>
                 </React.Fragment>
@@ -75,10 +79,10 @@ export default function Dashboard({
           </Row>
           {lists &&
             lists.map((list) => (
-              <React.Fragment key={list._id}>
+              <React.Fragment key={list._id.toString()}>
                 <ItemCard
                   name={list.name}
-                  href={getRouteForSingleCardList(list._id)}
+                  href={getRouteForSingleCardList(list._id.toString())}
                 />
                 <Spacer y={1}></Spacer>
               </React.Fragment>

@@ -14,7 +14,7 @@ import styled from "@emotion/styled";
 import { IncomingMessage } from "http";
 import { getUserIdFromReq } from "../../util";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import getTextById from "../../util/mongo/getTextById";
+import getTextById from "../../util/mongo/texts/getTextById";
 import { TextDocument } from "../../types/Texts";
 
 export default function TextPage({ text }: { text: TextDocument | null }) {
