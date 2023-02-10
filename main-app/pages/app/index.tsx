@@ -24,6 +24,7 @@ import getTextsForUser from "../../util/mongo/texts/getTextsForUser";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
+import { NameModal } from "../../components/modals/NameModal";
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const userId = await getUserIdFromReq(req);
@@ -48,7 +49,7 @@ export default function Dashboard({
     setVisible(true);
   };
 
-  const onNewTextConfirm = async () => {
+  const onNewTextConfirm = async (name: string) => {
     const baseUrl = window.location.origin;
     console.log(`baseUrl`, baseUrl);
     const result = await fetch(`${baseUrl}/api/texts/create`, {
@@ -56,7 +57,7 @@ export default function Dashboard({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: inputValue }),
+      body: JSON.stringify({ name }),
     });
     const data = await result.json();
     if (data) {
@@ -65,28 +66,14 @@ export default function Dashboard({
     }
   };
 
-  const { value: inputValue, bindings: inputBindings } = useInput("");
-
   return (
     <>
-      <Modal closeButton open={visible} onClose={() => setVisible(false)}>
-        <Modal.Header>
-          <Text>What do you want to name your new Text?</Text>
-        </Modal.Header>
-        <Modal.Body>
-          <Input
-            value={inputValue}
-            onChange={inputBindings.onChange}
-            placeholder="Test"
-          />
-        </Modal.Body>
-        <form></form>
-        <Modal.Footer>
-          <Button auto onPress={onNewTextConfirm}>
-            Create
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <NameModal
+        title={"Insert name of text"}
+        isOpen={visible}
+        onCancel={() => setVisible(false)}
+        onConfirm={onNewTextConfirm}
+      />
       <Container>
         <Spacer y={2} />
         <Row>
