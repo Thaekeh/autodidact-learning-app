@@ -1,4 +1,16 @@
-import { Col, Container, Row, Spacer, Tooltip } from "@nextui-org/react";
+import {
+  Col,
+  Container,
+  Input,
+  Modal,
+  Row,
+  Spacer,
+  Tooltip,
+  useModal,
+  Text,
+  Button,
+  useInput,
+} from "@nextui-org/react";
 import { IncomingMessage } from "http";
 import React from "react";
 import { Plus } from "react-feather";
@@ -31,7 +43,12 @@ export default function Dashboard({
 }) {
   const router = useRouter();
 
-  const newTextHandler = async () => {
+  const { visible, setVisible } = useModal(false);
+  const newTextButtonHandler = () => {
+    setVisible(true);
+  };
+
+  const onNewTextConfirm = async () => {
     const baseUrl = window.location.origin;
     console.log(`baseUrl`, baseUrl);
     const result = await fetch(`${baseUrl}/api/texts/create`, {
@@ -39,7 +56,7 @@ export default function Dashboard({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ test: "test" }),
+      body: JSON.stringify({ name: inputValue }),
     });
     const data = await result.json();
     if (data) {
@@ -48,54 +65,76 @@ export default function Dashboard({
     }
   };
 
+  const { value: inputValue, bindings: inputBindings } = useInput("");
+
   return (
-    <Container>
-      <Spacer y={2} />
-      <Row>
-        <Col>
-          <Row align="center" justify="space-between">
-            <h2>Texts</h2>
-            <Tooltip content={"Create new text"}>
-              <IconButton onClick={newTextHandler}>
-                <Plus />
-              </IconButton>
-            </Tooltip>
-          </Row>
+    <>
+      <Modal closeButton open={visible} onClose={() => setVisible(false)}>
+        <Modal.Header>
+          <Text>What do you want to name your new Text?</Text>
+        </Modal.Header>
+        <Modal.Body>
+          <Input
+            value={inputValue}
+            onChange={inputBindings.onChange}
+            placeholder="Test"
+          />
+        </Modal.Body>
+        <form></form>
+        <Modal.Footer>
+          <Button auto onPress={onNewTextConfirm}>
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Container>
+        <Spacer y={2} />
+        <Row>
           <Col>
-            {texts &&
-              texts.map((text) => (
-                <React.Fragment key={text._id.toString()}>
+            <Row align="center" justify="space-between">
+              <h2>Texts</h2>
+              <Tooltip content={"Create new text"}>
+                <IconButton onClick={newTextButtonHandler}>
+                  <Plus />
+                </IconButton>
+              </Tooltip>
+            </Row>
+            <Col>
+              {texts &&
+                texts.map((text) => (
+                  <React.Fragment key={text._id.toString()}>
+                    <ItemCard
+                      name={text.name}
+                      href={getRouteForSingleText(text._id.toString())}
+                    />
+                    <Spacer y={1}></Spacer>
+                  </React.Fragment>
+                ))}
+            </Col>
+          </Col>
+          <Spacer x={4} />
+          <Col>
+            <Row align="center" justify="space-between">
+              <h2>Card Lists</h2>
+              <Tooltip content={"Create new list"}>
+                <IconButton>
+                  <Plus />
+                </IconButton>
+              </Tooltip>
+            </Row>
+            {lists &&
+              lists.map((list) => (
+                <React.Fragment key={list._id.toString()}>
                   <ItemCard
-                    name={text.name}
-                    href={getRouteForSingleText(text._id.toString())}
+                    name={list.name}
+                    href={getRouteForSingleCardList(list._id.toString())}
                   />
                   <Spacer y={1}></Spacer>
                 </React.Fragment>
               ))}
           </Col>
-        </Col>
-        <Spacer x={4} />
-        <Col>
-          <Row align="center" justify="space-between">
-            <h2>Card Lists</h2>
-            <Tooltip content={"Create new list"}>
-              <IconButton>
-                <Plus />
-              </IconButton>
-            </Tooltip>
-          </Row>
-          {lists &&
-            lists.map((list) => (
-              <React.Fragment key={list._id.toString()}>
-                <ItemCard
-                  name={list.name}
-                  href={getRouteForSingleCardList(list._id.toString())}
-                />
-                <Spacer y={1}></Spacer>
-              </React.Fragment>
-            ))}
-        </Col>
-      </Row>
-    </Container>
+        </Row>
+      </Container>
+    </>
   );
 }
