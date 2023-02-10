@@ -26,7 +26,6 @@ export const NameModal: React.FC<NameModalProps> = ({
       <Modal.Body>
         <Input value={value} onChange={bindings.onChange} placeholder="Name" />
       </Modal.Body>
-      <form></form>
       <Modal.Footer>
         <Button auto onPress={() => onConfirm(value)}>
           Create
