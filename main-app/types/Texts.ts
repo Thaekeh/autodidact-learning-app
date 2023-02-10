@@ -1,8 +1,10 @@
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 
-export interface TextDocument extends WithId<Document> {
+export interface TextObject {
   name: string;
-  updatedAt: string;
+  updatedAt: number;
   content?: string;
-  owner: string;
+  owner: ObjectId;
 }
+
+export type TextDocument = TextObject & WithId<Document>;

@@ -15,6 +15,7 @@ import { getUserIdFromReq } from "../../util";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import getTextById from "../../util/mongo/texts/getTextById";
 import { TextDocument } from "../../types/Texts";
+import { ObjectId } from "mongodb";
 
 export default function TextPage({ text }: { text: TextDocument | null }) {
   const [isInEditMode, setIsInEditMode] = useState(false);
@@ -103,7 +104,7 @@ export async function getServerSideProps({
   params: Params;
 }) {
   const userId = await getUserIdFromReq(req);
-  const textId = params.text[0];
+  const textId = new ObjectId(params.text[0]);
   const text = await getTextById(userId, textId);
   return { props: { text: text || null } };
 }
