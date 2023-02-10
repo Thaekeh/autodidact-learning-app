@@ -4,15 +4,14 @@ import React from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { ItemCard } from "../../components/cards/ItemCard";
-import { connectToDatabase } from "../../lib/mongodb";
 import { ListDocument } from "../../types/Lists";
 import { TextDocument } from "../../types/Texts";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
 import getListsForUser from "../../util/mongo/flashcards/lists/getListsForUser";
-import createNewText from "../../util/mongo/texts/createNewText";
 import getTextsForUser from "../../util/mongo/texts/getTextsForUser";
 import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const userId = await getUserIdFromReq(req);
@@ -30,8 +29,23 @@ export default function Dashboard({
   texts: TextDocument[];
   lists: ListDocument[];
 }) {
-  const newTextHandler = () => {
-    createNewText();
+  const router = useRouter();
+
+  const newTextHandler = async () => {
+    const baseUrl = window.location.origin;
+    console.log(`baseUrl`, baseUrl);
+    const result = await fetch(`${baseUrl}/api/texts/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ test: "test" }),
+    });
+    const data = await result.json();
+    if (data) {
+      const textUrl = `${window.location.origin}/text/${data.id}`;
+      router.push(textUrl);
+    }
   };
 
   return (
