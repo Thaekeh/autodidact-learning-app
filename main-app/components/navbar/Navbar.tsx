@@ -8,10 +8,7 @@ export const ComposedNavbar = () => {
   const { data } = useSession();
 
   return (
-    <Navbar
-      variant={"sticky"}
-      css={{ backgroundColor: theme.colors.cyan50.value }}
-    >
+    <Navbar variant={"sticky"}>
       <Navbar.Brand>
         <NextLink href={"/"}>
           <h1>Learning Hub</h1>
