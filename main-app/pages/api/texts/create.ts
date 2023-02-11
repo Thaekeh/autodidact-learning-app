@@ -19,7 +19,7 @@ export default nextConnect<NextApiRequest, NextApiResponseWithInsertedId>({
     res.status(500).json({ error: `something went wrong, ${error}` });
   },
 }).post(async (req, res) => {
-  console.log(`body`, req.body);
+  const name: string = req.body.name;
 
   const userId = await getUserIdFromReq(req);
   if (!userId) {
@@ -27,9 +27,8 @@ export default nextConnect<NextApiRequest, NextApiResponseWithInsertedId>({
     return;
   }
 
-  // TODO actually use incoming name
   const newText: TextObject = {
-    name: "temporary name",
+    name,
     updatedAt: Date.now(),
     owner: userId,
     content: "test",
