@@ -1,5 +1,5 @@
 import React from "react";
-import { ComposedNavbar } from "./Navbar";
+import { ComposedNavbar } from "./navbar/Navbar";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
