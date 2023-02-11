@@ -5,7 +5,6 @@ import { Button } from "@nextui-org/react";
 export default function Logout() {
   const { data } = useSession();
   const onLogout = () => {
-    event?.preventDefault();
     signOut({ redirect: false });
   };
   return (
