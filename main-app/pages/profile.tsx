@@ -30,6 +30,7 @@ export default function Profile() {
           <PaddedCard variant="bordered">
             <h3>Settings</h3>
             <Input
+              shadow={false}
               label="Name"
               value={nameInputValue}
               onChange={nameInputBindings.onChange}
