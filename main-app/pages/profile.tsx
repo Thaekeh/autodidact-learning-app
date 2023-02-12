@@ -1,5 +1,12 @@
 import styled from "@emotion/styled";
-import { Container, Input, theme, useInput } from "@nextui-org/react";
+import {
+  Card,
+  Container,
+  Input,
+  theme,
+  useInput,
+  styled as NextUIStyled,
+} from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -20,13 +27,15 @@ export default function Profile() {
     <Container xs>
       <BackgroundDiv>
         <HeadingContainer>
-          <h2>Settings</h2>
-          <Input
-            label="Name"
-            value={nameInputValue}
-            onChange={nameInputBindings.onChange}
-            onBlur={() => onInputFieldBlur("username", nameInputValue)}
-          ></Input>
+          <PaddedCard variant="bordered">
+            <h3>Settings</h3>
+            <Input
+              label="Name"
+              value={nameInputValue}
+              onChange={nameInputBindings.onChange}
+              onBlur={() => onInputFieldBlur("username", nameInputValue)}
+            ></Input>
+          </PaddedCard>
         </HeadingContainer>
       </BackgroundDiv>
     </Container>
@@ -37,7 +46,7 @@ const BackgroundDiv = styled.div`
   background-color: ${theme.colors.white.value};
   height: 100%;
   width: 100%;
-  padding-top: ${theme.space[18].value};
+  margin-top: ${theme.space[12].value};
 `;
 
 const HeadingContainer = styled.div`
@@ -45,3 +54,7 @@ const HeadingContainer = styled.div`
   justify-content: center;
   flex-direction: column;
 `;
+
+const PaddedCard = NextUIStyled(Card, {
+  padding: theme.space[12].value,
+});
