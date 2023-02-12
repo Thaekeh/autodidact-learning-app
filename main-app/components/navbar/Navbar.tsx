@@ -32,7 +32,7 @@ export const ComposedNavbar = () => {
           </>
         ) : (
           <NextLink href={"/login"}>
-            <Button>Login</Button>
+            <Button size={"sm"}>Login</Button>
           </NextLink>
         )}
       </Navbar.Content>
