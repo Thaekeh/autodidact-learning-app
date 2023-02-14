@@ -1,19 +1,20 @@
 import { Avatar, Dropdown, Text, Navbar } from "@nextui-org/react";
-import { signOut, useSession } from "next-auth/react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { Key } from "react";
 import { User } from "react-feather";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
+  const supabase = useSupabaseClient();
   const router = useRouter();
-  const { data: sessionData } = useSession();
-  const user = sessionData?.user;
+  const user = useUser();
 
   const onDropdownAction = (actionKey: Key) => {
     switch (actionKey) {
       case "logout":
-        signOut({ redirect: false });
+        supabase.auth.signOut();
+        router.push("/");
       case "settings":
         router.push("/profile");
     }
