@@ -25,6 +25,7 @@ import { getRouteForSingleCardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
+import { DashboardCardContainer } from "../../components/cards/DashboardCardContainer";
 
 export async function getServerSideProps({ req }: { req: IncomingMessage }) {
   const userId = await getUserIdFromReq(req);
@@ -78,47 +79,51 @@ export default function Dashboard({
         <Spacer y={2} />
         <Row>
           <Col>
-            <Row align="center" justify="space-between">
-              <h2>Texts</h2>
-              <Tooltip content={"Create new text"}>
-                <IconButton onClick={newTextButtonHandler}>
-                  <Plus />
-                </IconButton>
-              </Tooltip>
-            </Row>
-            <Col>
-              {texts &&
-                texts.map((text) => (
-                  <React.Fragment key={text._id.toString()}>
+            <DashboardCardContainer>
+              <Row align="center" justify="space-between">
+                <h2>Texts</h2>
+                <Tooltip content={"Create new text"}>
+                  <IconButton onClick={newTextButtonHandler}>
+                    <Plus />
+                  </IconButton>
+                </Tooltip>
+              </Row>
+              <Col>
+                {texts &&
+                  texts.map((text) => (
+                    <React.Fragment key={text._id.toString()}>
+                      <ItemCard
+                        name={text.name}
+                        href={getRouteForSingleText(text._id.toString())}
+                      />
+                      <Spacer y={1}></Spacer>
+                    </React.Fragment>
+                  ))}
+              </Col>
+            </DashboardCardContainer>
+          </Col>
+          <Spacer x={2} />
+          <Col>
+            <DashboardCardContainer>
+              <Row align="center" justify="space-between">
+                <h2>Card Lists</h2>
+                <Tooltip content={"Create new list"}>
+                  <IconButton>
+                    <Plus />
+                  </IconButton>
+                </Tooltip>
+              </Row>
+              {lists &&
+                lists.map((list) => (
+                  <React.Fragment key={list._id.toString()}>
                     <ItemCard
-                      name={text.name}
-                      href={getRouteForSingleText(text._id.toString())}
+                      name={list.name}
+                      href={getRouteForSingleCardList(list._id.toString())}
                     />
                     <Spacer y={1}></Spacer>
                   </React.Fragment>
                 ))}
-            </Col>
-          </Col>
-          <Spacer x={4} />
-          <Col>
-            <Row align="center" justify="space-between">
-              <h2>Card Lists</h2>
-              <Tooltip content={"Create new list"}>
-                <IconButton>
-                  <Plus />
-                </IconButton>
-              </Tooltip>
-            </Row>
-            {lists &&
-              lists.map((list) => (
-                <React.Fragment key={list._id.toString()}>
-                  <ItemCard
-                    name={list.name}
-                    href={getRouteForSingleCardList(list._id.toString())}
-                  />
-                  <Spacer y={1}></Spacer>
-                </React.Fragment>
-              ))}
+            </DashboardCardContainer>
           </Col>
         </Row>
       </Container>
