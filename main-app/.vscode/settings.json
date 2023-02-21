@@ -1,5 +1,6 @@
 {
     "exportall.config.folderListener": [
-        "/types"
+        "/types",
+        "/util/routing"
     ]
 }
