@@ -7,30 +7,22 @@ import {
   Spacer,
   Tooltip,
   useModal,
-  Text,
-  Button,
-  useInput,
 } from "@nextui-org/react";
-import { IncomingMessage } from "http";
 import React from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { ItemCard } from "../../components/cards/ItemCard";
-import { ListDocument } from "../../types/Lists";
-import { TextDocument } from "../../types/Texts";
+import { FlashcardListRow } from "../../types/Lists";
 import { getUserIdFromReq } from "../../util/getUserIdFromReq";
-import getListsForUser from "../../util/mongo/flashcards/lists/getListsForUser";
-import getTextsForUser from "../../util/mongo/texts/getTextsForUser";
-import { getRouteForSingleCardList } from "../../util/routing/cardLists";
+import { getRouteForFlashcardList } from "../../util/routing/cardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
 import { DashboardCardContainer } from "../../components/cards/DashboardCardContainer";
-import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { NextRequest, NextResponse } from "next/server";
-import { Database } from "../../lib/database.types";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Database } from "../../types/supabase";
+import { TextRow } from "../../types/Texts";
 
 export async function getServerSideProps({
   req,
@@ -44,17 +36,9 @@ export async function getServerSideProps({
     res,
   });
 
-  const { data: getUserData } = await supabase.auth.getUser();
-  console.log("user from server", getUserData.user);
 
-  const { data: textsData, error } = await supabase.from("texts").select();
-
-  console.log(`textsData`, textsData);
-
-  const userId = await getUserIdFromReq(req);
-
-  const texts = await getTextsForUser(userId);
-  const lists = await getListsForUser(userId);
+  const { data: texts } = await supabase.from("texts").select();
+  const { data: lists } = await supabase.from("flashcardLists").select();
 
   return { props: { texts, lists } };
 }
@@ -63,8 +47,8 @@ export default function Dashboard({
   texts,
   lists,
 }: {
-  texts: TextDocument[];
-  lists: ListDocument[];
+  texts: TextRow[];
+  lists: FlashcardListRow[];
 }) {
   const router = useRouter();
 
@@ -114,10 +98,10 @@ export default function Dashboard({
               <Col>
                 {texts &&
                   texts.map((text) => (
-                    <React.Fragment key={text._id.toString()}>
+                    <React.Fragment key={text.id}>
                       <ItemCard
                         name={text.name}
-                        href={getRouteForSingleText(text._id.toString())}
+                        href={getRouteForSingleText(text.id)}
                       />
                       <Spacer y={1}></Spacer>
                     </React.Fragment>
@@ -138,10 +122,10 @@ export default function Dashboard({
               </Row>
               {lists &&
                 lists.map((list) => (
-                  <React.Fragment key={list._id.toString()}>
+                  <React.Fragment key={list.id}>
                     <ItemCard
                       name={list.name}
-                      href={getRouteForSingleCardList(list._id.toString())}
+                      href={getRouteForFlashcardList(list.id)}
                     />
                     <Spacer y={1}></Spacer>
                   </React.Fragment>
