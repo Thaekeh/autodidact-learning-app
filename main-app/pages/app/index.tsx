@@ -12,9 +12,7 @@ import React from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { ItemCard } from "../../components/cards/ItemCard";
-import { FlashcardListRow } from "../../types/Lists";
-import { getUserIdFromReq } from "../../util/getUserIdFromReq";
-import { getRouteForFlashcardList } from "../../util/routing/cardLists";
+import { getRouteForFlashcardList } from "../../util/routing/flashcardLists";
 import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
@@ -23,6 +21,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Database } from "../../types/supabase";
 import { TextRow } from "../../types/Texts";
+import { FlashcardListRow } from "../../types/FlashcardLists";
 
 export async function getServerSideProps({
   req,
