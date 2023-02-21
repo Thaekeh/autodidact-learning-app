@@ -1,3 +1,3 @@
-export const getRouteForSingleCardList = (id: string) => {
+export const getRouteForFlashcardList = (id: number) => {
   return `/list/${id}`;
 };
