@@ -1,6 +1,5 @@
-import { WithId } from "mongodb";
+import { Database } from "./supabase";
 
-export interface ListDocument extends WithId<Document> {
-  name: string;
-  updatedAt: string;
-}
+export type FlashcardListRow = Database['public']['Tables']['flashcardLists']['Row'];
+
+
