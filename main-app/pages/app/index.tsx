@@ -26,8 +26,31 @@ import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
 import { DashboardCardContainer } from "../../components/cards/DashboardCardContainer";
+import { useUser } from "@supabase/auth-helpers-react";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { NextRequest, NextResponse } from "next/server";
+import { Database } from "../../lib/database.types";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export async function getServerSideProps({ req }: { req: IncomingMessage }) {
+export async function getServerSideProps({
+  req,
+  res,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+}) {
+  const supabase = await createServerSupabaseClient<Database>({
+    req,
+    res,
+  });
+
+  const { data: getUserData } = await supabase.auth.getUser();
+  console.log("user from server", getUserData.user);
+
+  const { data: textsData, error } = await supabase.from("texts").select();
+
+  console.log(`textsData`, textsData);
+
   const userId = await getUserIdFromReq(req);
 
   const texts = await getTextsForUser(userId);
