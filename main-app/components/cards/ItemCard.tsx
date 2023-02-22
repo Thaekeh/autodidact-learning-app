@@ -1,4 +1,4 @@
-import { Card } from "@nextui-org/react";
+import { Card, theme } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { getRouteForSingleText } from "../../util/routing/texts";
@@ -16,11 +16,19 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 }) => {
   const router = useRouter();
   return (
-    <Card isPressable onPress={() => router.push(href)}>
+    <Card
+      css={{
+        backgroundColor: theme.colors.background.value,
+        boxShadow: theme.shadows.md.value,
+      }}
+      isPressable
+      onPress={() => router.push(href)}
+    >
       <Card.Body>
         <h4>{name}</h4>
-        <p>{lastUpdated}</p>
+        <p>Last updated: {lastUpdated}</p>
       </Card.Body>
+      <Card.Divider />
     </Card>
   );
 };

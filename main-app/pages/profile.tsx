@@ -7,16 +7,13 @@ import {
   useInput,
   styled as NextUIStyled,
 } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@supabase/auth-helpers-react";
 import React from "react";
 
 type fieldName = "username";
 
 export default function Profile() {
-  const { data } = useSession();
-  const { value: nameInputValue, bindings: nameInputBindings } = useInput(
-    data?.user?.name || ""
-  );
+  const { value: nameInputValue, bindings: nameInputBindings } = useInput("");
 
   const onInputFieldBlur = (fieldName: fieldName, fieldValue: string) => {
     // update mongo user
