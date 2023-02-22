@@ -22,6 +22,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Database } from "../../types/supabase";
 import { TextRow } from "../../types/Texts";
 import { FlashcardListRow } from "../../types/FlashcardLists";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export async function getServerSideProps({
   req,
@@ -51,6 +52,8 @@ export default function Dashboard({
 }) {
   const router = useRouter();
 
+  const supabaseClient = useSupabaseClient();
+
   const { visible, setVisible } = useModal(false);
   const newTextButtonHandler = () => {
     setVisible(true);
@@ -59,16 +62,11 @@ export default function Dashboard({
   const onNewTextConfirm = async (name: string) => {
     const baseUrl = window.location.origin;
     console.log(`baseUrl`, baseUrl);
-    const result = await fetch(`${baseUrl}/api/texts/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    });
-    const data = await result.json();
-    if (data) {
-      const textUrl = `${window.location.origin}/text/${data.id}`;
+    const user = await supabaseClient.auth.getSession();
+
+    const createdDocument = await supabaseClient.from('texts').insert({name, user_id: user.data.session?.user.id}).select().single();
+    if (createdDocument) {
+      const textUrl = getRouteForSingleText(createdDocument.data.id);
       router.push(textUrl);
     }
   };
