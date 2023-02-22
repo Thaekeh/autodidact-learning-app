@@ -5,37 +5,46 @@ import { NavbarAvatar } from "./NavbarAvatar";
 import { useUser } from "@supabase/auth-helpers-react";
 
 export const ComposedNavbar = () => {
-  const user = useUser();
+	const user = useUser();
 
-  return (
-    <Navbar variant={"sticky"}>
-      <Navbar.Brand>
-        <NextLink href={"/"}>
-          <h1>Learning Hub</h1>
-        </NextLink>
-      </Navbar.Brand>
-      <Navbar.Content>
-        {user ? (
-          <>
-            <Navbar.Link as={"span"}>
-              <NextLink href="/app">Dashboard</NextLink>
-            </Navbar.Link>
-            <Navbar.Link as={"span"}>
-              <NextLink href="/flashcards">Flashcards</NextLink>
-            </Navbar.Link>
-            <Navbar.Link as={"span"}>
-              <NextLink href="/texts">Texts</NextLink>
-            </Navbar.Link>
-            <Navbar.Link as={"span"}>
-              <NavbarAvatar />
-            </Navbar.Link>
-          </>
-        ) : (
-          <NextLink href={"/login"}>
-            <Button size={"sm"}>Login</Button>
-          </NextLink>
-        )}
-      </Navbar.Content>
-    </Navbar>
-  );
+	return (
+		<Navbar variant={"sticky"}>
+			<Navbar.Brand>
+				<NextLink href={"/"}>
+					<h1>Learning Hub</h1>
+				</NextLink>
+			</Navbar.Brand>
+			<Navbar.Content>
+				<Navbar.Content>
+					{user ? (
+						<>
+							<Navbar.Link as={"span"}>
+								<NextLink href="/app">Dashboard</NextLink>
+							</Navbar.Link>
+							<Navbar.Link as={"span"}>
+								<NextLink href="/flashcards">Flashcards</NextLink>
+							</Navbar.Link>
+							<Navbar.Link as={"span"}>
+								<NextLink href="/texts">Texts</NextLink>
+							</Navbar.Link>
+						</>
+					) : (
+						<NextLink href={"/login"}>
+							<Button size={"sm"}>Login</Button>
+						</NextLink>
+					)}
+				</Navbar.Content>
+				<Navbar.Content
+					css={{
+						"@xs": {
+							w: "12%",
+							jc: "flex-end",
+						},
+					}}
+				>
+					{user && <NavbarAvatar />}
+				</Navbar.Content>
+			</Navbar.Content>
+		</Navbar>
+	);
 };
