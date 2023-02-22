@@ -10,14 +10,13 @@ import {
 import React, { useState } from "react";
 import { Edit2 } from "react-feather";
 import styled from "@emotion/styled";
-import { IncomingMessage } from "http";
-import { getUserIdFromReq } from "../../util";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import getTextById from "../../util/mongo/texts/getTextById";
-import { TextDocument } from "../../types/Texts";
-import { ObjectId } from "mongodb";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "../../types/supabase";
+import { NextApiRequest, NextApiResponse } from "next";
+import { TextRow } from "../../types/Texts";
 
-export default function TextPage({ text }: { text: TextDocument | null }) {
+export default function TextPage({ text }: { text: TextRow | null }) {
   const [isInEditMode, setIsInEditMode] = useState(false);
 
   const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
@@ -98,15 +97,22 @@ export default function TextPage({ text }: { text: TextDocument | null }) {
 
 export async function getServerSideProps({
   req,
+  res,
   params,
 }: {
-  req: IncomingMessage;
+  req: NextApiRequest;
+  res: NextApiResponse;
   params: Params;
 }) {
-  const userId = await getUserIdFromReq(req);
-  const textId = new ObjectId(params.text[0]);
-  const text = await getTextById(userId, textId);
-  return { props: { text: text || null } };
+  const supabase = await createServerSupabaseClient<Database>({
+    req,
+    res,
+  });
+
+  const textId = params.text[0];
+  const { data: text } = await supabase.from("texts").select().eq('id', textId).single();
+
+  return { props: { text: text } };
 }
 
 const HoverableWord = styled.span`

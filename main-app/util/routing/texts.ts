@@ -1,3 +1,3 @@
-export const getRouteForSingleText = (id: string) => {
-  return `/text/${id}`;
+export const getRouteForSingleText = (id: number) => {
+  return `/texts/${id}`;
 };

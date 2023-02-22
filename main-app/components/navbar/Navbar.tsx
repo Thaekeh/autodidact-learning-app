@@ -1,11 +1,11 @@
 import React from "react";
-import { Navbar, Button, theme } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
+import { Navbar, Button } from "@nextui-org/react";
 import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export const ComposedNavbar = () => {
-  const { data } = useSession();
+  const user = useUser();
 
   return (
     <Navbar variant={"sticky"}>
@@ -15,7 +15,7 @@ export const ComposedNavbar = () => {
         </NextLink>
       </Navbar.Brand>
       <Navbar.Content>
-        {data?.user ? (
+        {user ? (
           <>
             <Navbar.Link as={"span"}>
               <NextLink href="/app">Dashboard</NextLink>

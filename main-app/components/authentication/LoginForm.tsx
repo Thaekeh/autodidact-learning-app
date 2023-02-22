@@ -1,17 +1,30 @@
-import React, { ChangeEvent, FormEvent, SyntheticEvent, useState } from "react";
-import { signIn } from "next-auth/react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Button, FormElement, Input } from "@nextui-org/react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
 
 export const LoginForm = () => {
+  const supabase = useSupabaseClient();
+  const router = useRouter();
+
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     if (!event) return;
     event.preventDefault();
-    await signIn("credentials", {
-      redirect: false,
-      email: formValues.email,
-      password: formValues.password,
-    });
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email: formValues.email,
+        password: formValues.password,
+      });
+    if (signInData) {
+      router.push("/app");
+    }
+    if (signInError) {
+      await supabase.auth.signUp({
+        email: formValues.email,
+        password: formValues.password,
+      });
+    }
   };
 
   const handleInputChange = (event: ChangeEvent<FormElement>) => {
