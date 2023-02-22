@@ -16,8 +16,7 @@ export default function Profile() {
   const { value: nameInputValue, bindings: nameInputBindings } = useInput("");
 
   const onInputFieldBlur = (fieldName: fieldName, fieldValue: string) => {
-    // update mongo user
-    // better wait till decision about supabase is made
+    // update supabase profile
   };
 
   return (
