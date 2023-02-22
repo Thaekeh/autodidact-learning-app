@@ -13,18 +13,21 @@ export interface Database {
         Row: {
           created_at: string | null
           id: number
+          last_updated: string | null
           name: string
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name: string
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name?: string
           user_id?: string | null
         }
@@ -33,18 +36,21 @@ export interface Database {
         Row: {
           created_at: string | null
           id: number
+          last_updated: string | null
           name: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name?: string | null
           user_id?: string | null
         }
@@ -54,6 +60,7 @@ export interface Database {
           content: string | null
           created_at: string | null
           id: number
+          last_updated: string | null
           name: string
           user_id: string | null
         }
@@ -61,6 +68,7 @@ export interface Database {
           content?: string | null
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name?: string
           user_id?: string | null
         }
@@ -68,6 +76,7 @@ export interface Database {
           content?: string | null
           created_at?: string | null
           id?: number
+          last_updated?: string | null
           name?: string
           user_id?: string | null
         }
