@@ -1,7 +1,6 @@
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
 import { ReactElement, ReactNode, useState } from "react";
 import { NextPage } from "next";
 import { Layout } from "../components/Layout";

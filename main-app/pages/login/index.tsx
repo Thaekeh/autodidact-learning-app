@@ -1,5 +1,4 @@
 import { useUser } from "@supabase/auth-helpers-react";
-import { useSession } from "next-auth/react";
 import React from "react";
 import { LoginForm } from "../../components/authentication/LoginForm";
 
