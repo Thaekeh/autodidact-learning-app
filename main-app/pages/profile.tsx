@@ -8,9 +8,21 @@ import {
   styled as NextUIStyled,
 } from "@nextui-org/react";
 import { useUser } from "@supabase/auth-helpers-react";
-import React from "react";
+import { NextApiRequest, NextApiResponse } from "next";
+import React, { useState } from "react";
 
 type fieldName = "username";
+
+export async function getServerSideProps({
+  req,
+  res,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+}) {
+  const user = useUser()
+  
+}
 
 export default function Profile() {
   const { value: nameInputValue, bindings: nameInputBindings } = useInput("");
