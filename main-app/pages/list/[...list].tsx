@@ -1,20 +1,15 @@
 import { Container, Table } from "@nextui-org/react";
 import React from "react";
-import { IncomingMessage } from "http";
-import { getUserIdFromReq } from "../../util";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import getListById from "../../util/mongo/flashcards/lists/getListById";
-import { ListDocument } from "../../types/Lists";
-import getFlashcardsForList from "../../util/mongo/flashcards/flashcards/getFlashcardsForList";
-import { FlashcardDocument } from "../../types/Flashcards";
-import { ObjectId } from "mongodb";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "../../types/supabase";
+import { NextApiRequest, NextApiResponse } from "next";
+import { FlashcardListRow } from "../../types/FlashcardLists";
 
 export default function TextPage({
   list,
-  flashcards,
 }: {
-  list: ListDocument | null;
-  flashcards: FlashcardDocument[];
+  list: FlashcardListRow | null;
 }) {
   return (
     <Container>
@@ -26,7 +21,7 @@ export default function TextPage({
           <Table.Column> </Table.Column>
         </Table.Header>
         <Table.Body>
-          {flashcards?.map((flashcard) => {
+          {/* {flashcards?.map((flashcard) => {
             return (
               <Table.Row>
                 <Table.Cell>test</Table.Cell>
@@ -34,7 +29,7 @@ export default function TextPage({
                 <Table.Cell>test</Table.Cell>
               </Table.Row>
             );
-          })}
+          })} */}
         </Table.Body>
       </Table>
     </Container>
@@ -43,16 +38,23 @@ export default function TextPage({
 
 export async function getServerSideProps({
   req,
+  res,
   params,
 }: {
-  req: IncomingMessage;
+  req: NextApiRequest;
+  res: NextApiResponse;
   params: Params;
 }) {
-  const userId = await getUserIdFromReq(req);
-  const listId = new ObjectId(params.list[0]);
-  const list = await getListById(userId, listId);
+  const supabase = await createServerSupabaseClient<Database>({
+    req,
+    res,
+  });
 
-  const flashcards = await getFlashcardsForList(userId, listId);
-  console.log(`flashcards`, flashcards);
-  return { props: { list: list || null, flashcards: flashcards } };
+  const listId = params.list[0];
+  const { data: list } = await supabase.from("list").select().eq('id', listId).single();
+
+  // TODO get cards for list
+
+
+  return { props: { list: list || null } };
 }
