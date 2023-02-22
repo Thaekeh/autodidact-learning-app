@@ -28,8 +28,8 @@ export const NavbarAvatar: React.FC<Props> = () => {
             bordered
             as="button"
             size="md"
-            text={user?.name || ""}
-            icon={user?.name ? undefined : <User />}
+            text={"replace text"}
+            icon={user ? "replace name" : <User />}
           />
         </Dropdown.Trigger>
       </Navbar.Item>
