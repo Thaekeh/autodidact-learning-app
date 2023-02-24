@@ -1,3 +1,9 @@
+
+
+export const getRouteForAllFlashcardLists = () => {
+  return `/lists`;
+};
+
 export const getRouteForFlashcardList = (id: number) => {
-  return `/list/${id}`;
+  return `/lists/${id}`;
 };
