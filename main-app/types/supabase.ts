@@ -12,44 +12,73 @@ export interface Database {
       flashcardLists: {
         Row: {
           created_at: string | null
-          id: number
+          id: string
           last_updated: string | null
           name: string
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name: string
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name?: string
           user_id?: string | null
         }
       }
+      flashcards: {
+        Row: {
+          backText: string | null
+          created_at: string | null
+          frontText: string | null
+          id: string
+          list_id: string
+          nextPracticeDate: string | null
+          user_id: string
+        }
+        Insert: {
+          backText?: string | null
+          created_at?: string | null
+          frontText?: string | null
+          id?: string
+          list_id: string
+          nextPracticeDate?: string | null
+          user_id: string
+        }
+        Update: {
+          backText?: string | null
+          created_at?: string | null
+          frontText?: string | null
+          id?: string
+          list_id?: string
+          nextPracticeDate?: string | null
+          user_id?: string
+        }
+      }
       profiles: {
         Row: {
           created_at: string | null
-          id: number
+          id: string
           last_updated: string | null
           name: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name?: string | null
           user_id?: string | null
@@ -59,7 +88,7 @@ export interface Database {
         Row: {
           content: string | null
           created_at: string | null
-          id: number
+          id: string
           last_updated: string | null
           name: string
           user_id: string | null
@@ -67,7 +96,7 @@ export interface Database {
         Insert: {
           content?: string | null
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name?: string
           user_id?: string | null
@@ -75,7 +104,7 @@ export interface Database {
         Update: {
           content?: string | null
           created_at?: string | null
-          id?: number
+          id?: string
           last_updated?: string | null
           name?: string
           user_id?: string | null

@@ -3,6 +3,7 @@ import { Navbar, Button } from "@nextui-org/react";
 import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
 import { useUser } from "@supabase/auth-helpers-react";
+import { getRouteForAllFlashcardLists } from "../../util";
 
 export const ComposedNavbar = () => {
 	const user = useUser();
@@ -10,7 +11,7 @@ export const ComposedNavbar = () => {
 	return (
 		<Navbar variant={"sticky"}>
 			<Navbar.Brand>
-				<NextLink href={"/"}>
+				<NextLink href={user ? "/app" : "/"}>
 					<h1>Learning Hub</h1>
 				</NextLink>
 			</Navbar.Brand>
@@ -22,7 +23,9 @@ export const ComposedNavbar = () => {
 								<NextLink href="/app">Dashboard</NextLink>
 							</Navbar.Link>
 							<Navbar.Link as={"span"}>
-								<NextLink href="/flashcards">Flashcards</NextLink>
+								<NextLink href={getRouteForAllFlashcardLists()}>
+									Flashcards
+								</NextLink>
 							</Navbar.Link>
 							<Navbar.Link as={"span"}>
 								<NextLink href="/texts">Texts</NextLink>

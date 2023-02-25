@@ -1,3 +1,9 @@
-export const getRouteForFlashcardList = (id: number) => {
-  return `/list/${id}`;
+
+
+export const getRouteForAllFlashcardLists = () => {
+  return `/lists`;
+};
+
+export const getRouteForFlashcardList = (id: string) => {
+  return `/lists/${id}`;
 };
