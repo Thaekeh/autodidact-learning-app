@@ -11,7 +11,7 @@ export const ComposedNavbar = () => {
 	return (
 		<Navbar variant={"sticky"}>
 			<Navbar.Brand>
-				<NextLink href={"/"}>
+				<NextLink href={user ? "/app" : "/"}>
 					<h1>Learning Hub</h1>
 				</NextLink>
 			</Navbar.Brand>
