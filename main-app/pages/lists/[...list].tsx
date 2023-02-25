@@ -1,4 +1,11 @@
-import { Container, Spacer, Table, Text, useModal } from "@nextui-org/react";
+import {
+	Button,
+	Container,
+	Spacer,
+	Table,
+	Text,
+	useModal,
+} from "@nextui-org/react";
 import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
@@ -6,7 +13,7 @@ import { Database } from "../../types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { getListById } from "../../util";
-import { Edit2, Plus } from "react-feather";
+import { Edit2, Play, Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import {
 	createNewFlashcard,
@@ -72,7 +79,17 @@ export default function TextPage({
 		<>
 			<Container>
 				<Spacer y={2}></Spacer>
-				<Text h3>{list?.name}</Text>
+				<Container
+					display="flex"
+					direction="row"
+					justify="space-between"
+					alignContent="center"
+				>
+					<Text h3>{list?.name}</Text>
+					{/* <Button size={"md"} icon={<Play size={16} />}>
+						Practice
+					</Button> */}
+				</Container>
 				<Table>
 					<Table.Header>
 						<Table.Column>Front</Table.Column>
