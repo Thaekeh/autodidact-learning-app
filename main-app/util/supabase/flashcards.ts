@@ -1,7 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { FlashcardRow } from "../../types";
 import { flashcardsTable } from "./tables";
-
+import { DateTime } from "luxon";
 
 export const getFlashcardsForList = async (supabase: SupabaseClient, listId: string): Promise<FlashcardRow[] | null> => {
     const { data } = await supabase
@@ -35,3 +35,8 @@ export const updateFlashcard = async(supabase: SupabaseClient, flashcardId: stri
     }
     return false;
 }
+
+export const getFlashcardsThatRequirePracticeByListId = async (supabase: SupabaseClient, listId: string) => {
+    const date = DateTime.utc().toISO()
+    return await supabase.from(flashcardsTable).select().eq("list_id", listId).lt("nextPracticeDate", date)
+} 
