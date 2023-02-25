@@ -59,7 +59,6 @@ export default function Dashboard({
 
 	const onNewTextConfirm = async (name: string) => {
 		const baseUrl = window.location.origin;
-		console.log(`baseUrl`, baseUrl);
 		const user = await supabaseClient.auth.getSession();
 
 		const createdDocument = await supabaseClient
