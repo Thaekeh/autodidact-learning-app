@@ -18,6 +18,7 @@ import { IconButton } from "../../components/buttons/IconButton";
 import {
 	createNewFlashcard,
 	getFlashcardsForList,
+	getFlashcardsThatRequirePracticeByListId,
 	updateFlashcard,
 } from "../../util/supabase/flashcards";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -28,9 +29,11 @@ import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
 export default function TextPage({
 	list,
 	flashcards,
+	flashcardsToPracticeCount,
 }: {
 	list: FlashcardListRow | null;
 	flashcards: FlashcardRow[] | null;
+	flashcardsToPracticeCount: number;
 }) {
 	const [selectedFlashcard, setSelectedFlashcard] = useState<
 		FlashcardRow | undefined
@@ -40,6 +43,7 @@ export default function TextPage({
 		visible: newFlashcardModalIsVisible,
 		setVisible: setNewFlashcardModalIsVisible,
 	} = useModal(false);
+
 	const {
 		visible: editFlashcardModalIsVisible,
 		setVisible: setEditFlashcardModalIsVisible,
@@ -86,6 +90,7 @@ export default function TextPage({
 					alignContent="center"
 				>
 					<Text h3>{list?.name}</Text>
+					<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
 					{/* <Button size={"md"} icon={<Play size={16} />}>
 						Practice
 					</Button> */}
@@ -171,6 +176,16 @@ export async function getServerSideProps({
 	const listId = params.list[0];
 	const list = await getListById(supabase, listId);
 
+	const flashcardsThatRequirePractice = await (
+		await getFlashcardsThatRequirePracticeByListId(supabase, listId)
+	).data?.length;
+
 	const flashcards = await getFlashcardsForList(supabase, listId);
-	return { props: { list: list, flashcards } };
+	return {
+		props: {
+			list: list,
+			flashcards,
+			flashcardsToPracticeCount: flashcardsThatRequirePractice,
+		},
+	};
 }
