@@ -91,9 +91,13 @@ export default function TextPage({
 				>
 					<Text h3>{list?.name}</Text>
 					<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
-					{/* <Button size={"md"} icon={<Play size={16} />}>
+					<Button
+						disabled={!!flashcardsToPracticeCount}
+						size={"md"}
+						icon={<Play size={16} />}
+					>
 						Practice
-					</Button> */}
+					</Button>
 				</Container>
 				<Table>
 					<Table.Header>
