@@ -26,7 +26,7 @@ import { FlashcardRow } from "../../types";
 import { NewFlashcardModal } from "../../components/modals/NewFlashcardModal";
 import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
 
-export default function TextPage({
+export default function ListPage({
 	list,
 	flashcards,
 	flashcardsToPracticeCount,
