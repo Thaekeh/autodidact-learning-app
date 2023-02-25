@@ -3,7 +3,6 @@ import { FlashcardRow } from "../../types";
 import { flashcardsTable } from "./tables";
 
 
-// TODO update type
 export const getFlashcardsForList = async (supabase: SupabaseClient, listId: string): Promise<FlashcardRow[] | null> => {
     const { data } = await supabase
     .from(flashcardsTable)
