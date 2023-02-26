@@ -40,7 +40,10 @@ export default function ListPage({
 			interval: newCardData.interval,
 			repetitions: newCardData.repetitions,
 		});
+		setFlashcardIndex(flashcardIndex + 1);
 	};
+
+	const hasSelectedFlashcard = !!(flashcards && flashcards[flashcardIndex]);
 
 	return (
 		<>
@@ -54,16 +57,19 @@ export default function ListPage({
 				></Container>
 				<Container display="flex" justify="center">
 					{/* TODO add nice flashcard here */}
-					{flashcards && (
+					{hasSelectedFlashcard ? (
 						<div onClick={() => setShowBack(!showBack)}>
 							{!showBack
 								? flashcards[flashcardIndex].frontText
 								: flashcards[flashcardIndex].backText}
 						</div>
+					) : (
+						<Text>No more cards to practice</Text>
 					)}
 					<Spacer y={4} />
 					<Container display="flex" justify="center">
 						<Button
+							disabled={!hasSelectedFlashcard}
 							bordered
 							onClick={() => handleDifficultyButtonClick("difficult")}
 						>
@@ -71,6 +77,7 @@ export default function ListPage({
 						</Button>
 						<Spacer x={1}></Spacer>
 						<Button
+							disabled={!hasSelectedFlashcard}
 							bordered
 							onClick={() => handleDifficultyButtonClick("okay")}
 						>
@@ -79,6 +86,7 @@ export default function ListPage({
 						<Spacer x={1}></Spacer>
 						<Button
 							bordered
+							disabled={!hasSelectedFlashcard}
 							onClick={() => handleDifficultyButtonClick("easy")}
 						>
 							Easy
