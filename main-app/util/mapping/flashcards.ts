@@ -30,18 +30,18 @@ export const calculateNewCardRepetitionData = (
 	if (difficultyResponseAsNumber < 3) {
 		return {
 			repetitions: 0,
-			easeFactor: data.easeFactor,
-			interval: data.interval,
+			easeFactor: easeFactor,
+			interval: interval,
 		};
 	}
 
 	const newEaseFactor = calculateNewEaseFactor({
 		responseQuality: difficultyResponseAsNumber,
-		easeFactor: data.easeFactor,
+		easeFactor: easeFactor,
 	});
 
 	return {
-		repetitions: data.repetitions + 1,
+		repetitions: repetitions + 1,
 		easeFactor: newEaseFactor,
 		interval: calculateNewInterval({
 			repetitions,
