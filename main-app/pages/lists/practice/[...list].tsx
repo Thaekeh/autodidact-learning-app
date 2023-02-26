@@ -5,7 +5,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { useState } from "react";
 import { Database, FlashcardRow } from "../../../types";
-import { getFlashcardsThatRequirePracticeByListId } from "../../../util";
+import {
+	getFlashcardsThatRequirePracticeByListId,
+	updateFlashcardWithSpacedRepetitionData,
+} from "../../../util";
+import { calculateNewCardRepetitionData } from "../../../util/mapping/flashcards";
 
 export default function ListPage({
 	flashcards,
@@ -17,27 +21,38 @@ export default function ListPage({
 
 	const supabase = useSupabaseClient();
 
+	const handleDifficultyButtonClick = (
+		difficultyResponse: "difficult" | "okay" | "easy"
+	) => {
+		if (!flashcards) return;
+		const selectedFlashcard = flashcards[flashcardIndex];
+		const next_practice_date = Date.now();
+		const newCardData = calculateNewCardRepetitionData({
+			repetitions: selectedFlashcard.repetitions,
+			difficultyResponse,
+			easeFactor: selectedFlashcard.ease_factor,
+			interval: selectedFlashcard.interval,
+		});
+
+		const response = updateFlashcardWithSpacedRepetitionData(supabase, {
+			ease_factor: newCardData.easeFactor,
+			id: selectedFlashcard.id,
+			interval: newCardData.interval,
+			repetitions: newCardData.repetitions,
+		});
+	};
+
 	return (
 		<>
-			<Container>
+			<Container display="flex" justify="center">
 				<Spacer y={2}></Spacer>
 				<Container
 					display="flex"
 					direction="row"
 					justify="space-between"
 					alignContent="center"
-				>
-					{/* <Text h3>{list?.name}</Text>
-					<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
-					<Button
-						disabled={!!flashcardsToPracticeCount}
-						size={"md"}
-						icon={<Play size={16} />}
-					>
-						Practice
-					</Button> */}
-				</Container>
-				<Container>
+				></Container>
+				<Container display="flex" justify="center">
 					{/* TODO add nice flashcard here */}
 					{flashcards && (
 						<div onClick={() => setShowBack(!showBack)}>
@@ -46,10 +61,29 @@ export default function ListPage({
 								: flashcards[flashcardIndex].backText}
 						</div>
 					)}
-					{/* TODO handle out of range error, add button for response quality */}
-					<Button onClick={() => setFlashcardIndex(flashcardIndex + 1)}>
-						Next
-					</Button>
+					<Spacer y={4} />
+					<Container display="flex" justify="center">
+						<Button
+							bordered
+							onClick={() => handleDifficultyButtonClick("difficult")}
+						>
+							Difficult
+						</Button>
+						<Spacer x={1}></Spacer>
+						<Button
+							bordered
+							onClick={() => handleDifficultyButtonClick("okay")}
+						>
+							Okay
+						</Button>
+						<Spacer x={1}></Spacer>
+						<Button
+							bordered
+							onClick={() => handleDifficultyButtonClick("easy")}
+						>
+							Easy
+						</Button>
+					</Container>
 				</Container>
 			</Container>
 		</>
