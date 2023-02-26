@@ -36,28 +36,37 @@ export interface Database {
         Row: {
           backText: string | null
           created_at: string | null
+          ease_factor: number | null
           frontText: string | null
           id: string
+          interval: number | null
           list_id: string
-          nextPracticeDate: string | null
+          next_practice_date: string | null
+          repetitions: number | null
           user_id: string
         }
         Insert: {
           backText?: string | null
           created_at?: string | null
+          ease_factor?: number | null
           frontText?: string | null
           id?: string
+          interval?: number | null
           list_id: string
-          nextPracticeDate?: string | null
+          next_practice_date?: string | null
+          repetitions?: number | null
           user_id: string
         }
         Update: {
           backText?: string | null
           created_at?: string | null
+          ease_factor?: number | null
           frontText?: string | null
           id?: string
+          interval?: number | null
           list_id?: string
-          nextPracticeDate?: string | null
+          next_practice_date?: string | null
+          repetitions?: number | null
           user_id?: string
         }
       }
