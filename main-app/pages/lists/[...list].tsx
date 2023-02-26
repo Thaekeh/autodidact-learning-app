@@ -12,7 +12,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FlashcardListRow } from "../../types/FlashcardLists";
-import { getListById } from "../../util";
+import { getListById, getRouteForPracticingFlashcardList } from "../../util";
 import { Edit2, Play, Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import {
@@ -25,6 +25,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "../../types";
 import { NewFlashcardModal } from "../../components/modals/NewFlashcardModal";
 import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
+import { useRouter } from "next/router";
 
 export default function ListPage({
 	list,
@@ -79,26 +80,34 @@ export default function ListPage({
 		setNewFlashcardModalIsVisible(false);
 	};
 
+	const router = useRouter();
+
 	return (
 		<>
 			<Container>
 				<Spacer y={2}></Spacer>
-				<Container
-					display="flex"
-					direction="row"
-					justify="space-between"
-					alignContent="center"
-				>
-					<Text h3>{list?.name}</Text>
-					<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
-					<Button
-						disabled={!!flashcardsToPracticeCount}
-						size={"md"}
-						icon={<Play size={16} />}
+				{list && (
+					<Container
+						display="flex"
+						direction="row"
+						justify="space-between"
+						alignContent="center"
 					>
-						Practice
-					</Button>
-				</Container>
+						<Text h3>{list?.name}</Text>
+						<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
+						<Button
+							disabled={!flashcardsToPracticeCount}
+							size={"md"}
+							icon={<Play size={16} />}
+							onClick={() =>
+								router.push(getRouteForPracticingFlashcardList(list.id))
+							}
+						>
+							Practice
+						</Button>
+					</Container>
+				)}
+
 				<Table>
 					<Table.Header>
 						<Table.Column>Front</Table.Column>
