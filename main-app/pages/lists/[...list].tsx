@@ -26,6 +26,7 @@ import { FlashcardRow } from "../../types";
 import { NewFlashcardModal } from "../../components/modals/NewFlashcardModal";
 import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
 import { useRouter } from "next/router";
+import { DateTime } from "luxon";
 
 export default function ListPage({
 	list,
@@ -112,7 +113,7 @@ export default function ListPage({
 					<Table.Header>
 						<Table.Column>Front</Table.Column>
 						<Table.Column>Back</Table.Column>
-						<Table.Column>Last opened</Table.Column>
+						<Table.Column>Next practice date</Table.Column>
 						<Table.Column>
 							<IconButton onClick={() => setNewFlashcardModalIsVisible(true)}>
 								<Plus />
@@ -130,7 +131,12 @@ export default function ListPage({
 										<Table.Cell>
 											{flashcard.backText || "No back text"}
 										</Table.Cell>
-										<Table.Cell> </Table.Cell>
+										<Table.Cell>
+											{flashcard.next_practice_date &&
+												DateTime.fromISO(
+													flashcard.next_practice_date
+												).toLocaleString()}
+										</Table.Cell>
 										<Table.Cell>
 											<IconButton
 												onClick={() => editFlashcardButtonHandler(flashcard)}
