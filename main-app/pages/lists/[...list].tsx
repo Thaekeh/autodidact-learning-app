@@ -34,7 +34,7 @@ export default function ListPage({
 }: {
 	list: FlashcardListRow | null;
 	flashcards: FlashcardRow[] | null;
-	flashcardsToPracticeCount: number;
+	flashcardsToPracticeCount: number | null;
 }) {
 	const [selectedFlashcard, setSelectedFlashcard] = useState<
 		FlashcardRow | undefined
@@ -198,7 +198,7 @@ export async function getServerSideProps({
 		props: {
 			list: list,
 			flashcards,
-			flashcardsToPracticeCount: flashcardsThatRequirePractice,
+			flashcardsToPracticeCount: flashcardsThatRequirePractice || 0,
 		},
 	};
 }
