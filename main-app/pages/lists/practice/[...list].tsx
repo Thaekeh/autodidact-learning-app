@@ -113,7 +113,6 @@ export async function getServerSideProps({
 	});
 
 	const listId = params.list[0];
-	// const list = await getListById(supabase, listId);
 
 	const flashcardsThatRequirePractice = await (
 		await getFlashcardsThatRequirePracticeByListId(supabase, listId)
