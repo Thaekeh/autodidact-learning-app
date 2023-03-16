@@ -87,10 +87,3 @@ const calculateNewInterval = ({
 		return Math.round(interval * easeFactor);
 	}
 };
-
-// pseudo sr algorithm
-// things to keep track of:
-// - repetitions
-// - easeFactor
-// - practiceDate
-// - interval
