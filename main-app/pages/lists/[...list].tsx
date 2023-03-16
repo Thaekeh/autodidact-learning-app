@@ -12,25 +12,30 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "../../types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FlashcardListRow } from "../../types/FlashcardLists";
-import { getListById } from "../../util";
+import { getListById, getRouteForPracticingFlashcardList } from "../../util";
 import { Edit2, Play, Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import {
 	createNewFlashcard,
 	getFlashcardsForList,
+	getFlashcardsThatRequirePracticeByListId,
 	updateFlashcard,
 } from "../../util/supabase/flashcards";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "../../types";
 import { NewFlashcardModal } from "../../components/modals/NewFlashcardModal";
 import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
+import { useRouter } from "next/router";
+import { DateTime } from "luxon";
 
-export default function TextPage({
+export default function ListPage({
 	list,
 	flashcards,
+	flashcardsToPracticeCount,
 }: {
 	list: FlashcardListRow | null;
 	flashcards: FlashcardRow[] | null;
+	flashcardsToPracticeCount: number | null;
 }) {
 	const [selectedFlashcard, setSelectedFlashcard] = useState<
 		FlashcardRow | undefined
@@ -40,6 +45,7 @@ export default function TextPage({
 		visible: newFlashcardModalIsVisible,
 		setVisible: setNewFlashcardModalIsVisible,
 	} = useModal(false);
+
 	const {
 		visible: editFlashcardModalIsVisible,
 		setVisible: setEditFlashcardModalIsVisible,
@@ -75,26 +81,39 @@ export default function TextPage({
 		setNewFlashcardModalIsVisible(false);
 	};
 
+	const router = useRouter();
+
 	return (
 		<>
 			<Container>
 				<Spacer y={2}></Spacer>
-				<Container
-					display="flex"
-					direction="row"
-					justify="space-between"
-					alignContent="center"
-				>
-					<Text h3>{list?.name}</Text>
-					{/* <Button size={"md"} icon={<Play size={16} />}>
-						Practice
-					</Button> */}
-				</Container>
+				{list && (
+					<Container
+						display="flex"
+						direction="row"
+						justify="space-between"
+						alignContent="center"
+					>
+						<Text h3>{list?.name}</Text>
+						<Text>{flashcardsToPracticeCount} card(s) to practice</Text>
+						<Button
+							disabled={!flashcardsToPracticeCount}
+							size={"md"}
+							icon={<Play size={16} />}
+							onClick={() =>
+								router.push(getRouteForPracticingFlashcardList(list.id))
+							}
+						>
+							Practice
+						</Button>
+					</Container>
+				)}
+
 				<Table>
 					<Table.Header>
 						<Table.Column>Front</Table.Column>
 						<Table.Column>Back</Table.Column>
-						<Table.Column>Last opened</Table.Column>
+						<Table.Column>Next practice date</Table.Column>
 						<Table.Column>
 							<IconButton onClick={() => setNewFlashcardModalIsVisible(true)}>
 								<Plus />
@@ -112,7 +131,12 @@ export default function TextPage({
 										<Table.Cell>
 											{flashcard.backText || "No back text"}
 										</Table.Cell>
-										<Table.Cell> </Table.Cell>
+										<Table.Cell>
+											{flashcard.next_practice_date &&
+												DateTime.fromISO(
+													flashcard.next_practice_date
+												).toLocaleString()}
+										</Table.Cell>
 										<Table.Cell>
 											<IconButton
 												onClick={() => editFlashcardButtonHandler(flashcard)}
@@ -171,6 +195,16 @@ export async function getServerSideProps({
 	const listId = params.list[0];
 	const list = await getListById(supabase, listId);
 
+	const flashcardsThatRequirePractice = await (
+		await getFlashcardsThatRequirePracticeByListId(supabase, listId)
+	).data?.length;
+
 	const flashcards = await getFlashcardsForList(supabase, listId);
-	return { props: { list: list, flashcards } };
+	return {
+		props: {
+			list: list,
+			flashcards,
+			flashcardsToPracticeCount: flashcardsThatRequirePractice || 0,
+		},
+	};
 }
