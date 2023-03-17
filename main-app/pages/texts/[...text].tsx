@@ -8,6 +8,7 @@ import {
 	Button,
 	Spacer,
 	Loading,
+	StyledButtonGroup,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import styled from "@emotion/styled";
@@ -62,7 +63,9 @@ export default function TextPage({
 		});
 	};
 
-	const setText = (inputText: string) => {};
+	const handleSaveText = (inputText: string) => {
+		setIsInEditMode(false);
+	};
 
 	const handleSaveCard = async () => {
 		if (!selectedList || !frontOfCardValue.length || !backOfCardValue.length) {
@@ -93,18 +96,37 @@ export default function TextPage({
 			>
 				{isInEditMode ? (
 					<>
-						<Text h4>Edit your text</Text>
-						<Textarea
-							animated={false}
-							value={text?.content || ""}
-							onChange={(event) => setText(event.target.value)}
-							maxRows={50}
-						></Textarea>
+						<Container direction="column" wrap="wrap">
+							<Text h3>Edit your text</Text>
+							<StyledButtonGroup>
+								<Button
+									onPress={() => setIsInEditMode(!isInEditMode)}
+									size={"sm"}
+								>
+									Save
+								</Button>
+							</StyledButtonGroup>
+							<Spacer y={1} />
+							<Textarea
+								animated={false}
+								value={text?.content || ""}
+								onChange={(event) => setText(event.target.value)}
+								maxRows={50}
+							></Textarea>
+						</Container>
 					</>
 				) : (
 					<>
 						<Container wrap="wrap" css={{ maxWidth: `100%` }}>
-							<Text h2>{text?.name}</Text>
+							<Text h3>{text?.name}</Text>
+							<StyledButtonGroup>
+								<Button
+									onPress={() => setIsInEditMode(!isInEditMode)}
+									size={"sm"}
+								>
+									Edit
+								</Button>
+							</StyledButtonGroup>
 							<Text css={{ display: `flex`, flexWrap: `wrap` }}>
 								{mappedText()}
 							</Text>
