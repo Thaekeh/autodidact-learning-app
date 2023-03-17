@@ -89,3 +89,10 @@ export const updateFlashcardWithSpacedRepetitionData = async (
 		.update({ ease_factor, repetitions, interval, next_practice_date })
 		.eq("id", data.id);
 };
+
+export const deleteFlashcard = async (
+	supabase: SupabaseClient,
+	flashcardId: string
+) => {
+	return await supabase.from(flashcardsTable).delete().eq("id", flashcardId);
+};
