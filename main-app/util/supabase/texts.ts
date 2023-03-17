@@ -13,3 +13,12 @@ export const createNewText = async (
 		.single();
 	return data;
 };
+
+export const saveTextContent = async (
+	supabaseClient: SupabaseClient,
+	textId: string,
+	content: string
+) => {
+	const user = await supabaseClient.auth.getSession();
+	await supabaseClient.from("texts").update({ content }).eq("id", textId);
+};
