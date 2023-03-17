@@ -45,10 +45,24 @@ export default function TextPage({
 
 	const supabase = useSupabaseClient();
 
-	const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
+	const handleTextClick = async (event: React.MouseEvent<HTMLSpanElement>) => {
 		const word = event?.currentTarget.innerHTML.toLowerCase();
 		if (word.length) {
 			setFrontOfCardValue(word);
+		}
+		const { translatedWord } = await fetch("/api/translate", {
+			method: "POST",
+			body: JSON.stringify({
+				word,
+				sourceLanguage: "en",
+				targetLanguage: "es",
+			}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}).then((res) => res.json());
+		if (translatedWord) {
+			setBackOfCardValue(translatedWord.replace(/['"]+/g, ""));
 		}
 	};
 
