@@ -19,6 +19,5 @@ export const saveTextContent = async (
 	textId: string,
 	content: string
 ) => {
-	const user = await supabaseClient.auth.getSession();
 	await supabaseClient.from("texts").update({ content }).eq("id", textId);
 };
