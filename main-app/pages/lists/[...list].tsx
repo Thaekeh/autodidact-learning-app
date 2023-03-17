@@ -4,6 +4,7 @@ import {
 	Spacer,
 	Table,
 	Text,
+	theme,
 	useModal,
 } from "@nextui-org/react";
 import React, { useState } from "react";
@@ -13,10 +14,11 @@ import { Database } from "../../types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { getListById, getRouteForPracticingFlashcardList } from "../../util";
-import { Edit2, Play, Plus } from "react-feather";
+import { Check, Edit2, Play, Plus, Trash, X } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import {
 	createNewFlashcard,
+	deleteFlashcard,
 	getFlashcardsForList,
 	getFlashcardsThatRequirePracticeByListId,
 	updateFlashcard,
@@ -81,6 +83,10 @@ export default function ListPage({
 		setNewFlashcardModalIsVisible(false);
 	};
 
+	const handleDeleteFlashcard = (flashcardId: string) => {
+		deleteFlashcard(supabase, flashcardId);
+	};
+
 	const router = useRouter();
 
 	return (
@@ -114,6 +120,7 @@ export default function ListPage({
 						<Table.Column>Front</Table.Column>
 						<Table.Column>Back</Table.Column>
 						<Table.Column>Next practice date</Table.Column>
+						<Table.Column>Learned</Table.Column>
 						<Table.Column>
 							<IconButton onClick={() => setNewFlashcardModalIsVisible(true)}>
 								<Plus />
@@ -125,12 +132,8 @@ export default function ListPage({
 							flashcards?.map((flashcard) => {
 								return (
 									<Table.Row key={flashcard.id}>
-										<Table.Cell>
-											{flashcard.frontText || "No front text"}
-										</Table.Cell>
-										<Table.Cell>
-											{flashcard.backText || "No back text"}
-										</Table.Cell>
+										<Table.Cell>{flashcard.frontText || "Empty"}</Table.Cell>
+										<Table.Cell>{flashcard.backText || "Empty"}</Table.Cell>
 										<Table.Cell>
 											{flashcard.next_practice_date &&
 												DateTime.fromISO(
@@ -138,11 +141,24 @@ export default function ListPage({
 												).toLocaleString()}
 										</Table.Cell>
 										<Table.Cell>
-											<IconButton
-												onClick={() => editFlashcardButtonHandler(flashcard)}
-											>
-												<Edit2 />
-											</IconButton>
+											{flashcard.interval > 21 && (
+												<Check color={theme.colors.green700.value} />
+											)}
+										</Table.Cell>
+										<Table.Cell>
+											<Button.Group>
+												<IconButton
+													onClick={() => editFlashcardButtonHandler(flashcard)}
+												>
+													<Edit2 />
+												</IconButton>
+												<Spacer x={1}></Spacer>
+												<IconButton
+													onClick={() => handleDeleteFlashcard(flashcard.id)}
+												>
+													<Trash color={theme.colors.red700.value} />
+												</IconButton>
+											</Button.Group>
 										</Table.Cell>
 									</Table.Row>
 								);
