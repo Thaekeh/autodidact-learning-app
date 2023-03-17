@@ -10,7 +10,6 @@ export const translateWord = async (
 	const { v4: uuidv4 } = require("uuid");
 
 	const location = "westeurope";
-	console.log(process.env.AZURE_KEY);
 
 	const response = await axios({
 		baseURL: TRANSLATION_ENDPOINT,
