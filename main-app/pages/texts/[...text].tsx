@@ -5,6 +5,9 @@ import {
 	Text,
 	Input,
 	Dropdown,
+	Button,
+	Spacer,
+	Loading,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import styled from "@emotion/styled";
@@ -14,9 +17,11 @@ import { Database } from "../../types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { TextRow } from "../../types/Texts";
 import {
+	createNewFlashcard,
 	FlashcardListWithNameOnly,
 	getAllFlashcardListsNamesOnly,
 } from "../../util";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function TextPage({
 	text,
@@ -32,8 +37,15 @@ export default function TextPage({
 		flashcardLists ? flashcardLists[0].id : undefined
 	);
 
+	const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
+
+	const supabase = useSupabaseClient();
+
 	const handleTextClick = (event: React.MouseEvent<HTMLSpanElement>) => {
-		console.log(event?.currentTarget.innerHTML);
+		const word = event?.currentTarget.innerHTML.toLowerCase();
+		if (word.length) {
+			setFrontOfCardValue(word);
+		}
 	};
 
 	const mappedText = () => {
@@ -51,6 +63,20 @@ export default function TextPage({
 	};
 
 	const setText = (inputText: string) => {};
+
+	const handleSaveCard = async () => {
+		if (!selectedList || !frontOfCardValue.length || !backOfCardValue.length) {
+			return;
+		}
+		setSavingCardIsLoading(true);
+		await createNewFlashcard(
+			supabase,
+			frontOfCardValue,
+			backOfCardValue,
+			selectedList
+		);
+		setSavingCardIsLoading(false);
+	};
 
 	return (
 		<Grid.Container
@@ -91,7 +117,7 @@ export default function TextPage({
 				{flashcardLists && (
 					<div>
 						<Dropdown>
-							<Dropdown.Button>
+							<Dropdown.Button flat>
 								{
 									flashcardLists.find(
 										(flashcardList) => flashcardList.id === selectedList
@@ -111,7 +137,7 @@ export default function TextPage({
 						</Dropdown>
 					</div>
 				)}
-				<div>
+				<div style={{ maxWidth: "300px" }}>
 					<form action="">
 						<Input
 							label="Front of card"
@@ -119,6 +145,7 @@ export default function TextPage({
 							required={true}
 							value={frontOfCardValue || ""}
 							onChange={(e) => setFrontOfCardValue(e.target.value)}
+							fullWidth
 						></Input>
 						<Input
 							label="Back of card"
@@ -126,7 +153,21 @@ export default function TextPage({
 							required={true}
 							value={backOfCardValue || ""}
 							onChange={(e) => setBackOfCardValue(e.target.value)}
+							fullWidth
 						></Input>
+						<Spacer y={1} />
+						<Button
+							disabled={savingCardIsLoading}
+							color={"secondary"}
+							flat
+							onPress={handleSaveCard}
+						>
+							{savingCardIsLoading ? (
+								<Loading color={"secondary"} type="points-opacity" />
+							) : (
+								"Save Card"
+							)}
+						</Button>
 					</form>
 				</div>
 			</Grid>
