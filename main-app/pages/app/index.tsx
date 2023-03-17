@@ -22,6 +22,7 @@ import { TextRow } from "../../types/Texts";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getListsForUser } from "../../util";
+import { createNewText } from "../../util/supabase/texts";
 
 export async function getServerSideProps({
 	req,
@@ -58,16 +59,9 @@ export default function Dashboard({
 	};
 
 	const onNewTextConfirm = async (name: string) => {
-		const baseUrl = window.location.origin;
-		const user = await supabaseClient.auth.getSession();
-
-		const createdDocument = await supabaseClient
-			.from("texts")
-			.insert({ name, user_id: user.data.session?.user.id })
-			.select()
-			.single();
+		const createdDocument = await createNewText(supabaseClient, name);
 		if (createdDocument) {
-			const textUrl = getRouteForSingleText(createdDocument.data.id);
+			const textUrl = getRouteForSingleText(createdDocument.id);
 			router.push(textUrl);
 		}
 	};
