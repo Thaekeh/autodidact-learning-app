@@ -1,8 +1,8 @@
 import { Col, Container, red, Row, Table, Tooltip } from "@nextui-org/react";
 import Link from "next/link";
-import { Edit2, Eye, Trash } from "react-feather";
+import { Eye, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
-import {  TextRow } from "../../types/Texts";
+import { TextRow } from "../../types/Texts";
 import { getRouteForSingleText } from "../../util/routing/texts";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
