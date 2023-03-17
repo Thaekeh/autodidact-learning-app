@@ -23,6 +23,7 @@ import {
 	getAllFlashcardListsNamesOnly,
 } from "../../util";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { saveTextContent } from "../../util/supabase/texts";
 
 export default function TextPage({
 	text,
@@ -38,6 +39,8 @@ export default function TextPage({
 		flashcardLists ? flashcardLists[0].id : undefined
 	);
 
+	const [textContent, setTextContent] = useState(text?.content || "");
+
 	const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
 	const supabase = useSupabaseClient();
@@ -50,8 +53,8 @@ export default function TextPage({
 	};
 
 	const mappedText = () => {
-		if (!text?.content) return "Empty";
-		const textInArray = text.content.split(" ");
+		if (!textContent) return "Empty";
+		const textInArray = textContent.split(" ");
 		return textInArray.map((word) => {
 			const randomNumber = Math.floor(Math.random() * 100000);
 			return (
@@ -63,8 +66,10 @@ export default function TextPage({
 		});
 	};
 
-	const handleSaveText = (inputText: string) => {
+	const handleSaveText = () => {
+		if (!text || !textContent) return;
 		setIsInEditMode(false);
+		saveTextContent(supabase, text.id, textContent);
 	};
 
 	const handleSaveCard = async () => {
@@ -99,18 +104,15 @@ export default function TextPage({
 						<Container direction="column" wrap="wrap">
 							<Text h3>Edit your text</Text>
 							<StyledButtonGroup>
-								<Button
-									onPress={() => setIsInEditMode(!isInEditMode)}
-									size={"sm"}
-								>
+								<Button onPress={handleSaveText} size={"sm"}>
 									Save
 								</Button>
 							</StyledButtonGroup>
 							<Spacer y={1} />
 							<Textarea
 								animated={false}
-								value={text?.content || ""}
-								onChange={(event) => setText(event.target.value)}
+								value={textContent}
+								onChange={(event) => setTextContent(event.target.value)}
 								maxRows={50}
 							></Textarea>
 						</Container>
