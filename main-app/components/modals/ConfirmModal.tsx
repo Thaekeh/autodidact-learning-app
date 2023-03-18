@@ -1,27 +1,23 @@
 import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
+import { useConfirm } from "../../hooks/useConfirm";
 
-interface ConfirmModalProps {
-  isOpen: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
+export const ConfirmModal: React.FC = () => {
+  const { prompt = "", isOpen = false, proceed, cancel } = useConfirm();
 
-export const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  isOpen,
-  onConfirm,
-  onCancel,
-}) => {
+  if (!proceed || !cancel) {
+    return <></>;
+  }
   return (
-    <Modal open={isOpen} onClose={onCancel}>
+    <Modal open={isOpen} onClose={() => cancel}>
       <Modal.Header>
-        <Text h3>Are you sure?</Text>
+        <Text h3>{prompt}</Text>
       </Modal.Header>
       <Modal.Footer justify="center">
-        <Button color={"secondary"} flat auto onPress={onCancel}>
+        <Button color={"secondary"} flat auto onPress={cancel}>
           Cancel
         </Button>
-        <Button color={"error"} flat auto onPress={onConfirm}>
+        <Button color={"error"} flat auto onPress={proceed}>
           Yes
         </Button>
       </Modal.Footer>
