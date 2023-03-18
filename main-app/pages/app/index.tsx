@@ -94,6 +94,7 @@ export default function Dashboard({
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
       setListModalIsVisible(false);
+      refetchLists();
     }
   };
 
