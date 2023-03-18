@@ -13,20 +13,18 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onCancel,
 }) => {
   return (
-    <Modal closeButton open={isOpen} onClose={onCancel}>
+    <Modal open={isOpen} onClose={onCancel}>
       <Modal.Header>
-        <Text size={20} weight={"bold"}>
-          Are you sure?
-        </Text>
+        <Text h3>Are you sure?</Text>
       </Modal.Header>
-      <Modal.Body>
-        <Button auto onPress={onCancel}>
+      <Modal.Footer justify="center">
+        <Button color={"secondary"} flat auto onPress={onCancel}>
           Cancel
         </Button>
-        <Button auto onPress={onConfirm}>
+        <Button color={"error"} flat auto onPress={onConfirm}>
           Yes
         </Button>
-      </Modal.Body>
+      </Modal.Footer>
     </Modal>
   );
 };
