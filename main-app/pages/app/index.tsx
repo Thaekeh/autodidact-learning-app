@@ -23,6 +23,7 @@ import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { createNewFlashcardList, getListsForUser } from "../../util";
 import { createNewText } from "../../util/supabase/texts";
+import { DateTime } from "luxon";
 
 export async function getServerSideProps({
   req,
@@ -110,15 +111,21 @@ export default function Dashboard({
               </Row>
               <Col>
                 {texts &&
-                  texts.map((text) => (
-                    <React.Fragment key={text.id}>
-                      <ItemCard
-                        name={text.name}
-                        href={getRouteForSingleText(text.id)}
-                      />
-                      <Spacer y={1}></Spacer>
-                    </React.Fragment>
-                  ))}
+                  texts.map((text) => {
+                    const lastUpdatedDate = text.last_updated
+                      ? DateTime.fromISO(text.last_updated).toLocaleString()
+                      : undefined;
+                    return (
+                      <React.Fragment key={text.id}>
+                        <ItemCard
+                          name={text.name}
+                          href={getRouteForSingleText(text.id)}
+                          lastUpdated={lastUpdatedDate}
+                        />
+                        <Spacer y={1}></Spacer>
+                      </React.Fragment>
+                    );
+                  })}
               </Col>
             </DashboardCardContainer>
           </Col>
@@ -134,15 +141,21 @@ export default function Dashboard({
                 </Tooltip>
               </Row>
               {lists &&
-                lists.map((list) => (
-                  <React.Fragment key={list.id}>
-                    <ItemCard
-                      name={list.name}
-                      href={getRouteForFlashcardList(list.id)}
-                    />
-                    <Spacer y={1}></Spacer>
-                  </React.Fragment>
-                ))}
+                lists.map((list) => {
+                  const lastUpdatedDate = list.last_updated
+                    ? DateTime.fromISO(list.last_updated).toLocaleString()
+                    : undefined;
+                  return (
+                    <React.Fragment key={list.id}>
+                      <ItemCard
+                        name={list.name}
+                        href={getRouteForFlashcardList(list.id)}
+                        lastUpdated={lastUpdatedDate}
+                      />
+                      <Spacer y={1}></Spacer>
+                    </React.Fragment>
+                  );
+                })}
             </DashboardCardContainer>
           </Col>
         </Row>
