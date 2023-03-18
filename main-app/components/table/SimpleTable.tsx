@@ -7,8 +7,8 @@ interface Props {
     id: string;
     name: string;
   }[];
-  openCallBack: () => void;
-  deleteCallback: () => void;
+  openCallBack: (id: string) => void;
+  deleteCallback: (id: string) => void;
 }
 
 export const SimpleTable: React.FC<Props> = ({
@@ -31,13 +31,13 @@ export const SimpleTable: React.FC<Props> = ({
                 <Table.Cell>
                   <Row>
                     <Tooltip content="Edit text">
-                      <IconButton onClick={() => console.log(item)}>
+                      <IconButton onClick={() => openCallBack(item.id)}>
                         <Edit />
                       </IconButton>
                     </Tooltip>
                     <Spacer x={1} />
                     <Tooltip color={"error"} content="Delete text">
-                      <IconButton onClick={() => console.log(item.id)}>
+                      <IconButton onClick={() => deleteCallback(item.id)}>
                         <Trash2 color={"#FF0080"} />
                       </IconButton>
                     </Tooltip>
