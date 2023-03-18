@@ -3,27 +3,30 @@ import {
   Container,
   Row,
   Spacer,
+  Table,
+  Text,
+  theme,
   Tooltip,
   useModal,
 } from "@nextui-org/react";
 import React from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
-import { ItemCard } from "../../components/cards/ItemCard";
-import { getRouteForFlashcardList } from "../../util/routing/flashcardLists";
-import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
-import { DashboardCardContainer } from "../../components/cards/DashboardCardContainer";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Database } from "../../types/supabase";
 import { TextRow } from "../../types/Texts";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { createNewFlashcardList, getListsForUser } from "../../util";
+import {
+  createNewFlashcardList,
+  getListsForUser,
+  getRouteForSingleText,
+} from "../../util";
 import { createNewText } from "../../util/supabase/texts";
-import { DateTime } from "luxon";
+import { SimpleTable } from "../../components/table/SimpleTable";
 
 export async function getServerSideProps({
   req,
@@ -82,6 +85,15 @@ export default function Dashboard({
     }
   };
 
+  const simpleMappedItems = (items: TextRow[] | FlashcardListRow[]) => {
+    return items.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+      };
+    });
+  };
+
   return (
     <>
       <NameModal
@@ -100,63 +112,39 @@ export default function Dashboard({
         <Spacer y={2} />
         <Row>
           <Col>
-            <DashboardCardContainer>
+            <Container>
               <Row align="center" justify="space-between">
-                <h2>Texts</h2>
+                <Text h3>Recent texts</Text>
                 <Tooltip content={"Create new text"}>
                   <IconButton onClick={newTextButtonHandler}>
                     <Plus />
                   </IconButton>
                 </Tooltip>
               </Row>
-              <Col>
-                {texts &&
-                  texts.map((text) => {
-                    const lastUpdatedDate = text.last_updated
-                      ? DateTime.fromISO(text.last_updated).toLocaleString()
-                      : undefined;
-                    return (
-                      <React.Fragment key={text.id}>
-                        <ItemCard
-                          name={text.name}
-                          href={getRouteForSingleText(text.id)}
-                          lastUpdated={lastUpdatedDate}
-                        />
-                        <Spacer y={1}></Spacer>
-                      </React.Fragment>
-                    );
-                  })}
-              </Col>
-            </DashboardCardContainer>
+              <SimpleTable
+                items={simpleMappedItems(texts)}
+                deleteCallback={() => console.log("delete")}
+                openCallBack={() => console.log("open")}
+              />
+            </Container>
           </Col>
           <Spacer x={2} />
           <Col>
-            <DashboardCardContainer>
+            <Container>
               <Row align="center" justify="space-between">
-                <h2>Card Lists</h2>
+                <Text h3>Card Lists</Text>
                 <Tooltip content={"Create new list"}>
                   <IconButton onClick={newListButtonHandler}>
                     <Plus />
                   </IconButton>
                 </Tooltip>
               </Row>
-              {lists &&
-                lists.map((list) => {
-                  const lastUpdatedDate = list.last_updated
-                    ? DateTime.fromISO(list.last_updated).toLocaleString()
-                    : undefined;
-                  return (
-                    <React.Fragment key={list.id}>
-                      <ItemCard
-                        name={list.name}
-                        href={getRouteForFlashcardList(list.id)}
-                        lastUpdated={lastUpdatedDate}
-                      />
-                      <Spacer y={1}></Spacer>
-                    </React.Fragment>
-                  );
-                })}
-            </DashboardCardContainer>
+              <SimpleTable
+                items={simpleMappedItems(lists)}
+                deleteCallback={() => console.log("delete")}
+                openCallBack={() => console.log("open")}
+              />
+            </Container>
           </Col>
         </Row>
       </Container>
