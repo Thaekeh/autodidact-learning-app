@@ -21,7 +21,7 @@ import { Database } from "../../types/supabase";
 import { TextRow } from "../../types/Texts";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getListsForUser } from "../../util";
+import { createNewFlashcardList, getListsForUser } from "../../util";
 import { createNewText } from "../../util/supabase/texts";
 
 export async function getServerSideProps({
@@ -53,9 +53,17 @@ export default function Dashboard({
 
 	const supabaseClient = useSupabaseClient();
 
-	const { visible, setVisible } = useModal(false);
+	const { visible: textModalIsVisible, setVisible: setTextModalIsVisible } =
+		useModal(false);
+	const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
+		useModal(false);
+
 	const newTextButtonHandler = () => {
-		setVisible(true);
+		setTextModalIsVisible(true);
+	};
+
+	const newListButtonHandler = () => {
+		setListModalIsVisible(true);
 	};
 
 	const onNewTextConfirm = async (name: string) => {
@@ -66,13 +74,26 @@ export default function Dashboard({
 		}
 	};
 
+	const onNewListConfirm = async (name: string) => {
+		const createdDocument = await createNewFlashcardList(supabaseClient, name);
+		if (createdDocument) {
+			setListModalIsVisible(false);
+		}
+	};
+
 	return (
 		<>
 			<NameModal
 				title={"Insert name of text"}
-				isOpen={visible}
-				onCancel={() => setVisible(false)}
+				isOpen={textModalIsVisible}
+				onCancel={() => setTextModalIsVisible(false)}
 				onConfirm={onNewTextConfirm}
+			/>
+			<NameModal
+				title={"Insert name of list"}
+				isOpen={listModalIsVisible}
+				onCancel={() => setListModalIsVisible(false)}
+				onConfirm={onNewListConfirm}
 			/>
 			<Container>
 				<Spacer y={2} />
@@ -107,7 +128,7 @@ export default function Dashboard({
 							<Row align="center" justify="space-between">
 								<h2>Card Lists</h2>
 								<Tooltip content={"Create new list"}>
-									<IconButton>
+									<IconButton onClick={newListButtonHandler}>
 										<Plus />
 									</IconButton>
 								</Tooltip>
