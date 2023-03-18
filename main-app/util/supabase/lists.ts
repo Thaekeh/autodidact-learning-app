@@ -9,6 +9,23 @@ export const getListsForUser = async (
 	return data;
 };
 
+export const createNewFlashcardList = async (
+	supabaseClient: SupabaseClient,
+	name: string
+): Promise<FlashcardListRow> => {
+	const user = await supabaseClient.auth.getSession();
+	const newFlashcardList = {
+		name,
+		user_id: user.data.session?.user.id,
+	};
+	const { data } = await supabaseClient
+		.from(flashcardListsTable)
+		.insert(newFlashcardList)
+		.select()
+		.single();
+	return data;
+};
+
 export const getListById = async (
 	supabase: SupabaseClient,
 	listId: string
