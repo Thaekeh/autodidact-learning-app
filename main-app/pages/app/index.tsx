@@ -22,6 +22,7 @@ import {
   createNewFlashcardList,
   deleteList,
   getListsForUser,
+  getRouteForFlashcardList,
   getRouteForSingleText,
 } from "../../util";
 import { createNewText, deleteText, getTexts } from "../../util/supabase/texts";
@@ -178,7 +179,9 @@ export default function Dashboard({
               <SimpleTable
                 items={simpleMappedItems(lists)}
                 deleteCallback={handleDeleteList}
-                openCallBack={() => console.log("open")}
+                openCallBack={(id: string) =>
+                  router.push(getRouteForFlashcardList(id))
+                }
               />
             </Container>
           </Col>

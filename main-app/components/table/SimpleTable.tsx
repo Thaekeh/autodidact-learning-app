@@ -30,13 +30,13 @@ export const SimpleTable: React.FC<Props> = ({
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>
                   <Row>
-                    <Tooltip content="Edit text">
+                    <Tooltip content="Edit">
                       <IconButton onClick={() => openCallBack(item.id)}>
                         <Edit />
                       </IconButton>
                     </Tooltip>
                     <Spacer x={1} />
-                    <Tooltip color={"error"} content="Delete text">
+                    <Tooltip color={"error"} content="Delete">
                       <IconButton onClick={() => deleteCallback(item.id)}>
                         <Trash2 color={"#FF0080"} />
                       </IconButton>
