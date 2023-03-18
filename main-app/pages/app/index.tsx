@@ -9,7 +9,7 @@ import {
   Tooltip,
   useModal,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
 import { useRouter } from "next/router";
@@ -22,11 +22,13 @@ import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   createNewFlashcardList,
+  deleteList,
   getListsForUser,
   getRouteForSingleText,
 } from "../../util";
-import { createNewText } from "../../util/supabase/texts";
+import { createNewText, deleteText, getTexts } from "../../util/supabase/texts";
 import { SimpleTable } from "../../components/table/SimpleTable";
+import { ConfirmModal } from "../../components/modals/ConfirmModal";
 
 export async function getServerSideProps({
   req,
@@ -40,19 +42,23 @@ export async function getServerSideProps({
     res,
   });
 
-  const { data: texts } = await supabase.from("texts").select();
+  const texts = await getTexts(supabase);
   const lists = await getListsForUser(supabase);
 
-  return { props: { texts, lists } };
+  return { props: { textsProp: texts, lists } };
 }
 
 export default function Dashboard({
-  texts,
+  textsProp,
   lists,
 }: {
-  texts: TextRow[];
+  textsProp: TextRow[];
   lists: FlashcardListRow[];
 }) {
+  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
+    undefined
+  );
+  const [texts, setTexts] = useState<TextRow[] | null>(textsProp);
   const router = useRouter();
 
   const supabaseClient = useSupabaseClient();
@@ -61,6 +67,15 @@ export default function Dashboard({
     useModal(false);
   const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
     useModal(false);
+  const {
+    visible: textDeleteConfirmModalIsOpen,
+    setVisible: setTextDeleteConfirmModalIsOpen,
+  } = useModal(false);
+  const {
+    visible: listDeleteConfirmModalIsOpen,
+    setVisible: setListDeleteConfirmModalIsOpen,
+    bindings: {},
+  } = useModal(false);
 
   const newTextButtonHandler = () => {
     setTextModalIsVisible(true);
@@ -68,6 +83,11 @@ export default function Dashboard({
 
   const newListButtonHandler = () => {
     setListModalIsVisible(true);
+  };
+
+  const refetchTexts = async () => {
+    const newTexts = await getTexts(supabaseClient);
+    setTexts(newTexts);
   };
 
   const onNewTextConfirm = async (name: string) => {
@@ -85,7 +105,8 @@ export default function Dashboard({
     }
   };
 
-  const simpleMappedItems = (items: TextRow[] | FlashcardListRow[]) => {
+  const simpleMappedItems = (items: TextRow[] | FlashcardListRow[] | null) => {
+    if (!items) return;
     return items.map((item) => {
       return {
         id: item.id,
@@ -99,7 +120,25 @@ export default function Dashboard({
   };
 
   const handleDeleteText = (id: string) => {
-    // router.push(getRouteForSingleText(id));
+    setSelectedItemId(id);
+    setTextDeleteConfirmModalIsOpen(true);
+  };
+
+  const handleDeleteList = (id: string) => {
+    setSelectedItemId(id);
+    setListDeleteConfirmModalIsOpen(true);
+  };
+
+  const confirmDeleteText = async () => {
+    setTextDeleteConfirmModalIsOpen(false);
+    if (!selectedItemId) return;
+    await deleteText(supabaseClient, selectedItemId);
+    refetchTexts();
+  };
+
+  const confirmDeleteList = () => {
+    if (!selectedItemId) return;
+    deleteList(supabaseClient, selectedItemId);
   };
 
   return (
@@ -116,7 +155,16 @@ export default function Dashboard({
         onCancel={() => setListModalIsVisible(false)}
         onConfirm={onNewListConfirm}
       />
-      {/* <ConfirmModal onConfirm={handleDeleteText} /> */}
+      <ConfirmModal
+        onCancel={() => setTextDeleteConfirmModalIsOpen(false)}
+        isOpen={textDeleteConfirmModalIsOpen}
+        onConfirm={confirmDeleteText}
+      />
+      <ConfirmModal
+        onCancel={() => setListDeleteConfirmModalIsOpen(false)}
+        isOpen={listDeleteConfirmModalIsOpen}
+        onConfirm={confirmDeleteList}
+      />
       <Container>
         <Spacer y={2} />
         <Row>
@@ -150,7 +198,7 @@ export default function Dashboard({
               </Row>
               <SimpleTable
                 items={simpleMappedItems(lists)}
-                deleteCallback={() => console.log("delete")}
+                deleteCallback={handleDeleteList}
                 openCallBack={() => console.log("open")}
               />
             </Container>
