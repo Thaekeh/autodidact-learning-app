@@ -1,7 +1,6 @@
 import { Card, theme } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import React from "react";
-import { getRouteForSingleText } from "../../util/routing/texts";
 
 interface ItemCardProps {
   name: string;
