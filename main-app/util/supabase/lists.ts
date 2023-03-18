@@ -46,3 +46,7 @@ export const getAllFlashcardListsNamesOnly = async (
   const { data } = await supabase.from(flashcardListsTable).select("id, name");
   return data;
 };
+
+export const deleteList = async (supabase: SupabaseClient, listId: string) => {
+  await supabase.from(flashcardListsTable).delete().eq("id", listId);
+};
