@@ -16,7 +16,7 @@ export const translateWord = async (
 		url: "/translate",
 		method: "post",
 		headers: {
-			"Ocp-Apim-Subscription-Key": "fbf93cbea2dc450d8a461e616dde72f1",
+			"Ocp-Apim-Subscription-Key": process.env.AZURE_KEY,
 			"Ocp-Apim-Subscription-Region": location,
 			"Content-type": "application/json",
 			"X-ClientTraceId": uuidv4().toString(),
