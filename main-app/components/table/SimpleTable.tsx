@@ -26,7 +26,7 @@ export const SimpleTable: React.FC<Props> = ({
         {items &&
           items.map((item) => {
             return (
-              <Table.Row>
+              <Table.Row key={item.id}>
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>
                   <Row>
