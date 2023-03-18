@@ -3,9 +3,7 @@ import {
   Container,
   Row,
   Spacer,
-  Table,
   Text,
-  theme,
   Tooltip,
   useModal,
 } from "@nextui-org/react";
@@ -28,7 +26,7 @@ import {
 } from "../../util";
 import { createNewText, deleteText, getTexts } from "../../util/supabase/texts";
 import { SimpleTable } from "../../components/table/SimpleTable";
-import { ConfirmModal } from "../../components/modals/ConfirmModal";
+import { useConfirm } from "../../hooks/useConfirm";
 
 export async function getServerSideProps({
   req,
@@ -45,20 +43,18 @@ export async function getServerSideProps({
   const texts = await getTexts(supabase);
   const lists = await getListsForUser(supabase);
 
-  return { props: { textsProp: texts, lists } };
+  return { props: { textsProp: texts, listsProp: lists } };
 }
 
 export default function Dashboard({
   textsProp,
-  lists,
+  listsProp,
 }: {
   textsProp: TextRow[];
-  lists: FlashcardListRow[];
+  listsProp: FlashcardListRow[];
 }) {
-  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
-    undefined
-  );
   const [texts, setTexts] = useState<TextRow[] | null>(textsProp);
+  const [lists, setLists] = useState<FlashcardListRow[] | null>(listsProp);
   const router = useRouter();
 
   const supabaseClient = useSupabaseClient();
@@ -67,15 +63,6 @@ export default function Dashboard({
     useModal(false);
   const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
     useModal(false);
-  const {
-    visible: textDeleteConfirmModalIsOpen,
-    setVisible: setTextDeleteConfirmModalIsOpen,
-  } = useModal(false);
-  const {
-    visible: listDeleteConfirmModalIsOpen,
-    setVisible: setListDeleteConfirmModalIsOpen,
-    bindings: {},
-  } = useModal(false);
 
   const newTextButtonHandler = () => {
     setTextModalIsVisible(true);
@@ -88,6 +75,11 @@ export default function Dashboard({
   const refetchTexts = async () => {
     const newTexts = await getTexts(supabaseClient);
     setTexts(newTexts);
+  };
+
+  const refetchLists = async () => {
+    const newLists = await getListsForUser(supabaseClient);
+    setLists(newLists);
   };
 
   const onNewTextConfirm = async (name: string) => {
@@ -106,7 +98,7 @@ export default function Dashboard({
   };
 
   const simpleMappedItems = (items: TextRow[] | FlashcardListRow[] | null) => {
-    if (!items) return;
+    if (!items) return [];
     return items.map((item) => {
       return {
         id: item.id,
@@ -115,30 +107,26 @@ export default function Dashboard({
     });
   };
 
+  const { isConfirmed } = useConfirm();
+
   const openText = (id: string) => {
     router.push(getRouteForSingleText(id));
   };
 
-  const handleDeleteText = (id: string) => {
-    setSelectedItemId(id);
-    setTextDeleteConfirmModalIsOpen(true);
+  const handleDeleteText = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteText(supabaseClient, id);
+      refetchTexts();
+    }
   };
 
-  const handleDeleteList = (id: string) => {
-    setSelectedItemId(id);
-    setListDeleteConfirmModalIsOpen(true);
-  };
-
-  const confirmDeleteText = async () => {
-    setTextDeleteConfirmModalIsOpen(false);
-    if (!selectedItemId) return;
-    await deleteText(supabaseClient, selectedItemId);
-    refetchTexts();
-  };
-
-  const confirmDeleteList = () => {
-    if (!selectedItemId) return;
-    deleteList(supabaseClient, selectedItemId);
+  const handleDeleteList = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteList(supabaseClient, id);
+      refetchLists();
+    }
   };
 
   return (
@@ -154,16 +142,6 @@ export default function Dashboard({
         isOpen={listModalIsVisible}
         onCancel={() => setListModalIsVisible(false)}
         onConfirm={onNewListConfirm}
-      />
-      <ConfirmModal
-        onCancel={() => setTextDeleteConfirmModalIsOpen(false)}
-        isOpen={textDeleteConfirmModalIsOpen}
-        onConfirm={confirmDeleteText}
-      />
-      <ConfirmModal
-        onCancel={() => setListDeleteConfirmModalIsOpen(false)}
-        isOpen={listDeleteConfirmModalIsOpen}
-        onConfirm={confirmDeleteList}
       />
       <Container>
         <Spacer y={2} />
