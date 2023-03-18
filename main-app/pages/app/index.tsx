@@ -94,6 +94,14 @@ export default function Dashboard({
     });
   };
 
+  const openText = (id: string) => {
+    router.push(getRouteForSingleText(id));
+  };
+
+  const handleDeleteText = (id: string) => {
+    // router.push(getRouteForSingleText(id));
+  };
+
   return (
     <>
       <NameModal
@@ -108,6 +116,7 @@ export default function Dashboard({
         onCancel={() => setListModalIsVisible(false)}
         onConfirm={onNewListConfirm}
       />
+      {/* <ConfirmModal onConfirm={handleDeleteText} /> */}
       <Container>
         <Spacer y={2} />
         <Row>
@@ -123,8 +132,8 @@ export default function Dashboard({
               </Row>
               <SimpleTable
                 items={simpleMappedItems(texts)}
-                deleteCallback={() => console.log("delete")}
-                openCallBack={() => console.log("open")}
+                deleteCallback={handleDeleteText}
+                openCallBack={openText}
               />
             </Container>
           </Col>
