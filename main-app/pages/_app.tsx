@@ -7,6 +7,8 @@ import { Layout } from "../components/Layout";
 import { NextUIProvider } from "@nextui-org/react";
 import { SSRProvider } from "@react-aria/ssr";
 import Head from "next/head";
+import ConfirmContextProvider from "../providers/ConfirmContextProvider";
+import { ConfirmModal } from "../components/modals/ConfirmModal";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -27,13 +29,16 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         initialSession={pageProps.initialSession}
       >
         <NextUIProvider>
-          <Layout>
-            <Head>
-              <title>Learning Hub</title>
-              <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Component {...pageProps} />
-          </Layout>
+          <ConfirmContextProvider>
+            <ConfirmModal />
+            <Layout>
+              <Head>
+                <title>Learning Hub</title>
+                <link rel="icon" href="/favicon.ico" />
+              </Head>
+              <Component {...pageProps} />
+            </Layout>
+          </ConfirmContextProvider>
         </NextUIProvider>
       </SessionContextProvider>
     </SSRProvider>
