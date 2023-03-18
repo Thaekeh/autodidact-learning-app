@@ -19,7 +19,7 @@ export const SimpleTable: React.FC<Props> = ({
   return (
     <Table>
       <Table.Header>
-        <Table.Column>Name</Table.Column>
+        <Table.Column width={"70%"}>Name</Table.Column>
         <Table.Column>Actions</Table.Column>
       </Table.Header>
       <Table.Body>
