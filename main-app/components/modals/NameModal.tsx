@@ -24,7 +24,12 @@ export const NameModal: React.FC<NameModalProps> = ({
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input value={value} onChange={bindings.onChange} placeholder="Name" />
+        <Input
+          value={value}
+          label="Name"
+          onChange={bindings.onChange}
+          placeholder="Name"
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button auto onPress={() => onConfirm(value)}>
