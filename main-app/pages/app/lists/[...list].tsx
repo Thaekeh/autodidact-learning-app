@@ -10,23 +10,23 @@ import {
 import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "../../../types/supabase";
+import { Database } from "types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
-import { FlashcardListRow } from "../../../types/FlashcardLists";
-import { getListById, getRouteForPracticingFlashcardList } from "../../../util";
+import { FlashcardListRow } from "types/FlashcardLists";
+import { getListById, getRouteForPracticingFlashcardList } from "utils";
 import { Check, Edit2, Play, Plus, Trash, X } from "react-feather";
-import { IconButton } from "../../../components/buttons/IconButton";
+import { IconButton } from "components/buttons/IconButton";
 import {
   createNewFlashcard,
   deleteFlashcard,
   getFlashcardsForList,
   getFlashcardsThatRequirePracticeByListId,
   updateFlashcard,
-} from "../../../util/supabase/flashcards";
+} from "utils/supabase/flashcards";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { FlashcardRow } from "../../../types";
-import { NewFlashcardModal } from "../../../components/modals/NewFlashcardModal";
-import { EditFlashcardModal } from "../../../components/modals/EditFlashcardModal";
+import { FlashcardRow } from "types";
+import { NewFlashcardModal } from "components/modals/NewFlashcardModal";
+import { EditFlashcardModal } from "components/modals/EditFlashcardModal";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
 

@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { FlashcardListRow } from "../../types";
+import { FlashcardListRow } from "types";
 import { flashcardListsTable } from "./tables";
 
 export const getListsForUser = async (

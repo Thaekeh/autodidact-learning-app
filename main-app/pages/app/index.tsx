@@ -9,14 +9,14 @@ import {
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { Plus } from "react-feather";
-import { IconButton } from "../../components/buttons/IconButton";
+import { IconButton } from "components/buttons/IconButton";
 import { useRouter } from "next/router";
-import { NameModal } from "../../components/modals/NameModal";
+import { NameModal } from "components/modals/NameModal";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Database } from "../../types/supabase";
-import { TextRow } from "../../types/Texts";
-import { FlashcardListRow } from "../../types/FlashcardLists";
+import { Database } from "types/supabase";
+import { TextRow } from "types/Texts";
+import { FlashcardListRow } from "types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   createNewFlashcardList,
@@ -24,10 +24,10 @@ import {
   getListsForUser,
   getRouteForFlashcardList,
   getRouteForSingleText,
-} from "../../util";
-import { createNewText, deleteText, getTexts } from "../../util/supabase/texts";
-import { SimpleTable } from "../../components/table/SimpleTable";
-import { useConfirm } from "../../hooks/useConfirm";
+} from "utils";
+import { createNewText, deleteText, getTexts } from "utils/supabase/texts";
+import { SimpleTable } from "components/table/SimpleTable";
+import { useConfirm } from "hooks/useConfirm";
 
 export async function getServerSideProps({
   req,

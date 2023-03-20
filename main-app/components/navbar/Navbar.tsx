@@ -3,7 +3,7 @@ import { Navbar, Button } from "@nextui-org/react";
 import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
 import { useUser } from "@supabase/auth-helpers-react";
-import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "../../util";
+import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
 
 export const ComposedNavbar = () => {
   const user = useUser();

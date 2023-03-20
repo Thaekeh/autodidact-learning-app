@@ -5,14 +5,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { Plus } from "react-feather";
-import { FullTable } from "../../../components/table/FullTable";
-import { useConfirm } from "../../../hooks/useConfirm";
-import { Database, FlashcardListRow } from "../../../types";
-import {
-  deleteList,
-  getListsForUser,
-  getRouteForFlashcardList,
-} from "../../../util";
+import { FullTable } from "components/table/FullTable";
+import { useConfirm } from "hooks/useConfirm";
+import { Database, FlashcardListRow } from "types";
+import { deleteList, getListsForUser, getRouteForFlashcardList } from "utils";
 
 export default function Lists({
   lists: listsProp,
