@@ -12,13 +12,18 @@ import { NextApiRequest, NextApiResponse } from "next";
 import React from "react";
 import { Edit2, Plus, Trash } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
+import { FullTable } from "../../components/table/FullTable";
 import { Database, FlashcardListRow } from "../../types";
 import { getListsForUser } from "../../util";
 
-export default function Lists({ lists }: { lists: FlashcardListRow[] | null }) {
-  const { visible, setVisible: setNewListModalIsVisible } = useModal(false);
+export default function Lists({ lists }: { lists: FlashcardListRow[] }) {
+  const handleOpenCallback = (id: string) => {
+    console.log(id);
+  };
 
-  const editListButtonHandler = (list: FlashcardListRow) => {};
+  const handleDeleteCallback = (id: string) => {
+    console.log(id);
+  };
 
   return (
     <>
@@ -35,43 +40,11 @@ export default function Lists({ lists }: { lists: FlashcardListRow[] | null }) {
             Create New
           </Button>
         </Container>
-        <Table>
-          <Table.Header>
-            <Table.Column>Name</Table.Column>
-            <Table.Column>Last opened</Table.Column>
-            <Table.Column> </Table.Column>
-          </Table.Header>
-          <Table.Body>
-            {lists ? (
-              lists?.map((list) => {
-                return (
-                  <Table.Row key={list.id}>
-                    <Table.Cell>{list.name}</Table.Cell>
-                    <Table.Cell> </Table.Cell>
-                    <Table.Cell>
-                      <Row>
-                        <IconButton onClick={() => editListButtonHandler(list)}>
-                          <Edit2 />
-                        </IconButton>
-                        <Spacer x={1} />
-                        <IconButton onClick={() => console.log(list.id)}>
-                          <Trash />
-                        </IconButton>
-                      </Row>
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })
-            ) : (
-              <Table.Row>
-                <Table.Cell>No cards in this list found</Table.Cell>
-                <Table.Cell> </Table.Cell>
-                <Table.Cell> </Table.Cell>
-                <Table.Cell> </Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table>
+        <FullTable
+          items={lists}
+          openCallBack={handleOpenCallback}
+          deleteCallback={handleDeleteCallback}
+        ></FullTable>
       </Container>
     </>
   );
