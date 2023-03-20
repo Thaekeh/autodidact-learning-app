@@ -9,6 +9,7 @@ import { SSRProvider } from "@react-aria/ssr";
 import Head from "next/head";
 import ConfirmContextProvider from "../providers/ConfirmContextProvider";
 import { ConfirmModal } from "../components/modals/ConfirmModal";
+import { appWithTranslation } from "next-i18next";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -19,7 +20,7 @@ type AppPropsWithLayout = AppProps & {
   initialSession: Session;
 };
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+function App({ Component, pageProps }: AppPropsWithLayout) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   return (
@@ -44,3 +45,5 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     </SSRProvider>
   );
 }
+
+export default appWithTranslation(App);
