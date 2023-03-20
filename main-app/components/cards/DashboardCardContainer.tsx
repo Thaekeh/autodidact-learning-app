@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const DashboardCardContainer: React.FC<Props> = ({ children }) => {
-  return <PaddedCard variant="bordered">{children}</PaddedCard>;
+  return <PaddedCard>{children}</PaddedCard>;
 };
 
 const PaddedCard = NextUIStyled(Card, {

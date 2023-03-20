@@ -1,5 +1,12 @@
-import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
-import React from "react";
+import {
+  Button,
+  Input,
+  Modal,
+  useInput,
+  Text,
+  Loading,
+} from "@nextui-org/react";
+import React, { useState } from "react";
 
 interface NameModalProps {
   title: string;
@@ -15,6 +22,12 @@ export const NameModal: React.FC<NameModalProps> = ({
   onCancel,
 }) => {
   const { value, bindings } = useInput("");
+  const [loading, setLoading] = useState(false);
+
+  const handleConfirm = () => {
+    setLoading(true);
+    onConfirm(value);
+  };
 
   return (
     <Modal closeButton open={isOpen} onClose={onCancel}>
@@ -32,8 +45,12 @@ export const NameModal: React.FC<NameModalProps> = ({
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button auto onPress={() => onConfirm(value)}>
-          Create
+        <Button flat auto onPress={() => handleConfirm()}>
+          {loading ? (
+            <Loading color="secondary" type="points-opacity" />
+          ) : (
+            "Create"
+          )}
         </Button>
       </Modal.Footer>
     </Modal>

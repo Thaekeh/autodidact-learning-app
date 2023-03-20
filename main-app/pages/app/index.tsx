@@ -3,26 +3,31 @@ import {
   Container,
   Row,
   Spacer,
+  Text,
   Tooltip,
   useModal,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "react-feather";
 import { IconButton } from "../../components/buttons/IconButton";
-import { ItemCard } from "../../components/cards/ItemCard";
-import { getRouteForFlashcardList } from "../../util/routing/flashcardLists";
-import { getRouteForSingleText } from "../../util/routing/texts";
 import { useRouter } from "next/router";
 import { NameModal } from "../../components/modals/NameModal";
-import { DashboardCardContainer } from "../../components/cards/DashboardCardContainer";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Database } from "../../types/supabase";
 import { TextRow } from "../../types/Texts";
 import { FlashcardListRow } from "../../types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { createNewFlashcardList, getListsForUser } from "../../util";
-import { createNewText } from "../../util/supabase/texts";
+import {
+  createNewFlashcardList,
+  deleteList,
+  getListsForUser,
+  getRouteForFlashcardList,
+  getRouteForSingleText,
+} from "../../util";
+import { createNewText, deleteText, getTexts } from "../../util/supabase/texts";
+import { SimpleTable } from "../../components/table/SimpleTable";
+import { useConfirm } from "../../hooks/useConfirm";
 
 export async function getServerSideProps({
   req,
@@ -36,19 +41,21 @@ export async function getServerSideProps({
     res,
   });
 
-  const { data: texts } = await supabase.from("texts").select();
+  const texts = await getTexts(supabase);
   const lists = await getListsForUser(supabase);
 
-  return { props: { texts, lists } };
+  return { props: { textsProp: texts, listsProp: lists } };
 }
 
 export default function Dashboard({
-  texts,
-  lists,
+  textsProp,
+  listsProp,
 }: {
-  texts: TextRow[];
-  lists: FlashcardListRow[];
+  textsProp: TextRow[];
+  listsProp: FlashcardListRow[];
 }) {
+  const [texts, setTexts] = useState<TextRow[] | null>(textsProp);
+  const [lists, setLists] = useState<FlashcardListRow[] | null>(listsProp);
   const router = useRouter();
 
   const supabaseClient = useSupabaseClient();
@@ -66,6 +73,16 @@ export default function Dashboard({
     setListModalIsVisible(true);
   };
 
+  const refetchTexts = async () => {
+    const newTexts = await getTexts(supabaseClient);
+    setTexts(newTexts);
+  };
+
+  const refetchLists = async () => {
+    const newLists = await getListsForUser(supabaseClient);
+    setLists(newLists);
+  };
+
   const onNewTextConfirm = async (name: string) => {
     const createdDocument = await createNewText(supabaseClient, name);
     if (createdDocument) {
@@ -78,6 +95,39 @@ export default function Dashboard({
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
       setListModalIsVisible(false);
+      refetchLists();
+    }
+  };
+
+  const simpleMappedItems = (items: TextRow[] | FlashcardListRow[] | null) => {
+    if (!items) return [];
+    return items.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+      };
+    });
+  };
+
+  const { isConfirmed } = useConfirm();
+
+  const openText = (id: string) => {
+    router.push(getRouteForSingleText(id));
+  };
+
+  const handleDeleteText = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteText(supabaseClient, id);
+      refetchTexts();
+    }
+  };
+
+  const handleDeleteList = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteList(supabaseClient, id);
+      refetchLists();
     }
   };
 
@@ -99,51 +149,41 @@ export default function Dashboard({
         <Spacer y={2} />
         <Row>
           <Col>
-            <DashboardCardContainer>
+            <Container>
               <Row align="center" justify="space-between">
-                <h2>Texts</h2>
+                <Text h3>Recent texts</Text>
                 <Tooltip content={"Create new text"}>
                   <IconButton onClick={newTextButtonHandler}>
                     <Plus />
                   </IconButton>
                 </Tooltip>
               </Row>
-              <Col>
-                {texts &&
-                  texts.map((text) => (
-                    <React.Fragment key={text.id}>
-                      <ItemCard
-                        name={text.name}
-                        href={getRouteForSingleText(text.id)}
-                      />
-                      <Spacer y={1}></Spacer>
-                    </React.Fragment>
-                  ))}
-              </Col>
-            </DashboardCardContainer>
+              <SimpleTable
+                items={simpleMappedItems(texts)}
+                deleteCallback={handleDeleteText}
+                openCallBack={openText}
+              />
+            </Container>
           </Col>
           <Spacer x={2} />
           <Col>
-            <DashboardCardContainer>
+            <Container>
               <Row align="center" justify="space-between">
-                <h2>Card Lists</h2>
+                <Text h3>Card Lists</Text>
                 <Tooltip content={"Create new list"}>
                   <IconButton onClick={newListButtonHandler}>
                     <Plus />
                   </IconButton>
                 </Tooltip>
               </Row>
-              {lists &&
-                lists.map((list) => (
-                  <React.Fragment key={list.id}>
-                    <ItemCard
-                      name={list.name}
-                      href={getRouteForFlashcardList(list.id)}
-                    />
-                    <Spacer y={1}></Spacer>
-                  </React.Fragment>
-                ))}
-            </DashboardCardContainer>
+              <SimpleTable
+                items={simpleMappedItems(lists)}
+                deleteCallback={handleDeleteList}
+                openCallBack={(id: string) =>
+                  router.push(getRouteForFlashcardList(id))
+                }
+              />
+            </Container>
           </Col>
         </Row>
       </Container>
