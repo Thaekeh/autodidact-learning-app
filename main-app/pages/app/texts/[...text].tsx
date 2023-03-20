@@ -14,16 +14,16 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "../../../types/supabase";
+import { Database } from "types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
-import { TextRow } from "../../../types/Texts";
+import { TextRow } from "types/Texts";
 import {
   createNewFlashcard,
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
-} from "../../../util";
+} from "utils";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { saveTextContent } from "../../../util/supabase/texts";
+import { saveTextContent } from "utils/supabase/texts";
 
 export default function TextPage({
   text,

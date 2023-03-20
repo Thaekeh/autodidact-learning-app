@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { TextRow } from "../../types";
+import { TextRow } from "types";
 import { textsTable } from "./tables";
 
 export const createNewText = async (

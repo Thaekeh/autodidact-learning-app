@@ -1,6 +1,6 @@
 import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
 import React, { useEffect } from "react";
-import { useConfirm } from "../../hooks/useConfirm";
+import { useConfirm } from "hooks/useConfirm";
 
 export const ConfirmModal: React.FC = () => {
   const { prompt = "", isOpen = false, proceed, cancel } = useConfirm();

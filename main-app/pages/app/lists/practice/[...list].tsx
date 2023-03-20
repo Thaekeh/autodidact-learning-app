@@ -4,12 +4,12 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { useState } from "react";
-import { Database, FlashcardRow } from "../../../../types";
+import { Database, FlashcardRow } from "types";
 import {
   getFlashcardsThatRequirePracticeByListId,
   updateFlashcardWithSpacedRepetitionData,
-} from "../../../../util";
-import { calculateNewCardRepetitionData } from "../../../../util/mapping/flashcards";
+} from "utils";
+import { calculateNewCardRepetitionData } from "utils/mapping/flashcards";
 
 export default function ListPage({
   flashcards,

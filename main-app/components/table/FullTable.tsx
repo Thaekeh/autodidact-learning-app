@@ -1,6 +1,6 @@
 import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
 import { Edit, Trash2 } from "react-feather";
-import { IconButton } from "../buttons/IconButton";
+import { IconButton } from "components/buttons/IconButton";
 
 interface Props {
   items: {
