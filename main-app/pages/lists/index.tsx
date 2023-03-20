@@ -8,17 +8,39 @@ import {
   Row,
 } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
-import React from "react";
-import { Edit2, Plus, Trash } from "react-feather";
-import { IconButton } from "../../components/buttons/IconButton";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { Plus } from "react-feather";
+import { FullTable } from "../../components/table/FullTable";
+import { useConfirm } from "../../hooks/useConfirm";
 import { Database, FlashcardListRow } from "../../types";
-import { getListsForUser } from "../../util";
+import {
+  deleteList,
+  getListsForUser,
+  getRouteForFlashcardList,
+} from "../../util";
 
-export default function Lists({ lists }: { lists: FlashcardListRow[] | null }) {
-  const { visible, setVisible: setNewListModalIsVisible } = useModal(false);
+export default function Lists({
+  lists: listsProp,
+}: {
+  lists: FlashcardListRow[];
+}) {
+  const [lists, setLists] = useState(listsProp);
+  const router = useRouter();
+  const { isConfirmed } = useConfirm();
 
-  const editListButtonHandler = (list: FlashcardListRow) => {};
+  const supabaseClient = useSupabaseClient();
+
+  const handleDeleteCallback = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteList(supabaseClient, id);
+      const newLists = await getListsForUser(supabaseClient);
+      setLists(newLists);
+    }
+  };
 
   return (
     <>
@@ -35,43 +57,11 @@ export default function Lists({ lists }: { lists: FlashcardListRow[] | null }) {
             Create New
           </Button>
         </Container>
-        <Table>
-          <Table.Header>
-            <Table.Column>Name</Table.Column>
-            <Table.Column>Last opened</Table.Column>
-            <Table.Column> </Table.Column>
-          </Table.Header>
-          <Table.Body>
-            {lists ? (
-              lists?.map((list) => {
-                return (
-                  <Table.Row key={list.id}>
-                    <Table.Cell>{list.name}</Table.Cell>
-                    <Table.Cell> </Table.Cell>
-                    <Table.Cell>
-                      <Row>
-                        <IconButton onClick={() => editListButtonHandler(list)}>
-                          <Edit2 />
-                        </IconButton>
-                        <Spacer x={1} />
-                        <IconButton onClick={() => console.log(list.id)}>
-                          <Trash />
-                        </IconButton>
-                      </Row>
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })
-            ) : (
-              <Table.Row>
-                <Table.Cell>No cards in this list found</Table.Cell>
-                <Table.Cell> </Table.Cell>
-                <Table.Cell> </Table.Cell>
-                <Table.Cell> </Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table>
+        <FullTable
+          items={lists}
+          openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
+          deleteCallback={handleDeleteCallback}
+        ></FullTable>
       </Container>
     </>
   );

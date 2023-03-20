@@ -4,9 +4,9 @@ import { flashcardListsTable } from "./tables";
 
 export const getListsForUser = async (
   supabase: SupabaseClient
-): Promise<FlashcardListRow[] | null> => {
+): Promise<FlashcardListRow[]> => {
   const { data } = await supabase.from(flashcardListsTable).select();
-  return data;
+  return data || [];
 };
 
 export const createNewFlashcardList = async (
