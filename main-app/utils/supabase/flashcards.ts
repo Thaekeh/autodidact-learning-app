@@ -6,12 +6,12 @@ import { DateTime } from "luxon";
 export const getFlashcardsForList = async (
   supabase: SupabaseClient,
   listId: string
-): Promise<FlashcardRow[] | null> => {
+): Promise<FlashcardRow[]> => {
   const { data } = await supabase
     .from(flashcardsTable)
     .select()
     .eq("list_id", listId);
-  return data;
+  return data || [];
 };
 
 export const createNewFlashcard = async (

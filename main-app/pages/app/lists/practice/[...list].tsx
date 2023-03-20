@@ -1,6 +1,8 @@
+import styled from "@emotion/styled";
 import { Button, Container, Spacer, Text } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import Flashcard from "components/cards/Flashcard";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { useState } from "react";
@@ -26,7 +28,6 @@ export default function ListPage({
   ) => {
     if (!flashcards) return;
     const selectedFlashcard = flashcards[flashcardIndex];
-    const next_practice_date = Date.now();
     const newCardData = calculateNewCardRepetitionData({
       repetitions: selectedFlashcard.repetitions,
       difficultyResponse,
@@ -45,27 +46,32 @@ export default function ListPage({
 
   const hasSelectedFlashcard = !!(flashcards && flashcards[flashcardIndex]);
 
+  const selectedFlashcard = flashcards && flashcards[flashcardIndex];
+
   return (
     <>
       <Container display="flex" justify="center">
-        <Spacer y={2}></Spacer>
+        <Spacer y={6}></Spacer>
+
         <Container
           display="flex"
-          direction="row"
-          justify="space-between"
-          alignContent="center"
-        ></Container>
-        <Container display="flex" justify="center">
-          {/* TODO add nice flashcard here */}
+          direction="column"
+          justify="center"
+          alignItems="center"
+        >
           {hasSelectedFlashcard ? (
-            <div onClick={() => setShowBack(!showBack)}>
-              {!showBack
-                ? flashcards[flashcardIndex].frontText
-                : flashcards[flashcardIndex].backText}
-            </div>
+            <Flashcard
+              text={{
+                front: selectedFlashcard?.frontText || "",
+                back: selectedFlashcard?.backText || "",
+              }}
+            />
           ) : (
-            <Text>No more cards to practice</Text>
+            <StyledDiv>
+              <Text>No more cards to practice</Text>
+            </StyledDiv>
           )}
+
           <Spacer y={4} />
           <Container display="flex" justify="center">
             <Button
@@ -123,3 +129,11 @@ export async function getServerSideProps({
     },
   };
 }
+
+const StyledDiv = styled.div`
+  width: 30rem;
+  height: 10rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
