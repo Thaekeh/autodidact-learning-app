@@ -111,10 +111,6 @@ export default function Dashboard({
 
   const { isConfirmed } = useConfirm();
 
-  const openText = (id: string) => {
-    router.push(getRouteForSingleText(id));
-  };
-
   const handleDeleteText = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
@@ -161,7 +157,7 @@ export default function Dashboard({
               <SimpleTable
                 items={simpleMappedItems(texts)}
                 deleteCallback={handleDeleteText}
-                openCallBack={openText}
+                openCallBack={(id) => router.push(getRouteForSingleText(id))}
               />
             </Container>
           </Col>
@@ -179,9 +175,7 @@ export default function Dashboard({
               <SimpleTable
                 items={simpleMappedItems(lists)}
                 deleteCallback={handleDeleteList}
-                openCallBack={(id: string) =>
-                  router.push(getRouteForFlashcardList(id))
-                }
+                openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
               />
             </Container>
           </Col>
