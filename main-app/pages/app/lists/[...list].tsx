@@ -28,20 +28,24 @@ import { FlashcardRow } from "types";
 import { NewFlashcardModal } from "components/modals/NewFlashcardModal";
 import { EditFlashcardModal } from "components/modals/EditFlashcardModal";
 import { useRouter } from "next/router";
-import { DateTime } from "luxon";
+import { FlashcardsTable } from "components/table/FlashcardsTable";
+import { useConfirm } from "hooks/useConfirm";
 
 export default function ListPage({
   list,
-  flashcards,
+  flashcards: flashcardsProp,
   flashcardsToPracticeCount,
 }: {
   list: FlashcardListRow | null;
-  flashcards: FlashcardRow[] | null;
+  flashcards: FlashcardRow[];
   flashcardsToPracticeCount: number | null;
 }) {
   const [selectedFlashcard, setSelectedFlashcard] = useState<
     FlashcardRow | undefined
   >(undefined);
+  const [flashcards, setFlashcards] = useState<FlashcardRow[]>(flashcardsProp);
+
+  const { isConfirmed } = useConfirm();
 
   const {
     visible: newFlashcardModalIsVisible,
@@ -83,8 +87,14 @@ export default function ListPage({
     setNewFlashcardModalIsVisible(false);
   };
 
-  const handleDeleteFlashcard = (flashcardId: string) => {
-    deleteFlashcard(supabase, flashcardId);
+  const handleDeleteFlashcard = async (flashcardId: string) => {
+    if (!list?.id) return;
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteFlashcard(supabase, flashcardId);
+      const newFlashcards = await getFlashcardsForList(supabase, list?.id);
+      setFlashcards(newFlashcards);
+    }
   };
 
   const router = useRouter();
@@ -114,8 +124,12 @@ export default function ListPage({
             </Button>
           </Container>
         )}
-
-        <Table>
+        <FlashcardsTable
+          flashcards={flashcards}
+          editCallback={editFlashcardButtonHandler}
+          deleteCallback={handleDeleteFlashcard}
+        />
+        {/* <Table>
           <Table.Header>
             <Table.Column>Front</Table.Column>
             <Table.Column>Back</Table.Column>
@@ -172,7 +186,7 @@ export default function ListPage({
               </Table.Row>
             )}
           </Table.Body>
-        </Table>
+        </Table> */}
       </Container>
       <NewFlashcardModal
         isOpen={newFlashcardModalIsVisible}
