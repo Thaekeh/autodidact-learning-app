@@ -11,23 +11,34 @@ import { Database } from "../../types/supabase";
 import { getLocale } from "../../util/translation/getLocale";
 import { useTranslation } from "next-i18next";
 import { FullTable } from "../../components/table/FullTable";
+import { useConfirm } from "../../hooks/useConfirm";
+import { deleteText, getTexts } from "../../util/supabase/texts";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
-export default function Texts({ texts }: { texts: TextRow[] }) {
+export default function Texts({ texts: textsProp }: { texts: TextRow[] }) {
   const { t } = useTranslation();
+  const [texts, setTexts] = useState<TextRow[]>(textsProp);
+  const { isConfirmed } = useConfirm();
+  const router = useRouter();
 
-  const handleOpenCallback = (id: string) => {
-    console.log(id);
-  };
+  const supabaseClient = useSupabaseClient();
 
-  const handleDeleteCallback = (id: string) => {
-    console.log(id);
+  const handleDeleteCallback = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteText(supabaseClient, id);
+      const newTexts = await getTexts(supabaseClient);
+      setTexts(newTexts);
+    }
   };
 
   return (
     <Container css={{ marginTop: "$18" }}>
       <FullTable
         items={texts}
-        openCallBack={handleOpenCallback}
+        openCallBack={(id) => router.push(getRouteForSingleText(id))}
         deleteCallback={handleDeleteCallback}
       ></FullTable>
     </Container>

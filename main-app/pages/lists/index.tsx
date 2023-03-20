@@ -8,21 +8,38 @@ import {
   Row,
 } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
-import React from "react";
-import { Edit2, Plus, Trash } from "react-feather";
-import { IconButton } from "../../components/buttons/IconButton";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { Plus } from "react-feather";
 import { FullTable } from "../../components/table/FullTable";
+import { useConfirm } from "../../hooks/useConfirm";
 import { Database, FlashcardListRow } from "../../types";
-import { getListsForUser } from "../../util";
+import {
+  deleteList,
+  getListsForUser,
+  getRouteForFlashcardList,
+} from "../../util";
 
-export default function Lists({ lists }: { lists: FlashcardListRow[] }) {
-  const handleOpenCallback = (id: string) => {
-    console.log(id);
-  };
+export default function Lists({
+  lists: listsProp,
+}: {
+  lists: FlashcardListRow[];
+}) {
+  const [lists, setLists] = useState(listsProp);
+  const router = useRouter();
+  const { isConfirmed } = useConfirm();
 
-  const handleDeleteCallback = (id: string) => {
-    console.log(id);
+  const supabaseClient = useSupabaseClient();
+
+  const handleDeleteCallback = async (id: string) => {
+    const confirmed = await isConfirmed("Are you sure?");
+    if (confirmed) {
+      await deleteList(supabaseClient, id);
+      const newLists = await getListsForUser(supabaseClient);
+      setLists(newLists);
+    }
   };
 
   return (
@@ -42,7 +59,7 @@ export default function Lists({ lists }: { lists: FlashcardListRow[] }) {
         </Container>
         <FullTable
           items={lists}
-          openCallBack={handleOpenCallback}
+          openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
           deleteCallback={handleDeleteCallback}
         ></FullTable>
       </Container>
