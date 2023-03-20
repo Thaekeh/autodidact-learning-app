@@ -22,11 +22,11 @@ import {
   getFlashcardsForList,
   getFlashcardsThatRequirePracticeByListId,
   updateFlashcard,
-} from "../../util/supabase/flashcards";
+} from "../../../util/supabase/flashcards";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { FlashcardRow } from "../../types";
-import { NewFlashcardModal } from "../../components/modals/NewFlashcardModal";
-import { EditFlashcardModal } from "../../components/modals/EditFlashcardModal";
+import { FlashcardRow } from "../../../types";
+import { NewFlashcardModal } from "../../../components/modals/NewFlashcardModal";
+import { EditFlashcardModal } from "../../../components/modals/EditFlashcardModal";
 import { useRouter } from "next/router";
 import { DateTime } from "luxon";
 
