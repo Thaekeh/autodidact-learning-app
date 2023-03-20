@@ -32,7 +32,7 @@ export const deleteText = async (
 
 export const getTexts = async (
   supabaseClient: SupabaseClient
-): Promise<TextRow[] | null> => {
+): Promise<TextRow[]> => {
   const { data } = await supabaseClient.from(textsTable).select();
-  return data;
+  return data || [];
 };
