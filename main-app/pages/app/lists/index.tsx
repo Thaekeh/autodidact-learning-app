@@ -1,26 +1,18 @@
-import {
-  Button,
-  Container,
-  Spacer,
-  useModal,
-  Text,
-  Table,
-  Row,
-} from "@nextui-org/react";
+import { Button, Container, Spacer, Text } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { Plus } from "react-feather";
-import { FullTable } from "../../components/table/FullTable";
-import { useConfirm } from "../../hooks/useConfirm";
-import { Database, FlashcardListRow } from "../../types";
+import { FullTable } from "../../../components/table/FullTable";
+import { useConfirm } from "../../../hooks/useConfirm";
+import { Database, FlashcardListRow } from "../../../types";
 import {
   deleteList,
   getListsForUser,
   getRouteForFlashcardList,
-} from "../../util";
+} from "../../../util";
 
 export default function Lists({
   lists: listsProp,
