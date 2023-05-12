@@ -28,6 +28,7 @@ import {
 import { createNewText, deleteText, getTexts } from "utils/supabase/texts";
 import { SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
+import { NewTextModal } from "components/modals/texts/NewTextModal";
 
 export async function getServerSideProps({
   req,
@@ -129,11 +130,9 @@ export default function Dashboard({
 
   return (
     <>
-      <NameModal
-        title={"Insert name of text"}
+      <NewTextModal
         isOpen={textModalIsVisible}
         onCancel={() => setTextModalIsVisible(false)}
-        onConfirm={onNewTextConfirm}
       />
       <NameModal
         title={"Insert name of list"}
