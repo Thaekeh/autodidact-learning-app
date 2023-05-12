@@ -4,12 +4,17 @@ import { textsTable } from "./tables";
 
 export const createNewText = async (
   supabaseClient: SupabaseClient,
-  name: string
+  name: string,
+  epubUrl?: string
 ): Promise<TextRow> => {
   const user = await supabaseClient.auth.getSession();
   const { data } = await supabaseClient
     .from("texts")
-    .insert({ name, user_id: user.data.session?.user.id })
+    .insert({
+      name,
+      user_id: user.data.session?.user.id,
+      epub_file: epubUrl || null,
+    })
     .select()
     .single();
   return data;
@@ -35,4 +40,16 @@ export const getTexts = async (
 ): Promise<TextRow[]> => {
   const { data } = await supabaseClient.from(textsTable).select();
   return data || [];
+};
+
+export const getTextById = async (
+  supabaseClient: SupabaseClient,
+  textId: string
+): Promise<TextRow | null> => {
+  const { data } = await supabaseClient
+    .from(textsTable)
+    .select()
+    .eq("id", textId)
+    .single();
+  return data;
 };

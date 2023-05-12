@@ -1,17 +1,14 @@
 import {
   Container,
   Grid,
-  Textarea,
   Text,
   Input,
   Dropdown,
   Button,
   Spacer,
   Loading,
-  StyledButtonGroup,
 } from "@nextui-org/react";
-import React, { useState } from "react";
-import styled from "@emotion/styled";
+import React, { useEffect, useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/supabase";
@@ -22,8 +19,10 @@ import {
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
 } from "utils";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { saveTextContent } from "utils/supabase/texts";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { getTextById, saveTextContent } from "utils/supabase/texts";
+import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
+import { TextReader } from "components/reader/TextReader";
 
 export default function TextPage({
   text,
@@ -32,18 +31,36 @@ export default function TextPage({
   text: TextRow | null;
   flashcardLists: FlashcardListWithNameOnly[] | null;
 }) {
-  const [isInEditMode, setIsInEditMode] = useState(false);
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
   const [selectedList, setSelectedList] = useState(
     flashcardLists ? flashcardLists[0].id : undefined
   );
 
-  const [textContent, setTextContent] = useState(text?.content || "");
+  const supabase = useSupabaseClient();
+
+  const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
+
+  const [textContent] = useState(text?.content || "");
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
-  const supabase = useSupabaseClient();
+  const translateText = async (text: string) => {
+    const { translatedWord } = await fetch("/api/translate", {
+      method: "POST",
+      body: JSON.stringify({
+        word: text,
+        sourceLanguage: "en",
+        targetLanguage: "es",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+    if (translatedWord) {
+      return translatedWord;
+    }
+  };
 
   const handleTextClick = async (event: React.MouseEvent<HTMLSpanElement>) => {
     const word = event?.currentTarget.innerHTML.toLowerCase();
@@ -66,24 +83,9 @@ export default function TextPage({
     }
   };
 
-  const mappedText = () => {
-    if (!textContent) return "Empty";
-    const textInArray = textContent.split(" ");
-    return textInArray.map((word) => {
-      const randomNumber = Math.floor(Math.random() * 100000);
-      return (
-        <React.Fragment key={`${word}-${randomNumber}`}>
-          <HoverableWord onClick={handleTextClick}>{word}</HoverableWord>
-          &nbsp;
-        </React.Fragment>
-      );
-    });
-  };
-
-  const handleSaveText = () => {
-    if (!text || !textContent) return;
-    setIsInEditMode(false);
-    saveTextContent(supabase, text.id, textContent);
+  const handleSaveText = (newTextContent: string) => {
+    if (!text || !newTextContent) return;
+    saveTextContent(supabase, text.id, newTextContent);
   };
 
   const handleSaveCard = async () => {
@@ -100,6 +102,17 @@ export default function TextPage({
     setSavingCardIsLoading(false);
   };
 
+  const processTextSelection = async (selectedText: string) => {
+    const trimmedText = selectedText.trim();
+    if (!trimmedText.length) return;
+    setFrontOfCardValue(trimmedText.toLowerCase());
+    const translatedText = await translateText(trimmedText);
+    const cleanedTranslatedText = translatedText
+      .replace(/['"]+/g, "")
+      .toLowerCase();
+    setBackOfCardValue(cleanedTranslatedText);
+  };
+
   return (
     <Grid.Container
       gap={2}
@@ -113,41 +126,24 @@ export default function TextPage({
           height: `80vh`,
         }}
       >
-        {isInEditMode ? (
+        {!!text?.epub_file ? (
           <>
             <Container direction="column" wrap="wrap">
-              <Text h3>Edit your text</Text>
-              <StyledButtonGroup>
-                <Button onPress={handleSaveText} size={"sm"}>
-                  Save
-                </Button>
-              </StyledButtonGroup>
-              <Spacer y={1} />
-              <Textarea
-                animated={false}
-                value={textContent}
-                onChange={(event) => setTextContent(event.target.value)}
-                maxRows={50}
-              ></Textarea>
+              <Text h3>Epub test</Text>
+              {textEpubUrl && (
+                <ReactReaderWrapper
+                  url={textEpubUrl}
+                  processTextSelection={processTextSelection}
+                />
+              )}
             </Container>
           </>
         ) : (
-          <>
-            <Container wrap="wrap" css={{ maxWidth: `100%` }}>
-              <Text h3>{text?.name}</Text>
-              <StyledButtonGroup>
-                <Button
-                  onPress={() => setIsInEditMode(!isInEditMode)}
-                  size={"sm"}
-                >
-                  Edit
-                </Button>
-              </StyledButtonGroup>
-              <Text css={{ display: `flex`, flexWrap: `wrap` }}>
-                {mappedText()}
-              </Text>
-            </Container>
-          </>
+          <TextReader
+            handleSaveText={handleSaveText}
+            handleTextClick={handleTextClick}
+            textContent={textContent}
+          />
         )}
       </Grid>
       <Grid xs={3} direction="column">
@@ -228,23 +224,9 @@ export async function getServerSideProps({
   });
 
   const textId = params.text[0];
-  const { data: text } = await supabase
-    .from("texts")
-    .select()
-    .eq("id", textId)
-    .single();
+  const text = await getTextById(supabase, textId);
 
   const flashcardLists = await getAllFlashcardListsNamesOnly(supabase);
 
   return { props: { text: text, flashcardLists } };
 }
-
-const HoverableWord = styled.span`
-  padding: 1px;
-  box-sizing: border-box;
-  :hover {
-    background-color: #8686ff;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-`;
