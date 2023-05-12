@@ -1,7 +1,6 @@
 import {
   Container,
   Grid,
-  Textarea,
   Text,
   Input,
   Dropdown,
@@ -10,7 +9,7 @@ import {
   Loading,
   StyledButtonGroup,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
@@ -22,8 +21,9 @@ import {
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
 } from "utils";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { saveTextContent } from "utils/supabase/texts";
+import { ReactReaderWrapper } from "components/reactReader/ReactReaderWrapper";
 
 export default function TextPage({
   text,
@@ -39,11 +39,46 @@ export default function TextPage({
     flashcardLists ? flashcardLists[0].id : undefined
   );
 
-  const [textContent, setTextContent] = useState(text?.content || "");
+  const supabase = useSupabaseClient();
+
+  const user = useUser();
+
+  const [textEpubUrl, setTextEpubUrl] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (!user) return;
+    // const getEpubFileForText = async () => {
+    //   if (!text?.epub_file) return;
+    //   const { data } = await supabase.storage
+    //     .from("text-files")
+    //     .createSignedUrl(`${user.id}/${text.epub_file}`, 60);
+    //   setTextEpubUrl(epub(data?.signedUrl);
+    // };
+    setTextEpubUrl("test");
+    if (!text) return;
+    // getEpubFileForText();
+  }, [text]);
+
+  const [textContent] = useState(text?.content || "");
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
-  const supabase = useSupabaseClient();
+  const translateText = async (text: string) => {
+    const { translatedWord } = await fetch("/api/translate", {
+      method: "POST",
+      body: JSON.stringify({
+        word: text,
+        sourceLanguage: "en",
+        targetLanguage: "es",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+    if (translatedWord) {
+      return translatedWord;
+    }
+  };
 
   const handleTextClick = async (event: React.MouseEvent<HTMLSpanElement>) => {
     const word = event?.currentTarget.innerHTML.toLowerCase();
@@ -100,6 +135,17 @@ export default function TextPage({
     setSavingCardIsLoading(false);
   };
 
+  const processTextSelection = async (selectedText: string) => {
+    const trimmedText = selectedText.trim();
+    if (!trimmedText.length) return;
+    setFrontOfCardValue(trimmedText.toLowerCase());
+    const translatedText = await translateText(trimmedText);
+    const cleanedTranslatedText = translatedText
+      .replace(/['"]+/g, "")
+      .toLowerCase();
+    setBackOfCardValue(cleanedTranslatedText);
+  };
+
   return (
     <Grid.Container
       gap={2}
@@ -113,25 +159,36 @@ export default function TextPage({
           height: `80vh`,
         }}
       >
-        {isInEditMode ? (
+        {!isInEditMode ? (
           <>
             <Container direction="column" wrap="wrap">
-              <Text h3>Edit your text</Text>
-              <StyledButtonGroup>
-                <Button onPress={handleSaveText} size={"sm"}>
-                  Save
-                </Button>
-              </StyledButtonGroup>
-              <Spacer y={1} />
-              <Textarea
-                animated={false}
-                value={textContent}
-                onChange={(event) => setTextContent(event.target.value)}
-                maxRows={50}
-              ></Textarea>
+              <Text h3>Epub test</Text>
+              {textEpubUrl && (
+                <ReactReaderWrapper
+                  url={textEpubUrl}
+                  processTextSelection={processTextSelection}
+                />
+              )}
             </Container>
           </>
         ) : (
+          // <>
+          //   <Container direction="column" wrap="wrap">
+          //     <Text h3>Edit your text</Text>
+          //     <StyledButtonGroup>
+          //       <Button onPress={handleSaveText} size={"sm"}>
+          //         Save
+          //       </Button>
+          //     </StyledButtonGroup>
+          //     <Spacer y={1} />
+          //     <Textarea
+          //       animated={false}
+          //       value={textContent}
+          //       onChange={(event) => setTextContent(event.target.value)}
+          //       maxRows={50}
+          //     ></Textarea>
+          //   </Container>
+          // </>
           <>
             <Container wrap="wrap" css={{ maxWidth: `100%` }}>
               <Text h3>{text?.name}</Text>
