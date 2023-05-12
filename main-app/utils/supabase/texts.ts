@@ -36,3 +36,15 @@ export const getTexts = async (
   const { data } = await supabaseClient.from(textsTable).select();
   return data || [];
 };
+
+export const getTextById = async (
+  supabaseClient: SupabaseClient,
+  textId: string
+): Promise<TextRow | null> => {
+  const { data } = await supabaseClient
+    .from(textsTable)
+    .select()
+    .eq("id", textId)
+    .single();
+  return data;
+};
