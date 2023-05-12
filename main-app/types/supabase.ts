@@ -97,6 +97,7 @@ export interface Database {
         Row: {
           content: string | null
           created_at: string | null
+          epub_file: string | null
           id: string
           last_updated: string | null
           name: string
@@ -105,6 +106,7 @@ export interface Database {
         Insert: {
           content?: string | null
           created_at?: string | null
+          epub_file?: string | null
           id?: string
           last_updated?: string | null
           name?: string
@@ -113,6 +115,7 @@ export interface Database {
         Update: {
           content?: string | null
           created_at?: string | null
+          epub_file?: string | null
           id?: string
           last_updated?: string | null
           name?: string
