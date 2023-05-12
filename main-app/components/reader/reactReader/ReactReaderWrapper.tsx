@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import Epub, { Rendition } from "epubjs";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Rendition } from "epubjs";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactReader } from "react-reader";
 
@@ -11,6 +12,8 @@ export const ReactReaderWrapper = ({
   url: string;
 }) => {
   const renditionRef = useRef<Rendition | null>(null);
+
+  const supabase = useSupabaseClient();
 
   const [previousSelections, setPreviousSelections] = useState<string>();
   const [selections, setSelections] = useState<string>();
@@ -41,13 +44,13 @@ export const ReactReaderWrapper = ({
     };
   }, [setSelections, selections]);
 
-  const fakeUrl =
-    "https://jefhagqiosajljxcnjie.supabase.co/storage/v1/object/public/test-bucket/alice.epub";
+  const fileUrl = supabase.storage.from("test-bucket").getPublicUrl(url)
+    .data.publicUrl;
 
   return (
     <ReactReaderContainer>
       <ReactReader
-        url="https://react-reader.metabits.no/files/alice.epub"
+        url={fileUrl}
         getRendition={(rendition) => {
           renditionRef.current = rendition;
           setSelections("");
