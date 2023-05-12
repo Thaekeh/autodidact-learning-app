@@ -31,7 +31,6 @@ export default function TextPage({
   text: TextRow | null;
   flashcardLists: FlashcardListWithNameOnly[] | null;
 }) {
-  const [isInEditMode, setIsInEditMode] = useState(false);
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
   const [selectedList, setSelectedList] = useState(
@@ -40,23 +39,7 @@ export default function TextPage({
 
   const supabase = useSupabaseClient();
 
-  const user = useUser();
-
-  const [textEpubUrl, setTextEpubUrl] = useState<string | undefined>();
-
-  useEffect(() => {
-    if (!user) return;
-    // const getEpubFileForText = async () => {
-    //   if (!text?.epub_file) return;
-    //   const { data } = await supabase.storage
-    //     .from("text-files")
-    //     .createSignedUrl(`${user.id}/${text.epub_file}`, 60);
-    //   setTextEpubUrl(epub(data?.signedUrl);
-    // };
-    setTextEpubUrl("test");
-    if (!text) return;
-    // getEpubFileForText();
-  }, [text]);
+  const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
 
   const [textContent] = useState(text?.content || "");
 
@@ -102,7 +85,6 @@ export default function TextPage({
 
   const handleSaveText = (newTextContent: string) => {
     if (!text || !newTextContent) return;
-    setIsInEditMode(false);
     saveTextContent(supabase, text.id, newTextContent);
   };
 
