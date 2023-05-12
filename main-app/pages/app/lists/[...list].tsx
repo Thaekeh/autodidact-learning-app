@@ -25,8 +25,8 @@ import {
 } from "utils/supabase/flashcards";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "types";
-import { NewFlashcardModal } from "components/modals/NewFlashcardModal";
-import { EditFlashcardModal } from "components/modals/EditFlashcardModal";
+import { NewFlashcardModal } from "components/modals/flashcards/NewFlashcardModal";
+import { EditFlashcardModal } from "components/modals/flashcards/EditFlashcardModal";
 import { useRouter } from "next/router";
 import { FlashcardsTable } from "components/table/FlashcardsTable";
 import { useConfirm } from "hooks/useConfirm";
