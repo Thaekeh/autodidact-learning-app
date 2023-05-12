@@ -10,6 +10,7 @@ import {
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import React from "react";
+import { Upload } from "react-feather";
 import { getRouteForSingleText } from "utils";
 import { createNewText } from "utils/supabase/texts";
 
@@ -101,7 +102,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button auto onPress={handleNewText}>
+        <Button color={"secondary"} auto onPress={handleNewText}>
           Save Text
         </Button>
       </Modal.Footer>
