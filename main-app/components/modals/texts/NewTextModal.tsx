@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import {
   Button,
   Input,
@@ -81,7 +82,10 @@ export const NewTextModal: React.FC<NameModalProps> = ({
           label="Text name"
         />
 
-        <Switch checked={isEpub} onChange={() => setIsEpub(!isEpub)} />
+        <FlexDiv>
+          <Text>Use epub</Text>
+          <Switch checked={isEpub} onChange={() => setIsEpub(!isEpub)} />
+        </FlexDiv>
         {isEpub && (
           <>
             <input
@@ -104,3 +108,8 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     </Modal>
   );
 };
+
+const FlexDiv = styled.div`
+  display: flex;
+  gap: 10px;
+`;
