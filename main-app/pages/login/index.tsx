@@ -6,7 +6,6 @@ export default function Login() {
   const user = useUser();
   return (
     <div>
-      {user && user.role}
       <LoginForm />
     </div>
   );
