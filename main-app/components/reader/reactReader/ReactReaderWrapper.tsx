@@ -15,7 +15,6 @@ export const ReactReaderWrapper = ({
 
   const supabase = useSupabaseClient();
 
-  const [previousSelections, setPreviousSelections] = useState<string>();
   const [selections, setSelections] = useState<string>();
 
   function setRenderSelection(cfiRange: string) {
@@ -23,13 +22,10 @@ export const ReactReaderWrapper = ({
   }
 
   function handleTextSelection() {
-    const selectedText = selections;
-    if (selectedText == previousSelections) {
-      return;
-    }
-    if (selectedText === "" || typeof selectedText !== "string") return;
-    setPreviousSelections(selectedText);
-    processTextSelection(selectedText);
+    const iframe = document.getElementsByTagName("iframe")[0];
+    const iframeSelection = iframe.contentWindow?.getSelection()?.toString();
+    if (!iframeSelection || !iframeSelection.length) return;
+    processTextSelection(iframeSelection);
   }
 
   useEffect(() => {
