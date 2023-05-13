@@ -20,7 +20,7 @@ export const createNewText = async (
   return data;
 };
 
-export const saveTextContent = async (
+export const setTextContent = async (
   supabaseClient: SupabaseClient,
   textId: string,
   content: string

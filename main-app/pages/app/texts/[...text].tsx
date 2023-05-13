@@ -20,7 +20,7 @@ import {
   getAllFlashcardListsNamesOnly,
 } from "utils";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getTextById, saveTextContent } from "utils/supabase/texts";
+import { getTextById, setTextContent } from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
 import { TextReader } from "components/reader/TextReader";
 import styled from "@emotion/styled";
@@ -103,7 +103,7 @@ export default function TextPage({
 
   const handleSaveText = (newTextContent: string) => {
     if (!text || !newTextContent) return;
-    saveTextContent(supabase, text.id, newTextContent);
+    setTextContent(supabase, text.id, newTextContent);
   };
 
   const handleSaveCard = async () => {
