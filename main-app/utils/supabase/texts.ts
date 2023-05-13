@@ -41,6 +41,28 @@ export const setLastFlashcardList = async (
     .eq("id", textId);
 };
 
+export const setLastSourceLanguage = async (
+  supabaseClient: SupabaseClient,
+  textId: string,
+  sourceLanguage: string
+) => {
+  await supabaseClient
+    .from("texts")
+    .update({ last_source_language: sourceLanguage })
+    .eq("id", textId);
+};
+
+export const setLastTargetLanguage = async (
+  supabaseClient: SupabaseClient,
+  textId: string,
+  targetLanguage: string
+) => {
+  await supabaseClient
+    .from("texts")
+    .update({ last_target_language: targetLanguage })
+    .eq("id", textId);
+};
+
 export const deleteText = async (
   supabaseClient: SupabaseClient,
   textId: string
