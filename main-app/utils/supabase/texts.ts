@@ -5,7 +5,8 @@ import { textsTable } from "./tables";
 export const createNewText = async (
   supabaseClient: SupabaseClient,
   name: string,
-  epubUrl?: string
+  epubUrl?: string,
+  flashcardListId?: string
 ): Promise<TextRow> => {
   const user = await supabaseClient.auth.getSession();
   const { data } = await supabaseClient
@@ -14,6 +15,7 @@ export const createNewText = async (
       name,
       user_id: user.data.session?.user.id,
       epub_file: epubUrl || null,
+      last_flashcard_list: flashcardListId || null,
     })
     .select()
     .single();
@@ -26,6 +28,17 @@ export const setTextContent = async (
   content: string
 ) => {
   await supabaseClient.from("texts").update({ content }).eq("id", textId);
+};
+
+export const setLastFlashcardList = async (
+  supabaseClient: SupabaseClient,
+  textId: string,
+  flashcardListId: string
+) => {
+  await supabaseClient
+    .from("texts")
+    .update({ last_flashcard_list: flashcardListId })
+    .eq("id", textId);
 };
 
 export const deleteText = async (
