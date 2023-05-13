@@ -84,14 +84,6 @@ export default function Dashboard({
     setLists(newLists);
   };
 
-  const onNewTextConfirm = async (name: string) => {
-    const createdDocument = await createNewText(supabaseClient, name);
-    if (createdDocument) {
-      const textUrl = getRouteForSingleText(createdDocument.id);
-      router.push(textUrl);
-    }
-  };
-
   const onNewListConfirm = async (name: string) => {
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
