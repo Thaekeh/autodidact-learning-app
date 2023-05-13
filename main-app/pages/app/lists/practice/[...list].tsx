@@ -1,25 +1,30 @@
 import styled from "@emotion/styled";
-import { Button, Container, Spacer, Text } from "@nextui-org/react";
+import { Button, Container, Spacer, Text, theme } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Flashcard from "components/cards/Flashcard";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { ArrowLeft } from "react-feather";
 import { Database, FlashcardRow } from "types";
 import {
   getFlashcardsThatRequirePracticeByListId,
+  getRouteForFlashcardList,
   updateFlashcardWithSpacedRepetitionData,
 } from "utils";
 import { calculateNewCardRepetitionData } from "utils/mapping/flashcards";
 
 export default function ListPage({
+  listId,
   flashcards,
 }: {
+  listId: string;
   flashcards: FlashcardRow[] | null;
 }) {
   const [flashcardIndex, setFlashcardIndex] = useState<number>(0);
-  const [showBack, setShowBack] = useState<boolean>(false);
+  const router = useRouter();
 
   const supabase = useSupabaseClient();
 
@@ -51,6 +56,18 @@ export default function ListPage({
   return (
     <>
       <Container display="flex" justify="center">
+        <Spacer y={3}></Spacer>
+        <BackButtonContainer>
+          <Button
+            onClick={() => router.push(getRouteForFlashcardList(listId))}
+            light
+            icon={<ArrowLeft />}
+            flat
+            color={"secondary"}
+          >
+            Back
+          </Button>
+        </BackButtonContainer>
         <Spacer y={6}></Spacer>
 
         <Container
@@ -125,15 +142,22 @@ export async function getServerSideProps({
   ).data;
   return {
     props: {
+      listId: listId,
       flashcards: flashcardsThatRequirePractice,
     },
   };
 }
 
 const StyledDiv = styled.div`
-  width: 30rem;
+  max-width: 10rem;
+  /* width: 100%; */
   height: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const BackButtonContainer = styled.div`
+  width: 100%;
+  justify-content: flex-start;
 `;
