@@ -20,7 +20,11 @@ import {
   getAllFlashcardListsNamesOnly,
 } from "utils";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getTextById, setTextContent } from "utils/supabase/texts";
+import {
+  getTextById,
+  setLastFlashcardList,
+  setTextContent,
+} from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
 import { TextReader } from "components/reader/TextReader";
 import styled from "@emotion/styled";
@@ -48,6 +52,12 @@ export default function TextPage({
   };
 
   const [selectedList, setSelectedList] = useState(getDefaultFlashcardList());
+
+  const handleSetSelectedList = (listId: string) => {
+    if (!text?.id) return;
+    setSelectedList(listId);
+    setLastFlashcardList(supabase, text?.id, listId);
+  };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
@@ -258,7 +268,7 @@ export default function TextPage({
                 }
               </Dropdown.Button>
               <Dropdown.Menu
-                onAction={(key) => setSelectedList(key.toString())}
+                onAction={(key) => handleSetSelectedList(key.toString())}
                 selectionMode="single"
               >
                 {flashcardLists.map((flashcardList) => (
