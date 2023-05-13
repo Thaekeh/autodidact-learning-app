@@ -13,7 +13,7 @@ export default async function handler(
   switch (method) {
     case "POST":
       const { word, targetLanguage, sourceLanguage } = req.body;
-      if (!word || !targetLanguage || !sourceLanguage) {
+      if (!word || !targetLanguage) {
         throw new Error("invalid props");
       }
       const translation = await translateWord(
