@@ -6,12 +6,12 @@ import {
   useInput,
   Text,
   Switch,
+  Loading,
 } from "@nextui-org/react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import React from "react";
-import { Upload } from "react-feather";
-import { getRouteForSingleText } from "utils";
+import React, { useState } from "react";
+import { createNewFlashcardList, getRouteForSingleText } from "utils";
 import { createNewText } from "utils/supabase/texts";
 
 interface NameModalProps {
@@ -24,8 +24,13 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   onCancel,
 }) => {
   const { value: textName, bindings: textNameBindings } = useInput("");
-  const [isEpub, setIsEpub] = React.useState(false);
-  const [epubUrl, setEpubUrl] = React.useState("");
+  const [isEpub, setIsEpub] = useState(false);
+  const [epubUrl, setEpubUrl] = useState("");
+  const [epubName, setEpubName] = useState("");
+  const [uploadingEpub, setUploadingEpub] = useState(false);
+  const [addFlashcardList, setAddFlashcardList] = useState(false);
+  const [creatingTextOrFlashcardList, setCreatingTextOrFlashcardList] =
+    useState(false);
 
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
 
@@ -33,14 +38,18 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   const router = useRouter();
 
   const handleNewText = async () => {
-    const createdDocument = await createNewText(
+    setCreatingTextOrFlashcardList(true);
+    const createdText = await createNewText(
       supabaseClient,
       textName,
-      epubUrl
+      isEpub ? epubUrl : undefined
     );
-    if (createdDocument) {
-      const textUrl = getRouteForSingleText(createdDocument.id);
+
+    await createNewFlashcardList(supabaseClient, textName);
+    if (createdText) {
+      const textUrl = getRouteForSingleText(createdText.id);
       router.push(textUrl);
+      setCreatingTextOrFlashcardList(false);
     }
   };
 
@@ -52,11 +61,13 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const i = e.target.files[0];
+      const file = e.target.files[0];
+
+      setEpubName(file.name);
 
       const { data, error } = await supabase.storage
         .from("test-bucket")
-        .upload(i.name, i, {
+        .upload(file.name, file, {
           cacheControl: "3600",
           upsert: false,
           contentType: "application/epub+zip",
@@ -76,34 +87,59 @@ export const NewTextModal: React.FC<NameModalProps> = ({
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Input
-          value={textName}
-          onChange={textNameBindings.onChange}
-          placeholder="Text name"
-          label="Text name"
-        />
+        <StyledDiv>
+          <Input
+            value={textName}
+            onChange={textNameBindings.onChange}
+            placeholder="Text name"
+            label="Text name"
+          />
 
-        <FlexDiv>
-          <Text>Use epub</Text>
-          <Switch checked={isEpub} onChange={() => setIsEpub(!isEpub)} />
-        </FlexDiv>
-        {isEpub && (
-          <>
-            <input
-              type="file"
-              ref={hiddenFileInput}
-              onChange={handleChange}
-              accept="epub/*"
-              style={{ display: "none" }}
-            />
-
-            <Button onClick={handleClick}>Upload Epub</Button>
-          </>
-        )}
+          <div>
+            <Text>Epub</Text>
+            <FlexDiv>
+              <Text size={"$sm"}>Use epub</Text>
+              <Switch checked={isEpub} onChange={() => setIsEpub(!isEpub)} />
+            </FlexDiv>
+          </div>
+          {isEpub && (
+            <>
+              <input
+                type="file"
+                ref={hiddenFileInput}
+                onChange={handleChange}
+                accept="epub/*"
+                style={{ display: "none" }}
+              />
+              {epubName && <Text>Epub: {epubName}</Text>}
+              <Button color={"secondary"} flat onClick={handleClick}>
+                {uploadingEpub ? (
+                  <Loading type="points" color={"secondary"} />
+                ) : (
+                  "Upload Epub"
+                )}{" "}
+              </Button>
+            </>
+          )}
+          <div>
+            <Text>Flashcard</Text>
+            <FlexDiv>
+              <Text size={"$sm"}>Add flashcard list</Text>
+              <Switch
+                checked={addFlashcardList}
+                onChange={() => setAddFlashcardList(!addFlashcardList)}
+              ></Switch>
+            </FlexDiv>
+          </div>
+        </StyledDiv>
       </Modal.Body>
       <Modal.Footer>
         <Button color={"secondary"} auto onPress={handleNewText}>
-          Save Text
+          {creatingTextOrFlashcardList ? (
+            <Loading type="points" color={"secondary"} />
+          ) : (
+            "Create Text"
+          )}
         </Button>
       </Modal.Footer>
     </Modal>
@@ -113,4 +149,11 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 const FlexDiv = styled.div`
   display: flex;
   gap: 10px;
+  justify-content: space-between;
+`;
+
+const StyledDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 `;
