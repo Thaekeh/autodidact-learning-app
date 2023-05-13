@@ -88,7 +88,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     <Modal closeButton open={isOpen} onClose={onCancel}>
       <Modal.Header>
         <Text size={20} weight={"bold"}>
-          Change your flashcard
+          Create new text
         </Text>
       </Modal.Header>
       <Modal.Body>
