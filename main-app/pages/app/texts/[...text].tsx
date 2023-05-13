@@ -149,6 +149,7 @@ export default function TextPage({
     setSelectedTargetLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
+    if (!frontOfCardValue.length) return;
     translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
   };
 
@@ -157,6 +158,8 @@ export default function TextPage({
     setSelectedSourceLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
+    if (!frontOfCardValue.length) return;
+
     translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
   };
 
