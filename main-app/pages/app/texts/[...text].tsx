@@ -8,7 +8,7 @@ import {
   Spacer,
   Loading,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/supabase";
@@ -19,10 +19,15 @@ import {
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
 } from "utils";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getTextById, saveTextContent } from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
 import { TextReader } from "components/reader/TextReader";
+import styled from "@emotion/styled";
+import {
+  SupportedLanguage,
+  getSupportedLanguages,
+} from "utils/translation/getSupportedLanguages";
 
 export default function TextPage({
   text,
@@ -37,6 +42,8 @@ export default function TextPage({
     flashcardLists ? flashcardLists[0].id : undefined
   );
 
+  const [waitingForTranslation, setWaitingForTranslation] = useState(false);
+
   const supabase = useSupabaseClient();
 
   const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
@@ -45,20 +52,31 @@ export default function TextPage({
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
-  const translateText = async (text: string) => {
-    const { translatedWord } = await fetch("/api/translate", {
+  const translateText = async (
+    text: string,
+    sourceLanguageKey: string | undefined,
+    targetLanguageKey: string | undefined
+  ) => {
+    setWaitingForTranslation(true);
+
+    const { translation } = await fetch("/api/translate", {
       method: "POST",
       body: JSON.stringify({
         word: text,
-        sourceLanguage: "en",
-        targetLanguage: "es",
+        sourceLanguage: sourceLanguageKey,
+        targetLanguage: targetLanguageKey,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => res.json());
-    if (translatedWord) {
-      return translatedWord;
+    setWaitingForTranslation(false);
+    if (translation) {
+      const cleanedTranslation = translation
+        .replace(/['"]+/g, "")
+        .toLowerCase();
+
+      setBackOfCardValue(cleanedTranslation);
     }
   };
 
@@ -103,14 +121,43 @@ export default function TextPage({
   };
 
   const processTextSelection = async (selectedText: string) => {
-    const trimmedText = selectedText.trim();
+    const trimmedText = selectedText.trim().toLowerCase();
     if (!trimmedText.length) return;
-    setFrontOfCardValue(trimmedText.toLowerCase());
-    const translatedText = await translateText(trimmedText);
-    const cleanedTranslatedText = translatedText
-      .replace(/['"]+/g, "")
-      .toLowerCase();
-    setBackOfCardValue(cleanedTranslatedText);
+    setFrontOfCardValue(trimmedText);
+
+    translateText(
+      trimmedText,
+      selectedSourceLanguage?.key,
+      selectedTargetLanguage?.key
+    );
+  };
+
+  const [supportedLanguages] = useState<SupportedLanguage[]>(
+    getSupportedLanguages()
+  );
+
+  const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
+    SupportedLanguage | undefined
+  >();
+
+  const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
+    SupportedLanguage | undefined
+  >(supportedLanguages.find((language) => language.key === "es"));
+
+  const handleSelectTargetLanguage = async (key: string) => {
+    if (key === selectedTargetLanguage?.key) return;
+    setSelectedTargetLanguage(
+      supportedLanguages.find((language) => language.key === key)
+    );
+    translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
+  };
+
+  const handleSelectSourceLanguage = (key: string) => {
+    if (key === selectedSourceLanguage?.key) return;
+    setSelectedSourceLanguage(
+      supportedLanguages.find((language) => language.key === key)
+    );
+    translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
   };
 
   return (
@@ -129,7 +176,7 @@ export default function TextPage({
         {!!text?.epub_file ? (
           <>
             <Container direction="column" wrap="wrap">
-              <Text h3>Epub test</Text>
+              <Text h3>{text.name}</Text>
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
@@ -147,7 +194,49 @@ export default function TextPage({
         )}
       </Grid>
       <Grid xs={3} direction="column">
-        <Text h3>Add card to list</Text>
+        <Text h3>Translation</Text>
+        <FlexContainer>
+          <div>
+            <Text h6>From</Text>
+            <Dropdown>
+              <Dropdown.Button size={"xs"} flat>
+                {selectedSourceLanguage
+                  ? selectedSourceLanguage.nativeName
+                  : "Detect Language"}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                onAction={(key) => handleSelectSourceLanguage(key.toString())}
+                selectionMode="single"
+              >
+                {supportedLanguages.map((language) => (
+                  <Dropdown.Item key={language.key}>
+                    {language.nativeName}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          <div>
+            <Text h6>To</Text>
+            <Dropdown>
+              <Dropdown.Button size={"xs"} flat>
+                {selectedTargetLanguage
+                  ? selectedTargetLanguage.nativeName
+                  : "Not selected"}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                onAction={(key) => handleSelectTargetLanguage(key.toString())}
+                selectionMode="single"
+              >
+                {supportedLanguages.map((language) => (
+                  <Dropdown.Item key={language.key}>
+                    {language.nativeName}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </FlexContainer>
         {flashcardLists && (
           <div>
             <Dropdown>
@@ -177,7 +266,7 @@ export default function TextPage({
               label="Front of card"
               name="front"
               required={true}
-              value={frontOfCardValue || ""}
+              value={frontOfCardValue}
               onChange={(e) => setFrontOfCardValue(e.target.value)}
               fullWidth
             ></Input>
@@ -185,9 +274,10 @@ export default function TextPage({
               label="Back of card"
               name="back"
               required={true}
-              value={backOfCardValue || ""}
+              value={backOfCardValue}
               onChange={(e) => setBackOfCardValue(e.target.value)}
               fullWidth
+              contentRight={waitingForTranslation && <Loading size="xs" />}
             ></Input>
             <Spacer y={1} />
             <Button
@@ -230,3 +320,10 @@ export async function getServerSideProps({
 
   return { props: { text: text, flashcardLists } };
 }
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+`;

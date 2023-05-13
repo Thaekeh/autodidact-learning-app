@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { translateWord } from "utils/azure/translation/translation";
 
 type Data = {
-  translatedWord: string;
+  translation: string;
 };
 
 export default async function handler(
@@ -13,7 +13,7 @@ export default async function handler(
   switch (method) {
     case "POST":
       const { word, targetLanguage, sourceLanguage } = req.body;
-      if (!word || !targetLanguage || !sourceLanguage) {
+      if (!word || !targetLanguage) {
         throw new Error("invalid props");
       }
       const translation = await translateWord(
@@ -21,6 +21,6 @@ export default async function handler(
         sourceLanguage,
         targetLanguage
       );
-      res.status(200).send({ translatedWord: translation });
+      res.status(200).send({ translation });
   }
 }
