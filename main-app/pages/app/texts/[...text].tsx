@@ -18,11 +18,14 @@ import {
   createNewFlashcard,
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
+  getRouteForFlashcardList,
 } from "utils";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   getTextById,
   setLastFlashcardList,
+  setLastSourceLanguage,
+  setLastTargetLanguage,
   setTextContent,
 } from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
@@ -32,6 +35,9 @@ import {
   SupportedLanguage,
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
+import { IconButton } from "components/buttons/IconButton";
+import { ArrowUpRight } from "react-feather";
+import router from "next/router";
 
 export default function TextPage({
   text,
@@ -40,13 +46,17 @@ export default function TextPage({
   text: TextRow | null;
   flashcardLists: FlashcardListWithNameOnly[] | null;
 }) {
+  if (!text) {
+    return <Loading />;
+  }
+
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
 
   const getDefaultFlashcardList = () => {
     if (!flashcardLists) return;
     const defaultFlashcardList = flashcardLists.find(
-      (flashcardList) => text?.last_flashcard_list === flashcardList.id
+      (flashcardList) => text.last_flashcard_list === flashcardList.id
     );
     return defaultFlashcardList?.id || flashcardLists[0].id;
   };
@@ -54,18 +64,18 @@ export default function TextPage({
   const [selectedList, setSelectedList] = useState(getDefaultFlashcardList());
 
   const handleSetSelectedList = (listId: string) => {
-    if (!text?.id) return;
+    if (!text.id) return;
     setSelectedList(listId);
-    setLastFlashcardList(supabase, text?.id, listId);
+    setLastFlashcardList(supabase, text.id, listId);
   };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
   const supabase = useSupabaseClient();
 
-  const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
+  const [textEpubUrl] = useState<string | null | undefined>(text.epub_file);
 
-  const [textContent] = useState(text?.content || "");
+  const [textContent] = useState(text.content || "");
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
@@ -153,19 +163,28 @@ export default function TextPage({
     getSupportedLanguages()
   );
 
+  const getSupportedLanguageByKey = (key: string) => {
+    return supportedLanguages.find((language) => language.key === key);
+  };
+
   const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
     SupportedLanguage | undefined
-  >();
+  >(
+    text.last_source_language
+      ? getSupportedLanguageByKey(text.last_source_language)
+      : undefined
+  );
 
   const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
     SupportedLanguage | undefined
-  >(supportedLanguages.find((language) => language.key === "es"));
+  >(getSupportedLanguageByKey(text.last_target_language || "en"));
 
   const handleSelectTargetLanguage = async (key: string) => {
     if (key === selectedTargetLanguage?.key) return;
     setSelectedTargetLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
+    setLastTargetLanguage(supabase, text.id, key);
     if (!frontOfCardValue.length) return;
     translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
   };
@@ -175,6 +194,7 @@ export default function TextPage({
     setSelectedSourceLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
+    setLastSourceLanguage(supabase, text.id, key);
     if (!frontOfCardValue.length) return;
 
     translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
@@ -193,7 +213,7 @@ export default function TextPage({
           height: `80vh`,
         }}
       >
-        {!!text?.epub_file ? (
+        {!!text.epub_file ? (
           <>
             <Container direction="column" wrap="wrap">
               <Text h3>{text.name}</Text>
@@ -258,7 +278,7 @@ export default function TextPage({
           </div>
         </FlexContainer>
         {flashcardLists && (
-          <div>
+          <FlexRowDiv>
             <Dropdown>
               <Dropdown.Button flat>
                 {
@@ -278,7 +298,17 @@ export default function TextPage({
                 ))}
               </Dropdown.Menu>
             </Dropdown>
-          </div>
+            {selectedList && (
+              <IconButton
+                color="secondary"
+                onClick={() =>
+                  router.push(getRouteForFlashcardList(selectedList))
+                }
+              >
+                <ArrowUpRight />
+              </IconButton>
+            )}
+          </FlexRowDiv>
         )}
         <div style={{ maxWidth: "300px" }}>
           <form action="">
@@ -346,4 +376,10 @@ const FlexContainer = styled.div`
   flex-direction: row;
   gap: 10px;
   margin-bottom: 20px;
+`;
+
+const FlexRowDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 `;
