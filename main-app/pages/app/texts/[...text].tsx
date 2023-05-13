@@ -114,11 +114,8 @@ export default function TextPage({
     const trimmedText = selectedText.trim();
     if (!trimmedText.length) return;
     setFrontOfCardValue(trimmedText.toLowerCase());
-    const translatedText = await translateText(trimmedText);
-    const cleanedTranslatedText = translatedText
-      .replace(/['"]+/g, "")
-      .toLowerCase();
-    setBackOfCardValue(cleanedTranslatedText);
+
+    cleanUpAndCallTranslateText(frontOfCardValue);
   };
 
   const [supportedLanguages] = useState<SupportedLanguage[]>(
@@ -132,6 +129,31 @@ export default function TextPage({
   const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
     SupportedLanguage | undefined
   >(supportedLanguages.find((language) => language.key === "es"));
+
+  const cleanUpAndCallTranslateText = async (text: string) => {
+    const cleanedText = text.replace(/['"]+/g, "");
+    const translatedText = await translateText(cleanedText);
+    const cleanedTranslatedText = translatedText
+      .replace(/['"]+/g, "")
+      .toLowerCase();
+    setBackOfCardValue(cleanedTranslatedText);
+  };
+
+  const handleSelectTargetLanguage = (key: string) => {
+    if (key === selectedTargetLanguage?.key) return;
+    setSelectedTargetLanguage(
+      supportedLanguages.find((language) => language.key === key)
+    );
+    cleanUpAndCallTranslateText(frontOfCardValue);
+  };
+
+  const handleSelectSourceLanguage = (key: string) => {
+    if (key === selectedSourceLanguage?.key) return;
+    setSelectedSourceLanguage(
+      supportedLanguages.find((language) => language.key === key)
+    );
+    cleanUpAndCallTranslateText(frontOfCardValue);
+  };
 
   return (
     <Grid.Container
@@ -178,13 +200,7 @@ export default function TextPage({
                   : "Detect Language"}
               </Dropdown.Button>
               <Dropdown.Menu
-                onAction={(key) =>
-                  setSelectedSourceLanguage(
-                    supportedLanguages.find(
-                      (language) => language.key === key.toString()
-                    )
-                  )
-                }
+                onAction={(key) => handleSelectSourceLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
@@ -204,13 +220,7 @@ export default function TextPage({
                   : "Not selected"}
               </Dropdown.Button>
               <Dropdown.Menu
-                onAction={(key) =>
-                  setSelectedTargetLanguage(
-                    supportedLanguages.find(
-                      (language) => language.key === key.toString()
-                    )
-                  )
-                }
+                onAction={(key) => handleSelectTargetLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
