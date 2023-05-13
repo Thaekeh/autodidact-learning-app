@@ -42,6 +42,8 @@ export default function TextPage({
     flashcardLists ? flashcardLists[0].id : undefined
   );
 
+  const [waitingForTranslation, setWaitingForTranslation] = useState(false);
+
   const supabase = useSupabaseClient();
 
   const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
@@ -52,19 +54,20 @@ export default function TextPage({
 
   const translateText = async (text: string) => {
     if (!selectedTargetLanguage) return;
+    setWaitingForTranslation(true);
+
     const { translatedWord } = await fetch("/api/translate", {
       method: "POST",
       body: JSON.stringify({
         word: text,
-        sourceLanguage: selectedSourceLanguage
-          ? selectedSourceLanguage.key
-          : undefined,
+        sourceLanguage: selectedSourceLanguage?.key,
         targetLanguage: selectedTargetLanguage.key,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => res.json());
+    setWaitingForTranslation(false);
     if (translatedWord) {
       return translatedWord;
     }
@@ -111,11 +114,11 @@ export default function TextPage({
   };
 
   const processTextSelection = async (selectedText: string) => {
-    const trimmedText = selectedText.trim();
+    const trimmedText = selectedText.trim().toLowerCase();
     if (!trimmedText.length) return;
     setFrontOfCardValue(trimmedText.toLowerCase());
 
-    cleanUpAndCallTranslateText(frontOfCardValue);
+    cleanUpAndCallTranslateText(trimmedText);
   };
 
   const [supportedLanguages] = useState<SupportedLanguage[]>(
@@ -131,7 +134,8 @@ export default function TextPage({
   >(supportedLanguages.find((language) => language.key === "es"));
 
   const cleanUpAndCallTranslateText = async (text: string) => {
-    const cleanedText = text.replace(/['"]+/g, "");
+    const cleanedText = text.trim();
+    if (!cleanedText.length) return;
     const translatedText = await translateText(cleanedText);
     const cleanedTranslatedText = translatedText
       .replace(/['"]+/g, "")
@@ -171,7 +175,7 @@ export default function TextPage({
         {!!text?.epub_file ? (
           <>
             <Container direction="column" wrap="wrap">
-              <Text h3>Epub test</Text>
+              <Text h3>{text.name}</Text>
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
@@ -196,7 +200,7 @@ export default function TextPage({
             <Dropdown>
               <Dropdown.Button size={"xs"} flat>
                 {selectedSourceLanguage
-                  ? selectedSourceLanguage.name
+                  ? selectedSourceLanguage.nativeName
                   : "Detect Language"}
               </Dropdown.Button>
               <Dropdown.Menu
@@ -205,7 +209,7 @@ export default function TextPage({
               >
                 {supportedLanguages.map((language) => (
                   <Dropdown.Item key={language.key}>
-                    {language.name}
+                    {language.nativeName}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
@@ -216,7 +220,7 @@ export default function TextPage({
             <Dropdown>
               <Dropdown.Button size={"xs"} flat>
                 {selectedTargetLanguage
-                  ? selectedTargetLanguage.name
+                  ? selectedTargetLanguage.nativeName
                   : "Not selected"}
               </Dropdown.Button>
               <Dropdown.Menu
@@ -272,6 +276,7 @@ export default function TextPage({
               value={backOfCardValue || ""}
               onChange={(e) => setBackOfCardValue(e.target.value)}
               fullWidth
+              contentRight={waitingForTranslation && <Loading size="xs" />}
             ></Input>
             <Spacer y={1} />
             <Button
