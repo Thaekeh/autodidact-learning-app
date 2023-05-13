@@ -38,9 +38,16 @@ export default function TextPage({
 }) {
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
-  const [selectedList, setSelectedList] = useState(
-    flashcardLists ? flashcardLists[0].id : undefined
-  );
+
+  const getDefaultFlashcardList = () => {
+    if (!flashcardLists) return;
+    const defaultFlashcardList = flashcardLists.find(
+      (flashcardList) => text?.last_flashcard_list === flashcardList.id
+    );
+    return defaultFlashcardList?.id || flashcardLists[0].id;
+  };
+
+  const [selectedList, setSelectedList] = useState(getDefaultFlashcardList());
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
