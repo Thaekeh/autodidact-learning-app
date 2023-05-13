@@ -1,4 +1,4 @@
-import { Button, Container, Spacer, Text } from "@nextui-org/react";
+import { Button, Container, Spacer, Text, useModal } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -8,7 +8,13 @@ import { Plus } from "react-feather";
 import { FullTable } from "components/table/FullTable";
 import { useConfirm } from "hooks/useConfirm";
 import { Database, FlashcardListRow } from "types";
-import { deleteList, getListsForUser, getRouteForFlashcardList } from "utils";
+import {
+  createNewFlashcardList,
+  deleteList,
+  getListsForUser,
+  getRouteForFlashcardList,
+} from "utils";
+import { NameModal } from "components/modals/NameModal";
 
 export default function Lists({
   lists: listsProp,
@@ -18,6 +24,9 @@ export default function Lists({
   const [lists, setLists] = useState(listsProp);
   const router = useRouter();
   const { isConfirmed } = useConfirm();
+
+  const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
+    useModal(false);
 
   const supabaseClient = useSupabaseClient();
 
@@ -30,8 +39,27 @@ export default function Lists({
     }
   };
 
+  const refetchLists = async () => {
+    const newLists = await getListsForUser(supabaseClient);
+    setLists(newLists);
+  };
+
+  const onNewListConfirm = async (name: string) => {
+    const createdDocument = await createNewFlashcardList(supabaseClient, name);
+    if (createdDocument) {
+      setListModalIsVisible(false);
+      refetchLists();
+    }
+  };
+
   return (
     <>
+      <NameModal
+        title={"Insert name of list"}
+        isOpen={listModalIsVisible}
+        onCancel={() => setListModalIsVisible(false)}
+        onConfirm={onNewListConfirm}
+      />
       <Container>
         <Spacer y={2}></Spacer>
         <Container
@@ -41,7 +69,11 @@ export default function Lists({
           alignContent="center"
         >
           <Text h3>Your lists</Text>
-          <Button size={"md"} icon={<Plus size={16} />}>
+          <Button
+            onClick={() => setListModalIsVisible(true)}
+            size={"md"}
+            icon={<Plus size={16} />}
+          >
             Create New
           </Button>
         </Container>
