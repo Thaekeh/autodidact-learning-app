@@ -8,7 +8,7 @@ import {
   Spacer,
   Loading,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/supabase";
@@ -19,10 +19,15 @@ import {
   FlashcardListWithNameOnly,
   getAllFlashcardListsNamesOnly,
 } from "utils";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { getTextById, saveTextContent } from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
 import { TextReader } from "components/reader/TextReader";
+import styled from "@emotion/styled";
+import {
+  SupportedLanguage,
+  getSupportedLanguages,
+} from "utils/translation/getSupportedLanguages";
 
 export default function TextPage({
   text,
@@ -46,12 +51,15 @@ export default function TextPage({
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
   const translateText = async (text: string) => {
+    if (!selectedTargetLanguage) return;
     const { translatedWord } = await fetch("/api/translate", {
       method: "POST",
       body: JSON.stringify({
         word: text,
-        sourceLanguage: "en",
-        targetLanguage: "es",
+        sourceLanguage: selectedSourceLanguage
+          ? selectedSourceLanguage.key
+          : undefined,
+        targetLanguage: selectedTargetLanguage.key,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -113,6 +121,18 @@ export default function TextPage({
     setBackOfCardValue(cleanedTranslatedText);
   };
 
+  const [supportedLanguages] = useState<SupportedLanguage[]>(
+    getSupportedLanguages()
+  );
+
+  const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
+    SupportedLanguage | undefined
+  >();
+
+  const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
+    SupportedLanguage | undefined
+  >(supportedLanguages.find((language) => language.key === "es"));
+
   return (
     <Grid.Container
       gap={2}
@@ -147,7 +167,61 @@ export default function TextPage({
         )}
       </Grid>
       <Grid xs={3} direction="column">
-        <Text h3>Add card to list</Text>
+        <Text h3>Translation</Text>
+        <FlexContainer>
+          <div>
+            <Text h6>From</Text>
+            <Dropdown>
+              <Dropdown.Button size={"xs"} flat>
+                {selectedSourceLanguage
+                  ? selectedSourceLanguage.name
+                  : "Detect Language"}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                onAction={(key) =>
+                  setSelectedSourceLanguage(
+                    supportedLanguages.find(
+                      (language) => language.key === key.toString()
+                    )
+                  )
+                }
+                selectionMode="single"
+              >
+                {supportedLanguages.map((language) => (
+                  <Dropdown.Item key={language.key}>
+                    {language.name}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          <div>
+            <Text h6>To</Text>
+            <Dropdown>
+              <Dropdown.Button size={"xs"} flat>
+                {selectedTargetLanguage
+                  ? selectedTargetLanguage.name
+                  : "Not selected"}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                onAction={(key) =>
+                  setSelectedTargetLanguage(
+                    supportedLanguages.find(
+                      (language) => language.key === key.toString()
+                    )
+                  )
+                }
+                selectionMode="single"
+              >
+                {supportedLanguages.map((language) => (
+                  <Dropdown.Item key={language.key}>
+                    {language.nativeName}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </FlexContainer>
         {flashcardLists && (
           <div>
             <Dropdown>
@@ -230,3 +304,10 @@ export async function getServerSideProps({
 
   return { props: { text: text, flashcardLists } };
 }
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
