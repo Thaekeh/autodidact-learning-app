@@ -52,24 +52,31 @@ export default function TextPage({
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
-  const translateText = async (text: string) => {
-    if (!selectedTargetLanguage) return;
+  const translateText = async (
+    text: string,
+    sourceLanguageKey: string | undefined,
+    targetLanguageKey: string | undefined
+  ) => {
     setWaitingForTranslation(true);
 
-    const { translatedWord } = await fetch("/api/translate", {
+    const { translation } = await fetch("/api/translate", {
       method: "POST",
       body: JSON.stringify({
         word: text,
-        sourceLanguage: selectedSourceLanguage?.key,
-        targetLanguage: selectedTargetLanguage.key,
+        sourceLanguage: sourceLanguageKey,
+        targetLanguage: targetLanguageKey,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     }).then((res) => res.json());
     setWaitingForTranslation(false);
-    if (translatedWord) {
-      return translatedWord;
+    if (translation) {
+      const cleanedTranslation = translation
+        .replace(/['"]+/g, "")
+        .toLowerCase();
+
+      setBackOfCardValue(cleanedTranslation);
     }
   };
 
@@ -116,9 +123,13 @@ export default function TextPage({
   const processTextSelection = async (selectedText: string) => {
     const trimmedText = selectedText.trim().toLowerCase();
     if (!trimmedText.length) return;
-    setFrontOfCardValue(trimmedText.toLowerCase());
+    setFrontOfCardValue(trimmedText);
 
-    cleanUpAndCallTranslateText(trimmedText);
+    translateText(
+      trimmedText,
+      selectedSourceLanguage?.key,
+      selectedTargetLanguage?.key
+    );
   };
 
   const [supportedLanguages] = useState<SupportedLanguage[]>(
@@ -133,22 +144,12 @@ export default function TextPage({
     SupportedLanguage | undefined
   >(supportedLanguages.find((language) => language.key === "es"));
 
-  const cleanUpAndCallTranslateText = async (text: string) => {
-    const cleanedText = text.trim();
-    if (!cleanedText.length) return;
-    const translatedText = await translateText(cleanedText);
-    const cleanedTranslatedText = translatedText
-      .replace(/['"]+/g, "")
-      .toLowerCase();
-    setBackOfCardValue(cleanedTranslatedText);
-  };
-
-  const handleSelectTargetLanguage = (key: string) => {
+  const handleSelectTargetLanguage = async (key: string) => {
     if (key === selectedTargetLanguage?.key) return;
     setSelectedTargetLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
-    cleanUpAndCallTranslateText(frontOfCardValue);
+    translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
   };
 
   const handleSelectSourceLanguage = (key: string) => {
@@ -156,7 +157,7 @@ export default function TextPage({
     setSelectedSourceLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
-    cleanUpAndCallTranslateText(frontOfCardValue);
+    translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
   };
 
   return (
@@ -265,7 +266,7 @@ export default function TextPage({
               label="Front of card"
               name="front"
               required={true}
-              value={frontOfCardValue || ""}
+              value={frontOfCardValue}
               onChange={(e) => setFrontOfCardValue(e.target.value)}
               fullWidth
             ></Input>
@@ -273,7 +274,7 @@ export default function TextPage({
               label="Back of card"
               name="back"
               required={true}
-              value={backOfCardValue || ""}
+              value={backOfCardValue}
               onChange={(e) => setBackOfCardValue(e.target.value)}
               fullWidth
               contentRight={waitingForTranslation && <Loading size="xs" />}
