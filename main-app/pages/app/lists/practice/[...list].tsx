@@ -150,7 +150,6 @@ export async function getServerSideProps({
 
 const StyledDiv = styled.div`
   max-width: 10rem;
-  /* width: 100%; */
   height: 10rem;
   display: flex;
   justify-content: center;
