@@ -40,7 +40,7 @@ export default function ListPage({
       interval: selectedFlashcard.interval,
     });
 
-    const response = updateFlashcardWithSpacedRepetitionData(supabase, {
+    updateFlashcardWithSpacedRepetitionData(supabase, {
       ease_factor: newCardData.easeFactor,
       id: selectedFlashcard.id,
       interval: newCardData.interval,
