@@ -20,7 +20,11 @@ import {
   getAllFlashcardListsNamesOnly,
 } from "utils";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { getTextById, saveTextContent } from "utils/supabase/texts";
+import {
+  getTextById,
+  setLastFlashcardList,
+  setTextContent,
+} from "utils/supabase/texts";
 import { ReactReaderWrapper } from "components/reader/reactReader/ReactReaderWrapper";
 import { TextReader } from "components/reader/TextReader";
 import styled from "@emotion/styled";
@@ -38,9 +42,22 @@ export default function TextPage({
 }) {
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
-  const [selectedList, setSelectedList] = useState(
-    flashcardLists ? flashcardLists[0].id : undefined
-  );
+
+  const getDefaultFlashcardList = () => {
+    if (!flashcardLists) return;
+    const defaultFlashcardList = flashcardLists.find(
+      (flashcardList) => text?.last_flashcard_list === flashcardList.id
+    );
+    return defaultFlashcardList?.id || flashcardLists[0].id;
+  };
+
+  const [selectedList, setSelectedList] = useState(getDefaultFlashcardList());
+
+  const handleSetSelectedList = (listId: string) => {
+    if (!text?.id) return;
+    setSelectedList(listId);
+    setLastFlashcardList(supabase, text?.id, listId);
+  };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
@@ -103,7 +120,7 @@ export default function TextPage({
 
   const handleSaveText = (newTextContent: string) => {
     if (!text || !newTextContent) return;
-    saveTextContent(supabase, text.id, newTextContent);
+    setTextContent(supabase, text.id, newTextContent);
   };
 
   const handleSaveCard = async () => {
@@ -251,7 +268,7 @@ export default function TextPage({
                 }
               </Dropdown.Button>
               <Dropdown.Menu
-                onAction={(key) => setSelectedList(key.toString())}
+                onAction={(key) => handleSetSelectedList(key.toString())}
                 selectionMode="single"
               >
                 {flashcardLists.map((flashcardList) => (

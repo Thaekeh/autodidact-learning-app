@@ -39,13 +39,18 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
   const handleNewText = async () => {
     setCreatingTextOrFlashcardList(true);
+    const flashcardList = await createNewFlashcardList(
+      supabaseClient,
+      textName
+    );
+    const flashcardListId = flashcardList?.id;
     const createdText = await createNewText(
       supabaseClient,
       textName,
-      isEpub ? epubUrl : undefined
+      isEpub ? epubUrl : undefined,
+      flashcardListId
     );
 
-    await createNewFlashcardList(supabaseClient, textName);
     if (createdText) {
       const textUrl = getRouteForSingleText(createdText.id);
       router.push(textUrl);
