@@ -3,6 +3,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Rendition } from "epubjs";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactReader } from "react-reader";
+import { snapSelectionToWord } from "./selectWholeWord";
 
 export const ReactReaderWrapper = ({
   processTextSelection,
@@ -23,6 +24,9 @@ export const ReactReaderWrapper = ({
 
   function handleTextSelection() {
     const iframe = document.getElementsByTagName("iframe")[0];
+
+    snapSelectionToWord(iframe);
+
     const iframeSelection = iframe.contentWindow?.getSelection()?.toString();
     if (!iframeSelection || !iframeSelection.length) return;
     processTextSelection(iframeSelection);
