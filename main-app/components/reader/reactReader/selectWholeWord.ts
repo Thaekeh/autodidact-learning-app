@@ -5,46 +5,67 @@ export function snapSelectionToWord(iframe: HTMLIFrameElement) {
 
   if (!window || !document) return;
 
-  // Check for existence of window.getSelection() and that it has a
-  // modify() method. IE 9 has both selection APIs but no modify() method.
   if (window.getSelection) {
     sel = window.getSelection();
+    if (!sel || !sel.anchorNode || !sel.focusNode) return;
     if (!sel?.isCollapsed) {
       // Detect if selection is backwards
       var range = document.createRange();
+
       range.setStart(sel.anchorNode, sel.anchorOffset);
       range.setEnd(sel.focusNode, sel.focusOffset);
       var backwards = range.collapsed;
-      range.detach();
-
-      // modify() works on the focus of the selection
-      var endNode = sel.focusNode,
-        endOffset = sel.focusOffset;
-      sel.collapse(sel.anchorNode, sel.anchorOffset);
 
       var direction = [];
+
       if (backwards) {
         direction = ["backward", "forward"];
       } else {
         direction = ["forward", "backward"];
       }
 
-      sel.modify("move", direction[0], "character");
-      sel.modify("move", direction[1], "word");
-      sel.extend(endNode, endOffset);
-      sel.modify("extend", direction[1], "character");
-      sel.modify("extend", direction[0], "word");
-    }
-  } else if ((sel = document.selection) && sel.type != "Control") {
-    var textRange = sel.createRange();
-    if (textRange.text) {
-      textRange.expand("word");
-      // Move the end back to not include the word's trailing space(s),
-      // if necessary
-      while (/\s$/.test(textRange.text)) {
-        textRange.moveEnd("character", -1);
+      const text = sel.toString();
+
+      const lengthOfTrailingSpaces =
+        sel.toString().length - sel.toString().trimEnd().length;
+
+      const lengthOfStartingSpaces =
+        sel.toString().length - sel.toString().trimStart().length;
+
+      if (lengthOfTrailingSpaces > 0) {
+        const newRange = new Range();
+        newRange.setStart(range.startContainer, range.startOffset);
+        newRange.setEnd(
+          range.endContainer,
+          range.endOffset - lengthOfTrailingSpaces
+        );
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+
+        sel.modify("move", direction[1], "word");
+        sel.modify("extend", direction[0], "word");
+      } else if (lengthOfStartingSpaces > 0) {
+        const newRange = new Range();
+        newRange.setStart(
+          range.startContainer,
+          range.startOffset + lengthOfStartingSpaces
+        );
+        newRange.setEnd(range.endContainer, range.endOffset);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+        sel.modify("move", direction[0], "word");
+        sel.modify("extend", direction[1], "word");
+      } else {
+        const wordCount = sel.toString().split(" ").length;
+        for (let i = 0; i < wordCount; i++) {
+          sel.modify("move", direction[1], "word");
+        }
+        for (let i = 0; i < wordCount; i++) {
+          sel.modify("extend", direction[0], "word");
+        }
       }
-      textRange.select();
+
+      console.log(sel.toString());
     }
   }
 }
