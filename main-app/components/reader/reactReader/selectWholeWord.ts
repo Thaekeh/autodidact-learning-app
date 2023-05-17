@@ -24,8 +24,6 @@ export function snapSelectionToWord(iframe: HTMLIFrameElement) {
         direction = ["forward", "backward"];
       }
 
-      const text = sel.toString();
-
       const lengthOfTrailingSpaces =
         sel.toString().length - sel.toString().trimEnd().length;
 
