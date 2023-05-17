@@ -29,7 +29,9 @@ export const ReactReaderWrapper = ({
 
     const iframeSelection = iframe.contentWindow?.getSelection()?.toString();
     if (!iframeSelection || !iframeSelection.length) return;
-    processTextSelection(iframeSelection);
+    const regex = new RegExp(/\s$|,|\./);
+    const trimmedSelection = iframeSelection.replace(regex, "");
+    processTextSelection(trimmedSelection);
   }
 
   useEffect(() => {
