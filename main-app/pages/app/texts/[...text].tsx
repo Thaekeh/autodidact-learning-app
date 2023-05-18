@@ -23,6 +23,7 @@ import {
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   getTextById,
+  setLastEpubLocation,
   setLastFlashcardList,
   setLastSourceLanguage,
   setLastTargetLanguage,
@@ -200,6 +201,11 @@ export default function TextPage({
     translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
   };
 
+  const setLastLocation = async (location: string) => {
+    if (!text.id) return;
+    setLastEpubLocation(supabase, text.id, location);
+  };
+
   return (
     <Grid.Container
       gap={2}
@@ -220,6 +226,8 @@ export default function TextPage({
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
+                  lastLocation={text.last_epub_location}
+                  setLastLocation={setLastLocation}
                   processTextSelection={processTextSelection}
                 />
               )}
