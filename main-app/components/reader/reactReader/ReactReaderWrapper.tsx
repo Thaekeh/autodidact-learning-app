@@ -7,9 +7,13 @@ import { snapSelectionToWord } from "./selectWholeWord";
 
 export const ReactReaderWrapper = ({
   processTextSelection,
+  lastLocation,
+  setLastLocation,
   url,
 }: {
   processTextSelection: (selectedText: string) => void;
+  lastLocation: string | null;
+  setLastLocation: (epubcifi: string) => void;
   url: string;
 }) => {
   const renditionRef = useRef<Rendition | null>(null);
@@ -56,6 +60,10 @@ export const ReactReaderWrapper = ({
         getRendition={(rendition) => {
           renditionRef.current = rendition;
           setSelections("");
+        }}
+        location={lastLocation || undefined}
+        locationChanged={(epubcifi) => {
+          setLastLocation(epubcifi.toString());
         }}
       />
     </ReactReaderContainer>
