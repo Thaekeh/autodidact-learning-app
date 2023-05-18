@@ -99,6 +99,7 @@ export interface Database {
           created_at: string | null
           epub_file: string | null
           id: string
+          last_epub_location: string | null
           last_flashcard_list: string | null
           last_source_language: string | null
           last_target_language: string | null
@@ -111,6 +112,7 @@ export interface Database {
           created_at?: string | null
           epub_file?: string | null
           id?: string
+          last_epub_location?: string | null
           last_flashcard_list?: string | null
           last_source_language?: string | null
           last_target_language?: string | null
@@ -123,6 +125,7 @@ export interface Database {
           created_at?: string | null
           epub_file?: string | null
           id?: string
+          last_epub_location?: string | null
           last_flashcard_list?: string | null
           last_source_language?: string | null
           last_target_language?: string | null
