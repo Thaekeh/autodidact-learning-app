@@ -82,6 +82,17 @@ export const setLastTargetLanguage = async (
     .eq("id", textId);
 };
 
+export const deleteTextAndAttachedFiles = async (
+  supabaseClient: SupabaseClient,
+  textId: string
+) => {
+  const text = await getTextById(supabaseClient, textId);
+  if (text?.epub_file) {
+    await supabaseClient.storage.from("test-bucket").remove([text.epub_file]);
+  }
+  await supabaseClient.from(textsTable).delete().eq("id", textId);
+};
+
 export const deleteText = async (
   supabaseClient: SupabaseClient,
   textId: string
