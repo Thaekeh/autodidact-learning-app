@@ -26,6 +26,17 @@ export const createNewFlashcardList = async (
   return data;
 };
 
+export const setListName = async (
+  supabaseClient: SupabaseClient,
+  listId: string,
+  name: string
+) => {
+  await supabaseClient
+    .from(flashcardListsTable)
+    .update({ name })
+    .eq("id", listId);
+};
+
 export const getListById = async (
   supabase: SupabaseClient,
   listId: string
