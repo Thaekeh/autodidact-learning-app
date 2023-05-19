@@ -8,7 +8,7 @@ import {
   Switch,
   Loading,
 } from "@nextui-org/react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { createNewFlashcardList, getRouteForSingleText } from "utils";
@@ -37,13 +37,18 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   const supabaseClient = useSupabaseClient();
   const router = useRouter();
 
+  const user = useUser();
+
   const handleNewText = async () => {
+    let flashcardListId: string | undefined;
     setCreatingTextOrFlashcardList(true);
-    const flashcardList = await createNewFlashcardList(
-      supabaseClient,
-      textName
-    );
-    const flashcardListId = flashcardList?.id;
+    if (addFlashcardList) {
+      const flashcardList = await createNewFlashcardList(
+        supabaseClient,
+        textName
+      );
+      flashcardListId = flashcardList?.id;
+    }
     const createdText = await createNewText(
       supabaseClient,
       textName,
@@ -70,17 +75,23 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
       setEpubName(file.name);
 
-      const { data, error } = await supabase.storage
-        .from("test-bucket")
-        .upload(file.name, file, {
+      if (!user) {
+        return;
+      }
+
+      setUploadingEpub(true);
+
+      await supabase.storage
+        .from("text-files")
+        .upload(`${user.id}/${file.name}`, file, {
           cacheControl: "3600",
           upsert: false,
           contentType: "application/epub+zip",
         });
 
-      console.log("results", data, error);
+      setUploadingEpub(false);
 
-      data?.path && setEpubUrl(data.path);
+      setEpubUrl(file.name);
     }
   };
 
