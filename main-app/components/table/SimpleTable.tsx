@@ -1,5 +1,5 @@
 import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
-import { Edit, Trash2 } from "react-feather";
+import { BookOpen, Edit, Trash2 } from "react-feather";
 import { IconButton } from "components/buttons/IconButton";
 
 interface Props {
@@ -9,15 +9,17 @@ interface Props {
   }[];
   openCallBack: (id: string) => void;
   deleteCallback: (id: string) => void;
+  editCallback: (id: string) => void;
 }
 
 export const SimpleTable: React.FC<Props> = ({
   items,
   openCallBack,
   deleteCallback,
+  editCallback,
 }) => {
   return (
-    <Table>
+    <Table aria-label="item table">
       <Table.Header>
         <Table.Column width={"70%"}>Name</Table.Column>
         <Table.Column>Actions</Table.Column>
@@ -32,6 +34,12 @@ export const SimpleTable: React.FC<Props> = ({
                   <Row>
                     <Tooltip content="Edit">
                       <IconButton onClick={() => openCallBack(item.id)}>
+                        <BookOpen />
+                      </IconButton>
+                    </Tooltip>
+                    <Spacer x={1} />
+                    <Tooltip content="Delete">
+                      <IconButton onClick={() => editCallback(item.id)}>
                         <Edit />
                       </IconButton>
                     </Tooltip>
