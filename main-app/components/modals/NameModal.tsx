@@ -51,7 +51,7 @@ export const NameModal: React.FC<NameModalProps> = ({
           {loading ? (
             <Loading color="secondary" type="points-opacity" />
           ) : (
-            "Create"
+            "Confirm"
           )}
         </Button>
       </Modal.Footer>
