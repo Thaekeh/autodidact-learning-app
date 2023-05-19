@@ -26,7 +26,11 @@ import {
   getRouteForSingleText,
   setListName,
 } from "utils";
-import { deleteText, getTexts, setTextName } from "utils/supabase/texts";
+import {
+  deleteTextAndAttachedFiles,
+  getTexts,
+  setTextName,
+} from "utils/supabase/texts";
 import { SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
@@ -108,7 +112,7 @@ export default function Dashboard({
   const handleDeleteText = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteText(supabaseClient, id);
+      await deleteTextAndAttachedFiles(supabaseClient, id);
       refetchTexts();
     }
   };
