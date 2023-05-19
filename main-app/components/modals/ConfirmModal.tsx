@@ -9,7 +9,13 @@ export const ConfirmModal: React.FC = () => {
     return <></>;
   }
   return (
-    <Modal open={isOpen} onClose={() => cancel}>
+    <Modal
+      aria-labelledby="Confirm modal"
+      open={isOpen}
+      onClose={() => {
+        cancel("close");
+      }}
+    >
       <Modal.Header>
         <Text h3>{prompt}</Text>
       </Modal.Header>
