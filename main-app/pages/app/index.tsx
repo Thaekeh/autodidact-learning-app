@@ -20,7 +20,7 @@ import { FlashcardListRow } from "types/FlashcardLists";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   createNewFlashcardList,
-  deleteList,
+  deleteListWithMatchingFlashcards,
   getListsForUser,
   getRouteForFlashcardList,
   getRouteForSingleText,
@@ -120,7 +120,7 @@ export default function Dashboard({
   const handleDeleteList = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteList(supabaseClient, id);
+      await deleteListWithMatchingFlashcards(supabaseClient, id);
       refetchLists();
     }
   };
