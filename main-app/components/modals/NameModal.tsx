@@ -13,15 +13,17 @@ interface NameModalProps {
   isOpen: boolean;
   onConfirm: (name: string) => void;
   onCancel: () => void;
+  initalName?: string;
 }
 
 export const NameModal: React.FC<NameModalProps> = ({
   title,
+  initalName,
   isOpen,
   onConfirm,
   onCancel,
 }) => {
-  const { value, bindings } = useInput("");
+  const { value, bindings } = useInput(initalName || "");
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = () => {
