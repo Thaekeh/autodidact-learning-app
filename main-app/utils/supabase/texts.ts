@@ -30,6 +30,14 @@ export const setTextContent = async (
   await supabaseClient.from("texts").update({ content }).eq("id", textId);
 };
 
+export const setTextName = async (
+  supabaseClient: SupabaseClient,
+  textId: string,
+  name: string
+) => {
+  await supabaseClient.from("texts").update({ name }).eq("id", textId);
+};
+
 export const setLastEpubLocation = async (
   supabaseClient: SupabaseClient,
   textId: string,

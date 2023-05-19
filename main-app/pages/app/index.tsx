@@ -24,8 +24,9 @@ import {
   getListsForUser,
   getRouteForFlashcardList,
   getRouteForSingleText,
+  setListName,
 } from "utils";
-import { createNewText, deleteText, getTexts } from "utils/supabase/texts";
+import { deleteText, getTexts, setTextName } from "utils/supabase/texts";
 import { SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
@@ -120,6 +121,16 @@ export default function Dashboard({
     }
   };
 
+  const [renameModalSettings, setRenameModalSettings] = useState<{
+    isOpen: boolean;
+    callback: (name: string) => void;
+    name?: string;
+  }>({
+    isOpen: false,
+    callback: () => {},
+    name: "",
+  });
+
   return (
     <>
       <NewTextModal
@@ -132,6 +143,29 @@ export default function Dashboard({
         onCancel={() => setListModalIsVisible(false)}
         onConfirm={onNewListConfirm}
       />
+      {renameModalSettings.isOpen && (
+        <NameModal
+          title={"Rename"}
+          isOpen={renameModalSettings.isOpen}
+          initalName={renameModalSettings.name}
+          onCancel={() =>
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            })
+          }
+          onConfirm={(name) => {
+            renameModalSettings.callback(name);
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            });
+          }}
+        />
+      )}
+
       <Container>
         <Spacer y={2} />
         <Row>
@@ -149,6 +183,16 @@ export default function Dashboard({
                 items={simpleMappedItems(texts)}
                 deleteCallback={handleDeleteText}
                 openCallBack={(id) => router.push(getRouteForSingleText(id))}
+                editCallback={(id) => {
+                  setRenameModalSettings({
+                    isOpen: true,
+                    name: texts?.find((text) => text.id === id)?.name,
+                    callback: async (name) => {
+                      await setTextName(supabaseClient, id, name);
+                      refetchTexts();
+                    },
+                  });
+                }}
               />
             </Container>
           </Col>
@@ -167,6 +211,16 @@ export default function Dashboard({
                 items={simpleMappedItems(lists)}
                 deleteCallback={handleDeleteList}
                 openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
+                editCallback={(id) =>
+                  setRenameModalSettings({
+                    isOpen: true,
+                    name: lists?.find((list) => list.id === id)?.name,
+                    callback: async (name) => {
+                      await setListName(supabaseClient, id, name);
+                      refetchLists();
+                    },
+                  })
+                }
               />
             </Container>
           </Col>
