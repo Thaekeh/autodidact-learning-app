@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Rendition } from "epubjs";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactReader } from "react-reader";
@@ -19,6 +19,7 @@ export const ReactReaderWrapper = ({
   const renditionRef = useRef<Rendition | null>(null);
 
   const supabase = useSupabaseClient();
+  const user = useUser();
 
   const [selections, setSelections] = useState<string>();
 
@@ -50,8 +51,11 @@ export const ReactReaderWrapper = ({
     };
   }, [setSelections, selections]);
 
-  const fileUrl = supabase.storage.from("test-bucket").getPublicUrl(url)
-    .data.publicUrl;
+  if (!url || !user?.id) return null;
+
+  const fileUrl = supabase.storage
+    .from("text-files")
+    .getPublicUrl(`${user?.id}/${url}`).data.publicUrl;
 
   return (
     <ReactReaderContainer>
