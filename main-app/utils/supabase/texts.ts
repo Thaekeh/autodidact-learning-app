@@ -86,11 +86,14 @@ export const deleteTextAndAttachedFiles = async (
   supabaseClient: SupabaseClient,
   textId: string
 ) => {
+  const user = await supabaseClient.auth.getSession();
   const text = await getTextById(supabaseClient, textId);
   if (text?.epub_file) {
-    await supabaseClient.storage.from("test-bucket").remove([text.epub_file]);
+    await supabaseClient.storage
+      .from("text-files")
+      .remove([`${user.data.session?.user.id}/${text.epub_file}`]);
   }
-  await supabaseClient.from(textsTable).delete().eq("id", textId);
+  await deleteText(supabaseClient, textId);
 };
 
 export const deleteText = async (
