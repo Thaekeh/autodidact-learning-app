@@ -75,8 +75,6 @@ type UpdateFlashcardWithSpacedRepetitionDataProps = Pick<
   "id" | "ease_factor" | "interval" | "repetitions"
 >;
 
-const MS_PER_DAY = 86400000;
-
 export const updateFlashcardWithSpacedRepetitionData = async (
   supabase: SupabaseClient,
   data: UpdateFlashcardWithSpacedRepetitionDataProps

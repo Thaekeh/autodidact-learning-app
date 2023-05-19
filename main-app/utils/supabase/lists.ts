@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { FlashcardListRow } from "types";
-import { flashcardListsTable } from "./tables";
+import { flashcardListsTable, flashcardsTable } from "./tables";
 
 export const getListsForUser = async (
   supabase: SupabaseClient
@@ -56,6 +56,14 @@ export const getAllFlashcardListsNamesOnly = async (
 ): Promise<FlashcardListWithNameOnly[] | null> => {
   const { data } = await supabase.from(flashcardListsTable).select("id, name");
   return data;
+};
+
+export const deleteListWithMatchingFlashcards = async (
+  supabase: SupabaseClient,
+  listId: string
+) => {
+  await deleteList(supabase, listId);
+  await supabase.from(flashcardsTable).delete().eq("list_id", listId);
 };
 
 export const deleteList = async (supabase: SupabaseClient, listId: string) => {
