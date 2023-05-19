@@ -32,13 +32,13 @@ export const SimpleTable: React.FC<Props> = ({
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>
                   <Row>
-                    <Tooltip content="Edit">
+                    <Tooltip content="Read">
                       <IconButton onClick={() => openCallBack(item.id)}>
                         <BookOpen />
                       </IconButton>
                     </Tooltip>
                     <Spacer x={1} />
-                    <Tooltip content="Delete">
+                    <Tooltip content="Edit name">
                       <IconButton onClick={() => editCallback(item.id)}>
                         <Edit />
                       </IconButton>
