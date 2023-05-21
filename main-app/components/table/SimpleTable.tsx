@@ -1,11 +1,18 @@
 import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
-import { BookOpen, Edit, Trash2 } from "react-feather";
+import { ArrowUpRight, BookOpen, Edit, Trash2 } from "react-feather";
 import { IconButton } from "components/buttons/IconButton";
+
+export enum RowType {
+  flashcard = "flashcard",
+  text = "text",
+  list = "list",
+}
 
 interface Props {
   items: {
     id: string;
     name: string;
+    type: RowType;
   }[];
   openCallBack: (id: string) => void;
   deleteCallback: (id: string) => void;
@@ -32,11 +39,10 @@ export const SimpleTable: React.FC<Props> = ({
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>
                   <Row>
-                    <Tooltip content="Read">
-                      <IconButton onClick={() => openCallBack(item.id)}>
-                        <BookOpen />
-                      </IconButton>
-                    </Tooltip>
+                    <OpenButton
+                      rowType={item.type}
+                      openCallback={() => openCallBack(item.id)}
+                    />
                     <Spacer x={1} />
                     <Tooltip content="Edit name">
                       <IconButton onClick={() => editCallback(item.id)}>
@@ -58,3 +64,28 @@ export const SimpleTable: React.FC<Props> = ({
     </Table>
   );
 };
+
+function OpenButton({
+  rowType,
+  openCallback,
+}: {
+  rowType: RowType;
+  openCallback: () => void;
+}) {
+  if (rowType === RowType.list || rowType === RowType.flashcard) {
+    return (
+      <Tooltip content="Open">
+        <IconButton onClick={openCallback}>
+          <ArrowUpRight />
+        </IconButton>
+      </Tooltip>
+    );
+  }
+  return (
+    <Tooltip content="Read">
+      <IconButton onClick={openCallback}>
+        <BookOpen />
+      </IconButton>
+    </Tooltip>
+  );
+}

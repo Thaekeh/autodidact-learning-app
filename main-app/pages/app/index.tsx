@@ -31,7 +31,7 @@ import {
   getTexts,
   setTextName,
 } from "utils/supabase/texts";
-import { SimpleTable } from "components/table/SimpleTable";
+import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
 
@@ -100,9 +100,11 @@ export default function Dashboard({
   const simpleMappedItems = (items: TextRow[] | FlashcardListRow[] | null) => {
     if (!items) return [];
     return items.map((item) => {
+      const isTextRow = Object.keys(item).includes("content");
       return {
         id: item.id,
         name: item.name,
+        type: isTextRow ? RowType.text : RowType.list,
       };
     });
   };

@@ -2,18 +2,20 @@ import styled from "@emotion/styled";
 import {
   Card,
   Container,
-  Input,
   theme,
-  useInput,
   styled as NextUIStyled,
+  Divider,
+  Text,
+  Spacer,
 } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { GenericInput } from "components/inputs/GenericInput";
 import { NextApiRequest, NextApiResponse } from "next";
-import React from "react";
+import React, { useEffect } from "react";
 import { Database, ProfileRow } from "types";
 
-type FieldName = "name";
+type FieldName = keyof ProfileRow;
 
 export async function getServerSideProps({
   req,
@@ -30,16 +32,11 @@ export async function getServerSideProps({
 export default function Profile({ profile }: { profile: ProfileRow }) {
   const user = useUser();
   const supabase = useSupabaseClient();
-  const { value: nameInputValue, bindings: nameInputBindings } = useInput(
-    profile.name || ""
-  );
 
   const onInputFieldBlur = async (fieldName: FieldName, fieldValue: string) => {
-    const updateDocument: Partial<ProfileRow> = {};
-    updateDocument[fieldName] = fieldValue;
     await supabase
       .from("profiles")
-      .update(updateDocument)
+      .update({ ...profile, [fieldName]: fieldValue })
       .eq("user_id", user?.id);
   };
 
@@ -48,14 +45,36 @@ export default function Profile({ profile }: { profile: ProfileRow }) {
       <BackgroundDiv>
         <HeadingContainer>
           <PaddedCard variant="bordered">
-            <h3>Settings</h3>
-            <Input
-              shadow={false}
-              label="Name"
-              value={nameInputValue}
-              onChange={nameInputBindings.onChange}
-              onBlur={() => onInputFieldBlur("name", nameInputValue)}
-            ></Input>
+            <Container display="flex" direction="column" css={{ rowGap: "$8" }}>
+              <Text h2>Settings</Text>
+              <Text h4>Profile</Text>
+              <GenericInput
+                label="Name"
+                initialValue={profile.name}
+                onInputFieldBlur={(value) => onInputFieldBlur("name", value)}
+              />
+
+              <Divider />
+              <Text h4>Flashcards</Text>
+              <GenericInput
+                label="First learning phase interval"
+                initialValue={
+                  profile.first_learning_phase_interval?.toString() || ""
+                }
+                onInputFieldBlur={(value) =>
+                  onInputFieldBlur("first_learning_phase_interval", value)
+                }
+              />
+              <GenericInput
+                label="Second learning phase interval"
+                initialValue={
+                  profile.second_learning_phase_interval?.toString() || ""
+                }
+                onInputFieldBlur={(value) =>
+                  onInputFieldBlur("second_learning_phase_interval", value)
+                }
+              />
+            </Container>
           </PaddedCard>
         </HeadingContainer>
       </BackgroundDiv>

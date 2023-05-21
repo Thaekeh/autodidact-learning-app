@@ -73,23 +73,29 @@ export interface Database {
       profiles: {
         Row: {
           created_at: string | null
+          first_learning_phase_interval: number | null
           id: string
           last_updated: string | null
           name: string | null
+          second_learning_phase_interval: number | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
+          first_learning_phase_interval?: number | null
           id?: string
           last_updated?: string | null
           name?: string | null
+          second_learning_phase_interval?: number | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
+          first_learning_phase_interval?: number | null
           id?: string
           last_updated?: string | null
           name?: string | null
+          second_learning_phase_interval?: number | null
           user_id?: string | null
         }
       }
