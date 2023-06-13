@@ -1,53 +1,62 @@
-import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
-import React from "react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@nextui-org/react";
+import React, { useState } from "react";
 
 interface NameModalProps {
-	isOpen: boolean;
-	onConfirm: ({
-		frontText,
-		backText,
-	}: {
-		frontText: string;
-		backText: string;
-	}) => void;
-	onCancel: () => void;
+  isOpen: boolean;
+  onConfirm: ({
+    frontText,
+    backText,
+  }: {
+    frontText: string;
+    backText: string;
+  }) => void;
+  onCancel: () => void;
 }
 
 export const NewFlashcardModal: React.FC<NameModalProps> = ({
-	isOpen,
-	onConfirm,
-	onCancel,
+  isOpen,
+  onConfirm,
+  onCancel,
 }) => {
-	const { value: frontText, bindings: frontTextBindings } = useInput("");
-	const { value: backText, bindings: backTextBindings } = useInput("");
+  const [frontTextValue, setFrontTextValue] = useState("");
+  const [backTextValue, setBackTextValue] = useState("");
 
-	return (
-		<Modal closeButton open={isOpen} onClose={onCancel}>
-			<Modal.Header>
-				<Text size={20} weight={"bold"}>
-					Change your flashcard
-				</Text>
-			</Modal.Header>
-			<Modal.Body>
-				<Input
-					value={frontText}
-					onChange={frontTextBindings.onChange}
-					placeholder="Front of card"
-					label="Front of card"
-				/>
+  return (
+    <Modal showCloseButton isOpen={isOpen} onClose={onCancel}>
+      <ModalHeader>
+        <p>Change your flashcard</p>
+      </ModalHeader>
+      <ModalBody>
+        <Input
+          value={frontTextValue}
+          onValueChange={setFrontTextValue}
+          placeholder="Front of card"
+          label="Front of card"
+        />
 
-				<Input
-					value={backText}
-					onChange={backTextBindings.onChange}
-					placeholder="Back of card"
-					label="Back of card"
-				/>
-			</Modal.Body>
-			<Modal.Footer>
-				<Button auto onPress={() => onConfirm({ frontText, backText })}>
-					Save Flashcard
-				</Button>
-			</Modal.Footer>
-		</Modal>
-	);
+        <Input
+          value={backTextValue}
+          onValueChange={setBackTextValue}
+          placeholder="Back of card"
+          label="Back of card"
+        />
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          onPress={() =>
+            onConfirm({ frontText: frontTextValue, backText: backTextValue })
+          }
+        >
+          Save Flashcard
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
 };

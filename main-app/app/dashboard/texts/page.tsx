@@ -1,5 +1,6 @@
+"use client";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { Container, red, Row, Table, Tooltip } from "@nextui-org/react";
+import { Container } from "@nextui-org/react";
 import { TextRow } from "types/Texts";
 import { getRouteForSingleText } from "utils/routing/texts";
 import { GetServerSidePropsContext } from "next";
@@ -12,7 +13,7 @@ import { useConfirm } from "hooks/useConfirm";
 import { deleteText, getTexts } from "utils/supabase/texts";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Texts({ texts: textsProp }: { texts: TextRow[] }) {
   const { t } = useTranslation();

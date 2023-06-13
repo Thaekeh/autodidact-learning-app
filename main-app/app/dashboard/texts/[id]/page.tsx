@@ -1,16 +1,14 @@
 import {
-  Container,
-  Grid,
-  Text,
   Input,
   Dropdown,
   Button,
   Spacer,
-  Loading,
+  DropdownMenu,
+  DropdownItem,
+  DropdownTrigger,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { TextRow } from "types/Texts";
@@ -36,9 +34,9 @@ import {
   SupportedLanguage,
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
-import { IconButton } from "components/buttons/IconButton";
+// import { IconButton } from "components/buttons/IconButton";
 import { ArrowUpRight } from "react-feather";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function TextPage({
   text,
@@ -47,8 +45,10 @@ export default function TextPage({
   text: TextRow | null;
   flashcardLists: FlashcardListWithNameOnly[] | null;
 }) {
+  const router = useRouter();
+
   if (!text) {
-    return <Loading />;
+    return <h1>Loading...</h1>;
   }
 
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
@@ -207,22 +207,22 @@ export default function TextPage({
   };
 
   return (
-    <Grid.Container
-      gap={2}
-      justify="center"
-      css={{ marginTop: `2rem`, width: `100vw`, margin: 0 }}
+    <div
+      className="inline-grid gap-2"
+      // css={{ marginTop: `2rem`, width: `100vw`, margin: 0 }}
     >
-      <Grid
-        xs={6}
-        css={{
-          maxHeight: `80vh`,
-          height: `80vh`,
-        }}
+      <div
+
+      // xs={6}
+      // css={{
+      //   maxHeight: `80vh`,
+      //   height: `80vh`,
+      // }}
       >
         {!!text.epub_file ? (
           <>
-            <Container direction="column" wrap="wrap">
-              <Text h3>{text.name}</Text>
+            <div className="container mx-auto">
+              <h3>{text.name}</h3>
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
@@ -231,7 +231,7 @@ export default function TextPage({
                   processTextSelection={processTextSelection}
                 />
               )}
-            </Container>
+            </div>
           </>
         ) : (
           <TextReader
@@ -240,81 +240,84 @@ export default function TextPage({
             textContent={textContent}
           />
         )}
-      </Grid>
-      <Grid xs={3} direction="column">
-        <Text h3>Translation</Text>
+      </div>
+      <div
+      // xs={3} direction="column"
+      >
+        <h3>Translation</h3>
         <FlexContainer>
           <div>
-            <Text h6>From</Text>
+            <h6>From</h6>
             <Dropdown>
-              <Dropdown.Button size={"xs"} flat>
+              <DropdownTrigger>
                 {selectedSourceLanguage
                   ? selectedSourceLanguage.nativeName
                   : "Detect Language"}
-              </Dropdown.Button>
-              <Dropdown.Menu
+              </DropdownTrigger>
+              <DropdownMenu
                 onAction={(key) => handleSelectSourceLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
-                  <Dropdown.Item key={language.key}>
+                  <DropdownItem key={language.key}>
                     {language.nativeName}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
           </div>
           <div>
-            <Text h6>To</Text>
+            <h6>To</h6>
             <Dropdown>
-              <Dropdown.Button size={"xs"} flat>
+              <DropdownTrigger>
                 {selectedTargetLanguage
                   ? selectedTargetLanguage.nativeName
                   : "Not selected"}
-              </Dropdown.Button>
-              <Dropdown.Menu
+              </DropdownTrigger>
+              <DropdownMenu
                 onAction={(key) => handleSelectTargetLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
-                  <Dropdown.Item key={language.key}>
+                  <DropdownItem key={language.key}>
                     {language.nativeName}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
           </div>
         </FlexContainer>
         {flashcardLists && (
           <FlexRowDiv>
             <Dropdown>
-              <Dropdown.Button flat>
+              <DropdownTrigger>
                 {
                   flashcardLists.find(
                     (flashcardList) => flashcardList.id === selectedList
                   )?.name
                 }
-              </Dropdown.Button>
-              <Dropdown.Menu
+              </DropdownTrigger>
+              <DropdownMenu
                 onAction={(key) => handleSetSelectedList(key.toString())}
                 selectionMode="single"
               >
                 {flashcardLists.map((flashcardList) => (
-                  <Dropdown.Item key={flashcardList.id}>
+                  <DropdownItem key={flashcardList.id}>
                     {flashcardList.name}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
             {selectedList && (
-              <IconButton
+              <Button
                 color="secondary"
-                onClick={() =>
+                onPress={() =>
                   router.push(getRouteForFlashcardList(selectedList))
                 }
+                isIconOnly
               >
                 <ArrowUpRight />
-              </IconButton>
+              </Button>
             )}
           </FlexRowDiv>
         )}
@@ -325,7 +328,7 @@ export default function TextPage({
               name="front"
               required={true}
               value={frontOfCardValue}
-              onChange={(e) => setFrontOfCardValue(e.target.value)}
+              onValueChange={setFrontOfCardValue}
               fullWidth
             ></Input>
             <Input
@@ -333,27 +336,23 @@ export default function TextPage({
               name="back"
               required={true}
               value={backOfCardValue}
-              onChange={(e) => setBackOfCardValue(e.target.value)}
+              onValueChange={setBackOfCardValue}
               fullWidth
-              contentRight={waitingForTranslation && <Loading size="xs" />}
             ></Input>
             <Spacer y={1} />
             <Button
               disabled={savingCardIsLoading}
               color={"secondary"}
-              flat
+              variant="flat"
               onPress={handleSaveCard}
+              isLoading={savingCardIsLoading}
             >
-              {savingCardIsLoading ? (
-                <Loading color={"secondary"} type="points-opacity" />
-              ) : (
-                "Save Card"
-              )}
+              Save Card
             </Button>
           </form>
         </div>
-      </Grid>
-    </Grid.Container>
+      </div>
+    </div>
   );
 }
 

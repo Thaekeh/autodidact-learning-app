@@ -2,9 +2,9 @@ import {
   Button,
   Input,
   Modal,
-  useInput,
-  Text,
-  Loading,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 
@@ -23,38 +23,36 @@ export const NameModal: React.FC<NameModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const { value, bindings } = useInput(initalName || "");
+  const [inputValue, setInputValue] = useState(initalName || "");
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = () => {
     setLoading(true);
-    onConfirm(value);
+    onConfirm(inputValue);
   };
 
   return (
-    <Modal closeButton open={isOpen} onClose={onCancel}>
-      <Modal.Header>
-        <Text size={20} weight={"bold"}>
-          {title}
-        </Text>
-      </Modal.Header>
-      <Modal.Body>
+    <Modal showCloseButton isOpen={isOpen} onClose={onCancel}>
+      <ModalHeader>
+        <p>{title}</p>
+      </ModalHeader>
+      <ModalBody>
         <Input
-          value={value}
+          value={inputValue}
           label="Name"
-          onChange={bindings.onChange}
+          onValueChange={setInputValue}
           placeholder="Name"
         />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button flat auto onPress={() => handleConfirm()}>
-          {loading ? (
-            <Loading color="secondary" type="points-opacity" />
-          ) : (
-            "Confirm"
-          )}
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          isLoading={loading}
+          variant="flat"
+          onPress={() => handleConfirm()}
+        >
+          Confirm
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

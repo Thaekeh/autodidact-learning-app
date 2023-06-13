@@ -1,8 +1,8 @@
-import { Button, Container, Spacer, Text, useModal } from "@nextui-org/react";
+import { Button, Spacer, useDisclosure } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { NextApiRequest, NextApiResponse } from "next";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Plus } from "react-feather";
 import { FullTable } from "components/table/FullTable";
@@ -25,8 +25,14 @@ export default function Lists({
   const router = useRouter();
   const { isConfirmed } = useConfirm();
 
-  const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
-    useModal(false);
+  const {
+    isOpen: listModalIsVisible,
+    onOpen: setListModalIsVisible,
+    onOpenChange,
+  } = useDisclosure();
+
+  // const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
+  //   useModal(false);
 
   const supabaseClient = useSupabaseClient();
 
@@ -47,7 +53,7 @@ export default function Lists({
   const onNewListConfirm = async (name: string) => {
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
-      setListModalIsVisible(false);
+      setListModalIsVisible;
       refetchLists();
     }
   };
@@ -57,32 +63,33 @@ export default function Lists({
       <NameModal
         title={"Insert name of list"}
         isOpen={listModalIsVisible}
-        onCancel={() => setListModalIsVisible(false)}
+        onCancel={setListModalIsVisible}
         onConfirm={onNewListConfirm}
       />
-      <Container>
+      <div className="container mx-auto">
         <Spacer y={2}></Spacer>
-        <Container
-          display="flex"
-          direction="row"
-          justify="space-between"
-          alignContent="center"
+        <div
+          className="container mx-auto"
+          // display="flex"
+          // direction="row"
+          // justify="space-between"
+          // alignContent="center"
         >
-          <Text h3>Your lists</Text>
+          <h3>Your lists</h3>
           <Button
-            onClick={() => setListModalIsVisible(true)}
+            onPress={setListModalIsVisible}
             size={"md"}
-            icon={<Plus size={16} />}
+            endIcon={<Plus size={16} />}
           >
             Create New
           </Button>
-        </Container>
+        </div>
         <FullTable
           items={lists}
           openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
           deleteCallback={handleDeleteCallback}
         ></FullTable>
-      </Container>
+      </div>
     </>
   );
 }

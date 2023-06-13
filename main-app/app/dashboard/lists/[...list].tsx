@@ -14,8 +14,7 @@ import { Database } from "types/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { FlashcardListRow } from "types/FlashcardLists";
 import { getListById, getRouteForPracticingFlashcardList } from "utils";
-import { Check, Edit2, Play, Plus, Trash, X } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
+import { Play } from "react-feather";
 import {
   createNewFlashcard,
   deleteFlashcard,
@@ -27,7 +26,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "types";
 import { NewFlashcardModal } from "components/modals/flashcards/NewFlashcardModal";
 import { EditFlashcardModal } from "components/modals/flashcards/EditFlashcardModal";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FlashcardsTable } from "components/table/FlashcardsTable";
 import { useConfirm } from "hooks/useConfirm";
 

@@ -1,6 +1,15 @@
-import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
+import {
+  Button,
+  Spacer,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+} from "@nextui-org/react";
 import { ArrowUpRight, BookOpen, Edit, Trash2 } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
 
 export enum RowType {
   flashcard = "flashcard",
@@ -26,41 +35,43 @@ export const SimpleTable: React.FC<Props> = ({
   editCallback,
 }) => {
   return (
-    <Table aria-label="item table">
-      <Table.Header>
-        <Table.Column width={"70%"}>Name</Table.Column>
-        <Table.Column>Actions</Table.Column>
-      </Table.Header>
-      <Table.Body>
-        {items &&
-          items.map((item) => {
-            return (
-              <Table.Row key={item.id}>
-                <Table.Cell>{item.name}</Table.Cell>
-                <Table.Cell>
-                  <Row>
-                    <OpenButton
-                      rowType={item.type}
-                      openCallback={() => openCallBack(item.id)}
-                    />
-                    <Spacer x={1} />
-                    <Tooltip content="Edit name">
-                      <IconButton onClick={() => editCallback(item.id)}>
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
-                    <Spacer x={1} />
-                    <Tooltip color={"error"} content="Delete">
-                      <IconButton onClick={() => deleteCallback(item.id)}>
-                        <Trash2 color={"#FF0080"} />
-                      </IconButton>
-                    </Tooltip>
-                  </Row>
-                </Table.Cell>
-              </Table.Row>
-            );
-          })}
-      </Table.Body>
+    <Table style={{ minHeight: "150px" }} aria-label="item table">
+      <TableHeader>
+        <TableColumn width={"70%"}>Name</TableColumn>
+        <TableColumn>Actions</TableColumn>
+      </TableHeader>
+      <TableBody
+        items={items}
+        loadingState={!items.length ? "loading" : undefined}
+      >
+        {(item) => {
+          return (
+            <TableRow key={item.id}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell>
+                <div className="flex">
+                  <OpenButton
+                    rowType={item.type}
+                    openCallback={() => openCallBack(item.id)}
+                  />
+                  <Spacer x={1} />
+                  <Tooltip content="Edit name">
+                    <Button isIconOnly onPress={() => editCallback(item.id)}>
+                      <Edit />
+                    </Button>
+                  </Tooltip>
+                  <Spacer x={1} />
+                  <Tooltip color={"danger"} content="Delete">
+                    <Button isIconOnly onPress={() => deleteCallback(item.id)}>
+                      <Trash2 color={"#FF0080"} />
+                    </Button>
+                  </Tooltip>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        }}
+      </TableBody>
     </Table>
   );
 };
@@ -75,17 +86,17 @@ function OpenButton({
   if (rowType === RowType.list || rowType === RowType.flashcard) {
     return (
       <Tooltip content="Open">
-        <IconButton onClick={openCallback}>
+        <Button isIconOnly onPress={openCallback}>
           <ArrowUpRight />
-        </IconButton>
+        </Button>
       </Tooltip>
     );
   }
   return (
     <Tooltip content="Read">
-      <IconButton onClick={openCallback}>
+      <Button isIconOnly onPress={openCallback}>
         <BookOpen />
-      </IconButton>
+      </Button>
     </Tooltip>
   );
 }

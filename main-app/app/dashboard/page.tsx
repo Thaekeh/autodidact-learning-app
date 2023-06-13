@@ -1,18 +1,18 @@
+"use client";
 import {
-  Col,
-  Container,
-  Row,
+  Button,
   Spacer,
-  Text,
   Tooltip,
+  useDisclosure,
   useModal,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
-import { useRouter } from "next/router";
+// import { IconButton } from "components/buttons/IconButton";
+import { useRouter } from "next/navigation";
 import { NameModal } from "components/modals/NameModal";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 import { NextApiRequest, NextApiResponse } from "next";
 import { Database } from "types/supabase";
 import { TextRow } from "types/Texts";
@@ -35,49 +35,55 @@ import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
 
-export async function getServerSideProps({
-  req,
-  res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
+// export async function getServerSideProps({
+//   req,
+//   res,
+// }: {
+//   req: NextApiRequest;
+//   res: NextApiResponse;
+// }) {
+//   const supabase = await createServerSupabaseClient<Database>({
+//     req,
+//     res,
+//   });
+
+//   const texts = await getTexts(supabase);
+//   const lists = await getListsForUser(supabase);
+
+//   return { props: { textsProp: texts, listsProp: lists } };
+// }
+
+export default function Dashboard({}: // textsProp,
+// listsProp,
+{
+  // textsProp: TextRow[];
+  // listsProp: FlashcardListRow[];
 }) {
-  const supabase = await createServerSupabaseClient<Database>({
-    req,
-    res,
-  });
-
-  const texts = await getTexts(supabase);
-  const lists = await getListsForUser(supabase);
-
-  return { props: { textsProp: texts, listsProp: lists } };
-}
-
-export default function Dashboard({
-  textsProp,
-  listsProp,
-}: {
-  textsProp: TextRow[];
-  listsProp: FlashcardListRow[];
-}) {
-  const [texts, setTexts] = useState<TextRow[] | null>(textsProp);
-  const [lists, setLists] = useState<FlashcardListRow[] | null>(listsProp);
+  const [texts, setTexts] = useState<TextRow[] | null>(null);
+  const [lists, setLists] = useState<FlashcardListRow[] | null>(null);
   const router = useRouter();
 
-  const supabaseClient = useSupabaseClient();
+  const supabaseClient = createClientComponentClient();
 
-  const { visible: textModalIsVisible, setVisible: setTextModalIsVisible } =
-    useModal(false);
-  const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
-    useModal(false);
+  useEffect(() => {
+    getTexts(supabaseClient).then((texts) => setTexts(texts));
+    getListsForUser(supabaseClient).then((lists) => setLists(lists));
+    // setTexts(texts);
+    // setLists(lists);
+  }, []);
 
-  const newTextButtonHandler = () => {
-    setTextModalIsVisible(true);
-  };
-
-  const newListButtonHandler = () => {
-    setListModalIsVisible(true);
-  };
+  // const { visible: textModalIsVisible, setVisible: setTextModalIsVisible } =
+  //   useModal(false);
+  const {
+    isOpen: textModalIsVisible,
+    onOpen: setTextModalIsVisible,
+    onOpenChange: onTextModalIsOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: listModalIsVisible,
+    onOpen: setListModalIsVisible,
+    onOpenChange: onListModalIsOpenChange,
+  } = useDisclosure();
 
   const refetchTexts = async () => {
     const newTexts = await getTexts(supabaseClient);
@@ -92,7 +98,7 @@ export default function Dashboard({
   const onNewListConfirm = async (name: string) => {
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
-      setListModalIsVisible(false);
+      setListModalIsVisible;
       refetchLists();
     }
   };
@@ -141,12 +147,12 @@ export default function Dashboard({
     <>
       <NewTextModal
         isOpen={textModalIsVisible}
-        onCancel={() => setTextModalIsVisible(false)}
+        onCancel={setTextModalIsVisible}
       />
       <NameModal
         title={"Insert name of list"}
         isOpen={listModalIsVisible}
-        onCancel={() => setListModalIsVisible(false)}
+        onCancel={setListModalIsVisible}
         onConfirm={onNewListConfirm}
       />
       {renameModalSettings.isOpen && (
@@ -172,19 +178,22 @@ export default function Dashboard({
         />
       )}
 
-      <Container>
+      <div className="container mx-auto">
         <Spacer y={2} />
-        <Row>
-          <Col>
-            <Container>
-              <Row align="center" justify="space-between">
-                <Text h3>Recent texts</Text>
+        <div>
+          <div>
+            <div className="container mx-auto">
+              <div
+              // align="center"
+              // justify="space-between"
+              >
+                <h3>Recent texts</h3>
                 <Tooltip content={"Create new text"}>
-                  <IconButton onClick={newTextButtonHandler}>
+                  <Button isIconOnly onPress={setTextModalIsVisible}>
                     <Plus />
-                  </IconButton>
+                  </Button>
                 </Tooltip>
-              </Row>
+              </div>
               <SimpleTable
                 items={simpleMappedItems(texts)}
                 deleteCallback={handleDeleteText}
@@ -200,19 +209,21 @@ export default function Dashboard({
                   });
                 }}
               />
-            </Container>
-          </Col>
+            </div>
+          </div>
           <Spacer x={2} />
-          <Col>
-            <Container>
-              <Row align="center" justify="space-between">
-                <Text h3>Card Lists</Text>
+          <div>
+            <div className="container mx-auto">
+              <div
+              // align="center" justify="space-between"
+              >
+                <h3>Card Lists</h3>
                 <Tooltip content={"Create new list"}>
-                  <IconButton onClick={newListButtonHandler}>
+                  <Button isIconOnly onPress={setListModalIsVisible}>
                     <Plus />
-                  </IconButton>
+                  </Button>
                 </Tooltip>
-              </Row>
+              </div>
               <SimpleTable
                 items={simpleMappedItems(lists)}
                 deleteCallback={handleDeleteList}
@@ -228,10 +239,10 @@ export default function Dashboard({
                   })
                 }
               />
-            </Container>
-          </Col>
-        </Row>
-      </Container>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

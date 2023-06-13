@@ -1,11 +1,13 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { Button, FormElement, Input, Loading, Text } from "@nextui-org/react";
+"use client";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Button, Input } from "@nextui-org/react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import styled from "@emotion/styled";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export const LoginForm = () => {
-  const supabase = useSupabaseClient();
+  const supabase = createClientComponentClient();
   const router = useRouter();
 
   const [formValues, setFormValues] = useState({ email: "", password: "" });
@@ -31,40 +33,38 @@ export const LoginForm = () => {
     }
   };
 
-  const handleInputChange = (event: ChangeEvent<FormElement>) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
+  const handleInputChange = (value: string, field: string) => {
     setFormValues({
       ...formValues,
-      [name]: value,
+      [field]: value,
     });
   };
 
   return (
     <StyledDiv>
-      <Text h3>Login</Text>
+      <h3>Login</h3>
       <StyledForm onSubmit={onSubmit}>
         <Input
           label="Email"
           name="email"
           required={true}
           value={formValues.email || ""}
-          onChange={handleInputChange}
+          onValueChange={(value) => handleInputChange(value, "email")}
         ></Input>
         <Input
           label="Password"
           name="password"
           type="password"
           value={formValues.password || ""}
-          onChange={handleInputChange}
+          onValueChange={(value) => handleInputChange(value, "password")}
         ></Input>
-        <Button flat color={"secondary"} type="submit">
-          {formSubmitIsLoading ? (
-            <Loading color={"currentColor"} type="points" />
-          ) : (
-            "Login"
-          )}
+        <Button
+          variant="flat"
+          color={"secondary"}
+          isLoading={formSubmitIsLoading}
+          type="submit"
+        >
+          Login
         </Button>
       </StyledForm>
     </StyledDiv>

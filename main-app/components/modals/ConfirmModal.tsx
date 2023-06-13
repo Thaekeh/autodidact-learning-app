@@ -1,5 +1,5 @@
-import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
-import React, { useEffect } from "react";
+import { Button, Modal, ModalFooter, ModalHeader } from "@nextui-org/react";
+import React from "react";
 import { useConfirm } from "hooks/useConfirm";
 
 export const ConfirmModal: React.FC = () => {
@@ -11,22 +11,24 @@ export const ConfirmModal: React.FC = () => {
   return (
     <Modal
       aria-labelledby="Confirm modal"
-      open={isOpen}
+      isOpen={isOpen}
       onClose={() => {
         cancel("close");
       }}
     >
-      <Modal.Header>
-        <Text h3>{prompt}</Text>
-      </Modal.Header>
-      <Modal.Footer justify="center">
-        <Button color={"secondary"} flat auto onPress={cancel}>
+      <ModalHeader>
+        <h3>{prompt}</h3>
+      </ModalHeader>
+      <ModalFooter
+      // justify="center"
+      >
+        <Button color={"secondary"} variant="flat" onPress={cancel}>
           Cancel
         </Button>
-        <Button color={"error"} flat auto onPress={proceed}>
+        <Button color={"danger"} variant="flat" onPress={proceed}>
           Yes
         </Button>
-      </Modal.Footer>
+      </ModalFooter>
     </Modal>
   );
 };

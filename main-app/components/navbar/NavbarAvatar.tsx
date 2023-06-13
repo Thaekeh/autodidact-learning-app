@@ -1,6 +1,13 @@
-import { Avatar, Dropdown, Text, Navbar } from "@nextui-org/react";
+import {
+  Avatar,
+  Dropdown,
+  NavbarItem,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Key } from "react";
 import { User } from "react-feather";
 
@@ -21,39 +28,34 @@ export const NavbarAvatar: React.FC<Props> = () => {
   };
 
   return (
-    <Dropdown placement="bottom-right">
-      <Navbar.Item>
-        <Dropdown.Trigger>
+    <Dropdown placement="bottom-end">
+      <NavbarItem>
+        <DropdownTrigger>
           <Avatar
-            bordered
             as="button"
             size="md"
             icon={<User color="white" />}
             color={"secondary"}
           />
-        </Dropdown.Trigger>
-      </Navbar.Item>
-      <Dropdown.Menu
+        </DropdownTrigger>
+      </NavbarItem>
+      <DropdownMenu
         aria-label="User menu actions"
         color="secondary"
         onAction={(actionKey) => onDropdownAction(actionKey)}
         disabledKeys={["profile"]}
       >
-        <Dropdown.Item key="profile" css={{ height: "$18" }}>
-          <Text b css={{ d: "flex" }}>
-            Signed in as
-          </Text>
-          <Text b css={{ d: "flex" }}>
-            {user?.email}
-          </Text>
-        </Dropdown.Item>
-        <Dropdown.Item key="settings" withDivider>
+        <DropdownItem key="profile" style={{ height: "$18" }}>
+          <p>Signed in as</p>
+          <p>{user?.email}</p>
+        </DropdownItem>
+        <DropdownItem key="settings" showDivider>
           My Settings
-        </Dropdown.Item>
-        <Dropdown.Item key="logout" withDivider color="error">
+        </DropdownItem>
+        <DropdownItem key="logout" showDivider color="danger">
           Log Out
-        </Dropdown.Item>
-      </Dropdown.Menu>
+        </DropdownItem>
+      </DropdownMenu>
     </Dropdown>
   );
 };

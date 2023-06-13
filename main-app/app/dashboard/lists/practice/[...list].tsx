@@ -5,7 +5,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Flashcard from "components/cards/Flashcard";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowLeft } from "react-feather";
 import { Database, FlashcardRow } from "types";

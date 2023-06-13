@@ -6,10 +6,10 @@ import { NextPage } from "next";
 import { Layout } from "components/Layout";
 import { NextUIProvider } from "@nextui-org/react";
 import { SSRProvider } from "@react-aria/ssr";
-import Head from "next/head";
 import ConfirmContextProvider from "providers/ConfirmContextProvider";
 import { ConfirmModal } from "components/modals/ConfirmModal";
 import { appWithTranslation } from "next-i18next";
+import { NavbarLayout } from "./NavbarLayout";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -32,18 +32,20 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
         <NextUIProvider>
           <ConfirmContextProvider>
             <ConfirmModal />
-            <Layout>
-              <Head>
+            <NavbarLayout>
+              {/* <Head>
                 <title>Learning Hub</title>
                 <link rel="icon" href="/favicon.ico" />
-              </Head>
+              </Head> */}
               <Component {...pageProps} />
-            </Layout>
+            </NavbarLayout>
           </ConfirmContextProvider>
         </NextUIProvider>
       </SessionContextProvider>
     </SSRProvider>
   );
 }
+
+// export default App;
 
 export default appWithTranslation(App);

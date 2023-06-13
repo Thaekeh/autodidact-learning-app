@@ -1,5 +1,5 @@
-import { Input, useInput } from "@nextui-org/react";
-import React from "react";
+import { Input } from "@nextui-org/react";
+import React, { useState } from "react";
 
 export const GenericInput = ({
   initialValue,
@@ -10,15 +10,14 @@ export const GenericInput = ({
   onInputFieldBlur: (value: string) => void;
   label: string;
 }) => {
-  const { value, bindings } = useInput(initialValue || "");
+  const [inputValue, setInputValue] = useState(initialValue || "");
 
   return (
     <Input
-      shadow={false}
       label={label}
-      value={value}
-      onChange={bindings.onChange}
-      onBlur={() => onInputFieldBlur(value)}
+      value={inputValue}
+      onValueChange={setInputValue}
+      onBlur={() => onInputFieldBlur(inputValue)}
     />
   );
 };

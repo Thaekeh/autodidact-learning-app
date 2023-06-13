@@ -1,12 +1,5 @@
 import styled from "@emotion/styled";
-import {
-  Button,
-  Container,
-  Spacer,
-  StyledButtonGroup,
-  Text,
-  Textarea,
-} from "@nextui-org/react";
+import { Button, ButtonGroup, Spacer, Textarea } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
 export const TextReader = ({
@@ -48,36 +41,33 @@ export const TextReader = ({
   return (
     <>
       {isInEditMode ? (
-        <Container direction="column" wrap="wrap">
-          <Text h3>Edit your text</Text>
-          <StyledButtonGroup>
+        <div className="container mx-auto">
+          <h3>Edit your text</h3>
+          <ButtonGroup>
             <Button onPress={saveText} size={"sm"}>
               Save
             </Button>
-          </StyledButtonGroup>
+          </ButtonGroup>
           <Spacer y={1} />
           <Textarea
-            animated={false}
             value={currentTextContent}
-            onChange={(event) => setCurrentTextContent(event.target.value)}
+            onValueChange={setCurrentTextContent}
             maxRows={50}
           ></Textarea>
-        </Container>
+        </div>
       ) : (
         <>
-          <Container wrap="wrap" css={{ maxWidth: `100%` }}>
-            <StyledButtonGroup>
+          <div className="container mx-auto">
+            <ButtonGroup>
               <Button
                 onPress={() => setIsInEditMode(!isInEditMode)}
                 size={"sm"}
               >
                 Edit
               </Button>
-            </StyledButtonGroup>
-            <Text css={{ display: `flex`, flexWrap: `wrap` }}>
-              {mappedText()}
-            </Text>
-          </Container>
+            </ButtonGroup>
+            <p className="flex flex-wrap">{mappedText()}</p>
+          </div>
         </>
       )}
     </>
