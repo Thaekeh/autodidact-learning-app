@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Navbar,
   Button,
@@ -10,22 +10,25 @@ import {
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
-import { useUser } from "@supabase/auth-helpers-react";
 import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
+import { create } from "domain";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabase } from "components/providers/supabase-provider";
 
 export const ComposedNavbar = () => {
-  const user = useUser();
+  const { supabase, session } = useSupabase();
 
   return (
     <Navbar>
       <NavbarBrand>
-        <NextLink href={user ? "/app" : "/"}>
+        <NextLink href={supabase ? "/app" : "/"}>
           <h1>Learning Hub</h1>
         </NextLink>
       </NavbarBrand>
       <NavbarContent>
         <NavbarContent>
-          {user ? (
+          {supabase ? (
             <>
               <NavbarItem as={"span"}>
                 <NextLink href="/app">Dashboard</NextLink>
@@ -45,16 +48,7 @@ export const ComposedNavbar = () => {
             </NextLink>
           )}
         </NavbarContent>
-        <NavbarContent
-        // style={{
-        //   "@xs": {
-        //     w: "12%",
-        //     jc: "flex-end",
-        //   },
-        // }}
-        >
-          {user && <NavbarAvatar />}
-        </NavbarContent>
+        <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
       </NavbarContent>
     </Navbar>
   );

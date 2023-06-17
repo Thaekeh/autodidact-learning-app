@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalContent,
 } from "@nextui-org/react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
@@ -16,12 +17,12 @@ import { createNewText } from "utils/supabase/texts";
 
 interface NameModalProps {
   isOpen: boolean;
-  onCancel: () => void;
+  onOpenChange: () => void;
 }
 
 export const NewTextModal: React.FC<NameModalProps> = ({
   isOpen,
-  onCancel,
+  onOpenChange,
 }) => {
   const [textNameValue, setTextNameValue] = useState("");
   const [isEpub, setIsEpub] = useState(false);
@@ -96,70 +97,83 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   };
 
   return (
-    <Modal showCloseButton isOpen={isOpen} onClose={onCancel}>
-      <ModalHeader>
-        <p>Create new text</p>
-      </ModalHeader>
-      <ModalBody>
-        <StyledDiv>
-          <Input
-            value={textNameValue}
-            onValueChange={setTextNameValue}
-            placeholder="Text name"
-            label="Text name"
-          />
+    <Modal
+      showCloseButton
+      isOpen={isOpen}
+      onClose={onOpenChange}
+      onOpenChange={onOpenChange}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader>
+              <p>Create new text</p>
+            </ModalHeader>
+            <ModalBody>
+              <StyledDiv>
+                <Input
+                  value={textNameValue}
+                  onValueChange={setTextNameValue}
+                  placeholder="Text name"
+                  label="Text name"
+                />
 
-          <div>
-            <p>Epub</p>
-            <FlexDiv>
-              <p>Use epub</p>
-              <Switch
-                isSelected={isEpub}
-                onValueChange={() => setIsEpub(!isEpub)}
-              />
-            </FlexDiv>
-          </div>
-          {isEpub && (
-            <>
-              <Input
-                type="file"
-                ref={hiddenFileInput}
-                onChange={handleChange}
-                accept="epub/*"
-                style={{ display: "none" }}
-              />
-              {epubName && <p>Epub: {epubName}</p>}
+                <div>
+                  <p>Epub</p>
+                  <FlexDiv>
+                    <p>Use epub</p>
+                    <Switch
+                      isSelected={isEpub}
+                      onValueChange={() => setIsEpub(!isEpub)}
+                    />
+                  </FlexDiv>
+                </div>
+                {isEpub && (
+                  <>
+                    <Input
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={handleChange}
+                      accept="epub/*"
+                      style={{ display: "none" }}
+                    />
+                    {epubName && <p>Epub: {epubName}</p>}
+                    <Button
+                      color={"secondary"}
+                      variant="flat"
+                      onPress={handleClick}
+                      isLoading={uploadingEpub}
+                    >
+                      Upload Epub
+                    </Button>
+                  </>
+                )}
+                <div>
+                  <p>Flashcard</p>
+                  <FlexDiv>
+                    <p>Add flashcard list</p>
+                    <Switch
+                      isSelected={addFlashcardList}
+                      onValueChange={() =>
+                        setAddFlashcardList(!addFlashcardList)
+                      }
+                    ></Switch>
+                  </FlexDiv>
+                </div>
+              </StyledDiv>
+            </ModalBody>
+            <ModalFooter>
               <Button
+                isLoading={creatingTextOrFlashcardList}
                 color={"secondary"}
-                variant="flat"
-                onPress={handleClick}
-                isLoading={uploadingEpub}
+                onPress={handleNewText}
               >
-                Upload Epub
+                Create Text
               </Button>
-            </>
-          )}
-          <div>
-            <p>Flashcard</p>
-            <FlexDiv>
-              <p>Add flashcard list</p>
-              <Switch
-                isSelected={addFlashcardList}
-                onValueChange={() => setAddFlashcardList(!addFlashcardList)}
-              ></Switch>
-            </FlexDiv>
-          </div>
-        </StyledDiv>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          isLoading={creatingTextOrFlashcardList}
-          color={"secondary"}
-          onPress={handleNewText}
-        >
-          Create Text
-        </Button>
-      </ModalFooter>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
     </Modal>
   );
 };

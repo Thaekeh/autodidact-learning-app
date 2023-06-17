@@ -1,12 +1,4 @@
-import {
-  Button,
-  Container,
-  Spacer,
-  Table,
-  Text,
-  theme,
-  useModal,
-} from "@nextui-org/react";
+import { Button, Spacer, useDisclosure } from "@nextui-org/react";
 import React, { useState } from "react";
 import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
@@ -46,15 +38,23 @@ export default function ListPage({
 
   const { isConfirmed } = useConfirm();
 
-  const {
-    visible: newFlashcardModalIsVisible,
-    setVisible: setNewFlashcardModalIsVisible,
-  } = useModal(false);
+  // const {
+  //   visible: newFlashcardModalIsVisible,
+  //   setVisible: setNewFlashcardModalIsVisible,
+  // } = useModal(false);
 
   const {
-    visible: editFlashcardModalIsVisible,
-    setVisible: setEditFlashcardModalIsVisible,
-  } = useModal(false);
+    isOpen: newFlashcardModalIsOpen,
+    onOpen: setNewFlashcardModalIsOpen,
+    onOpenChange: onFlashcardModalIsOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: editFlashcardModalIsOpen,
+    onOpen: setEditFlashcardModalIsOpen,
+    onOpenChange: onEditFlashcardModalIsOpenChange,
+  } = useDisclosure();
+
   const supabase = useSupabaseClient();
 
   const onEditFlashcardConfirm = async ({
@@ -65,7 +65,7 @@ export default function ListPage({
     backText: string;
   }) => {
     if (!list || !selectedFlashcard) return;
-    setEditFlashcardModalIsVisible(false);
+    onEditFlashcardModalIsOpenChange();
     await updateFlashcard(
       supabase,
       selectedFlashcard?.id,
@@ -77,13 +77,13 @@ export default function ListPage({
 
   const editFlashcardButtonHandler = (flashcard: FlashcardRow) => {
     setSelectedFlashcard(flashcard);
-    setEditFlashcardModalIsVisible(true);
+    onEditFlashcardModalIsOpenChange();
   };
 
   const onNewFlashcardConfirm = () => {
     if (!list) return;
     createNewFlashcard(supabase, "test front", "test back", list.id);
-    setNewFlashcardModalIsVisible(false);
+    onFlashcardModalIsOpenChange();
   };
 
   const handleDeleteFlashcard = async (flashcardId: string) => {
@@ -100,28 +100,23 @@ export default function ListPage({
 
   return (
     <>
-      <Container>
+      <div className="container mx-auto">
         <Spacer y={2}></Spacer>
         {list && (
-          <Container
-            display="flex"
-            direction="row"
-            justify="space-between"
-            alignContent="center"
-          >
-            <Text h3>{list?.name}</Text>
-            <Text>{flashcardsToPracticeCount} card(s) to practice</Text>
+          <div className="flex flex-row justify-between items-center">
+            <h3>{list?.name}</h3>
+            <p>{flashcardsToPracticeCount} card(s) to practice</p>
             <Button
               disabled={!flashcardsToPracticeCount}
               size={"md"}
-              icon={<Play size={16} />}
+              endIcon={<Play size={16} />}
               onClick={() =>
                 router.push(getRouteForPracticingFlashcardList(list.id))
               }
             >
               Practice
             </Button>
-          </Container>
+          </div>
         )}
         <FlashcardsTable
           flashcards={flashcards}
@@ -186,23 +181,22 @@ export default function ListPage({
             )}
           </Table.Body>
         </Table> */}
-      </Container>
+      </div>
       <NewFlashcardModal
-        isOpen={newFlashcardModalIsVisible}
-        onCancel={() => setNewFlashcardModalIsVisible(false)}
+        isOpen={newFlashcardModalIsOpen}
+        onCancel={onFlashcardModalIsOpenChange}
         onConfirm={onNewFlashcardConfirm}
       />
-      {editFlashcardModalIsVisible && (
-        <EditFlashcardModal
-          isOpen={editFlashcardModalIsVisible}
-          initialContent={{
-            frontText: selectedFlashcard?.frontText || "",
-            backText: selectedFlashcard?.backText || "",
-          }}
-          onCancel={() => setEditFlashcardModalIsVisible(false)}
-          onConfirm={onEditFlashcardConfirm}
-        />
-      )}
+
+      <EditFlashcardModal
+        isOpen={editFlashcardModalIsOpen}
+        initialContent={{
+          frontText: selectedFlashcard?.frontText || "",
+          backText: selectedFlashcard?.backText || "",
+        }}
+        onCancel={onEditFlashcardModalIsOpenChange}
+        onConfirm={onEditFlashcardConfirm}
+      />
     </>
   );
 }

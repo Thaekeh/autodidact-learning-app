@@ -19,7 +19,7 @@ export const createNewText = async (
     })
     .select()
     .single();
-  return data;
+  return data as TextRow;
 };
 
 export const setTextContent = async (
@@ -107,7 +107,7 @@ export const getTexts = async (
   supabaseClient: SupabaseClient
 ): Promise<TextRow[]> => {
   const { data } = await supabaseClient.from(textsTable).select();
-  return data || [];
+  return (data as TextRow[] | null) || [];
 };
 
 export const getTextById = async (
@@ -119,5 +119,5 @@ export const getTextById = async (
     .select()
     .eq("id", textId)
     .single();
-  return data;
+  return data as TextRow | null;
 };

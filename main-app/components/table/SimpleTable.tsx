@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
+  useTable,
 } from "@nextui-org/react";
 import { ArrowUpRight, BookOpen, Edit, Trash2 } from "react-feather";
 
@@ -34,11 +35,25 @@ export const SimpleTable: React.FC<Props> = ({
   deleteCallback,
   editCallback,
 }) => {
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      width: "70%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "actions",
+    },
+  ];
+
   return (
     <Table style={{ minHeight: "150px" }} aria-label="item table">
-      <TableHeader>
-        <TableColumn width={"70%"}>Name</TableColumn>
-        <TableColumn>Actions</TableColumn>
+      <TableHeader columns={columns}>
+        {(column) => {
+          const { dataIndex, title } = column;
+          return <TableColumn key={dataIndex}>{title}</TableColumn>;
+        }}
       </TableHeader>
       <TableBody
         items={items}
@@ -56,13 +71,23 @@ export const SimpleTable: React.FC<Props> = ({
                   />
                   <Spacer x={1} />
                   <Tooltip content="Edit name">
-                    <Button isIconOnly onPress={() => editCallback(item.id)}>
+                    <Button
+                      radius="full"
+                      variant="light"
+                      isIconOnly
+                      onPress={() => editCallback(item.id)}
+                    >
                       <Edit />
                     </Button>
                   </Tooltip>
                   <Spacer x={1} />
                   <Tooltip color={"danger"} content="Delete">
-                    <Button isIconOnly onPress={() => deleteCallback(item.id)}>
+                    <Button
+                      radius="full"
+                      variant="light"
+                      isIconOnly
+                      onPress={() => deleteCallback(item.id)}
+                    >
                       <Trash2 color={"#FF0080"} />
                     </Button>
                   </Tooltip>
@@ -86,7 +111,7 @@ function OpenButton({
   if (rowType === RowType.list || rowType === RowType.flashcard) {
     return (
       <Tooltip content="Open">
-        <Button isIconOnly onPress={openCallback}>
+        <Button radius="full" variant="light" isIconOnly onPress={openCallback}>
           <ArrowUpRight />
         </Button>
       </Tooltip>
@@ -94,7 +119,7 @@ function OpenButton({
   }
   return (
     <Tooltip content="Read">
-      <Button isIconOnly onPress={openCallback}>
+      <Button radius="full" variant="light" isIconOnly onPress={openCallback}>
         <BookOpen />
       </Button>
     </Tooltip>

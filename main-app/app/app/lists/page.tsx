@@ -1,3 +1,4 @@
+"use client";
 import { Button, Spacer, useDisclosure } from "@nextui-org/react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -94,18 +95,19 @@ export default function Lists({
   );
 }
 
-export async function getServerSideProps({
-  req,
-  res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
-  const supabase = await createServerSupabaseClient<Database>({
-    req,
-    res,
-  });
+// TODO: Fix
+// export async function getServerSideProps({
+//   req,
+//   res,
+// }: {
+//   req: NextApiRequest;
+//   res: NextApiResponse;
+// }) {
+//   const supabase = await createServerSupabaseClient<Database>({
+//     req,
+//     res,
+//   });
 
-  const lists = await getListsForUser(supabase);
-  return { props: { lists } };
-}
+//   const lists = await getListsForUser(supabase);
+//   return { props: { lists } };
+// }

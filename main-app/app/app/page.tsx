@@ -1,14 +1,7 @@
 "use client";
-import {
-  Button,
-  Spacer,
-  Tooltip,
-  useDisclosure,
-  useModal,
-} from "@nextui-org/react";
+import { Button, Spacer, Tooltip, useDisclosure } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
-// import { IconButton } from "components/buttons/IconButton";
 import { useRouter } from "next/navigation";
 import { NameModal } from "components/modals/NameModal";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -53,12 +46,7 @@ import { NewTextModal } from "components/modals/texts/NewTextModal";
 //   return { props: { textsProp: texts, listsProp: lists } };
 // }
 
-export default function Dashboard({}: // textsProp,
-// listsProp,
-{
-  // textsProp: TextRow[];
-  // listsProp: FlashcardListRow[];
-}) {
+export default function Dashboard() {
   const [texts, setTexts] = useState<TextRow[] | null>(null);
   const [lists, setLists] = useState<FlashcardListRow[] | null>(null);
   const router = useRouter();
@@ -68,12 +56,8 @@ export default function Dashboard({}: // textsProp,
   useEffect(() => {
     getTexts(supabaseClient).then((texts) => setTexts(texts));
     getListsForUser(supabaseClient).then((lists) => setLists(lists));
-    // setTexts(texts);
-    // setLists(lists);
   }, []);
 
-  // const { visible: textModalIsVisible, setVisible: setTextModalIsVisible } =
-  //   useModal(false);
   const {
     isOpen: textModalIsVisible,
     onOpen: setTextModalIsVisible,
@@ -147,12 +131,12 @@ export default function Dashboard({}: // textsProp,
     <>
       <NewTextModal
         isOpen={textModalIsVisible}
-        onCancel={setTextModalIsVisible}
+        onOpenChange={onTextModalIsOpenChange}
       />
       <NameModal
         title={"Insert name of list"}
         isOpen={listModalIsVisible}
-        onCancel={setListModalIsVisible}
+        onOpenChange={onListModalIsOpenChange}
         onConfirm={onNewListConfirm}
       />
       {renameModalSettings.isOpen && (
@@ -160,7 +144,7 @@ export default function Dashboard({}: // textsProp,
           title={"Rename"}
           isOpen={renameModalSettings.isOpen}
           initalName={renameModalSettings.name}
-          onCancel={() =>
+          onOpenChange={() =>
             setRenameModalSettings({
               isOpen: false,
               name: "",
@@ -178,69 +162,67 @@ export default function Dashboard({}: // textsProp,
         />
       )}
 
-      <div className="container mx-auto">
-        <Spacer y={2} />
+      {/* <div className="container flex flex-row flex-wrap gap-8 mx-auto w-screen mt-8 justify-around"> */}
+      <div className="grid grid-cols-2 max-md:grid-cols-1  gap-4 w-screen p-4">
         <div>
-          <div>
-            <div className="container mx-auto">
-              <div
-              // align="center"
-              // justify="space-between"
+          <div className="flex flex-row items-center justify-between">
+            <h3>Recent texts</h3>
+            <Tooltip content={"Create new text"}>
+              <Button
+                radius="full"
+                variant="light"
+                isIconOnly
+                onPress={setTextModalIsVisible}
               >
-                <h3>Recent texts</h3>
-                <Tooltip content={"Create new text"}>
-                  <Button isIconOnly onPress={setTextModalIsVisible}>
-                    <Plus />
-                  </Button>
-                </Tooltip>
-              </div>
-              <SimpleTable
-                items={simpleMappedItems(texts)}
-                deleteCallback={handleDeleteText}
-                openCallBack={(id) => router.push(getRouteForSingleText(id))}
-                editCallback={(id) => {
-                  setRenameModalSettings({
-                    isOpen: true,
-                    name: texts?.find((text) => text.id === id)?.name,
-                    callback: async (name) => {
-                      await setTextName(supabaseClient, id, name);
-                      refetchTexts();
-                    },
-                  });
-                }}
-              />
-            </div>
+                <Plus />
+              </Button>
+            </Tooltip>
           </div>
-          <Spacer x={2} />
-          <div>
-            <div className="container mx-auto">
-              <div
-              // align="center" justify="space-between"
+          <SimpleTable
+            items={simpleMappedItems(texts)}
+            deleteCallback={handleDeleteText}
+            openCallBack={(id) => router.push(getRouteForSingleText(id))}
+            editCallback={(id) => {
+              setRenameModalSettings({
+                isOpen: true,
+                name: texts?.find((text) => text.id === id)?.name,
+                callback: async (name) => {
+                  await setTextName(supabaseClient, id, name);
+                  refetchTexts();
+                },
+              });
+            }}
+          />
+        </div>
+        <div>
+          <div className="flex flex-row items-center justify-between">
+            <h3>Card Lists</h3>
+            <Tooltip content={"Create new list"}>
+              <Button
+                radius="full"
+                variant="light"
+                isIconOnly
+                onPress={setListModalIsVisible}
               >
-                <h3>Card Lists</h3>
-                <Tooltip content={"Create new list"}>
-                  <Button isIconOnly onPress={setListModalIsVisible}>
-                    <Plus />
-                  </Button>
-                </Tooltip>
-              </div>
-              <SimpleTable
-                items={simpleMappedItems(lists)}
-                deleteCallback={handleDeleteList}
-                openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
-                editCallback={(id) =>
-                  setRenameModalSettings({
-                    isOpen: true,
-                    name: lists?.find((list) => list.id === id)?.name,
-                    callback: async (name) => {
-                      await setListName(supabaseClient, id, name);
-                      refetchLists();
-                    },
-                  })
-                }
-              />
-            </div>
+                <Plus />
+              </Button>
+            </Tooltip>
           </div>
+          <SimpleTable
+            items={simpleMappedItems(lists)}
+            deleteCallback={handleDeleteList}
+            openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
+            editCallback={(id) =>
+              setRenameModalSettings({
+                isOpen: true,
+                name: lists?.find((list) => list.id === id)?.name,
+                callback: async (name) => {
+                  await setListName(supabaseClient, id, name);
+                  refetchLists();
+                },
+              })
+            }
+          />
         </div>
       </div>
     </>

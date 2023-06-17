@@ -1,4 +1,7 @@
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import {
+  createClientComponentClient,
+  createPagesBrowserClient,
+} from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import type { AppProps } from "next/app";
 import { ReactElement, ReactNode, useState } from "react";
@@ -9,7 +12,7 @@ import { SSRProvider } from "@react-aria/ssr";
 import ConfirmContextProvider from "providers/ConfirmContextProvider";
 import { ConfirmModal } from "components/modals/ConfirmModal";
 import { appWithTranslation } from "next-i18next";
-import { NavbarLayout } from "./NavbarLayout";
+import NavbarLayout from "./app/layout";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -21,7 +24,7 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
-  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+  const [supabaseClient] = useState(() => createPagesBrowserClient());
 
   return (
     <SSRProvider>

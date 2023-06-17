@@ -6,16 +6,27 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
+import {
+  createClientComponentClient,
+  User,
+} from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSupabase } from "components/providers/supabase-provider";
 import { useRouter } from "next/navigation";
-import { Key } from "react";
-import { User } from "react-feather";
+import { Key, useEffect, useState } from "react";
+import { User as UserIcon } from "react-feather";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
-  const user = useUser();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then((user) => {
+      setUser(user.data.user);
+    });
+  }, [supabase]);
 
   const onDropdownAction = (actionKey: Key) => {
     switch (actionKey) {
@@ -34,7 +45,7 @@ export const NavbarAvatar: React.FC<Props> = () => {
           <Avatar
             as="button"
             size="md"
-            icon={<User color="white" />}
+            icon={<UserIcon color="white" />}
             color={"secondary"}
           />
         </DropdownTrigger>

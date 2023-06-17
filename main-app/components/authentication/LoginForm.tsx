@@ -17,6 +17,8 @@ export const LoginForm = () => {
     if (!event) return;
     setFormSubmitIsLoading(true);
     event.preventDefault();
+
+    // TODO: implement signup with auth/callback: https://supabase.com/docs/guides/auth/auth-helpers/nextjs#client-side
     try {
       supabase.auth
         .signInWithPassword({

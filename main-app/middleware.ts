@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "types";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  const supabase = createMiddlewareClient({ req, res });
+  const supabase = createMiddlewareClient<Database>({ req, res });
 
   const {
     data: { session },
