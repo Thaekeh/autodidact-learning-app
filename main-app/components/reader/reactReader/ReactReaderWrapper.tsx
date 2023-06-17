@@ -1,3 +1,4 @@
+"use client";
 import styled from "@emotion/styled";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Rendition } from "epubjs";

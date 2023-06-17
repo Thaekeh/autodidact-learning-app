@@ -1,6 +1,15 @@
-import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
+import {
+  Button,
+  Spacer,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+} from "@nextui-org/react";
 import { Edit, Trash2 } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
 
 interface Props {
   items: {
@@ -18,35 +27,35 @@ export const FullTable: React.FC<Props> = ({
 }) => {
   return (
     <Table>
-      <Table.Header>
-        <Table.Column width={"70%"}>Name</Table.Column>
-        <Table.Column>Actions</Table.Column>
-      </Table.Header>
-      <Table.Body>
+      <TableHeader>
+        <TableColumn width={"70%"}>Name</TableColumn>
+        <TableColumn>Actions</TableColumn>
+      </TableHeader>
+      <TableBody>
         {items &&
           items.map((item) => {
             return (
-              <Table.Row key={item.id}>
-                <Table.Cell>{item.name}</Table.Cell>
-                <Table.Cell>
-                  <Row>
+              <TableRow key={item.id}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>
+                  <div>
                     <Tooltip content="Edit">
-                      <IconButton onClick={() => openCallBack(item.id)}>
+                      <Button onPress={() => openCallBack(item.id)}>
                         <Edit />
-                      </IconButton>
+                      </Button>
                     </Tooltip>
                     <Spacer x={1} />
-                    <Tooltip color={"error"} content="Delete">
-                      <IconButton onClick={() => deleteCallback(item.id)}>
+                    <Tooltip color={"danger"} content="Delete">
+                      <Button onPress={() => deleteCallback(item.id)}>
                         <Trash2 color={"#FF0080"} />
-                      </IconButton>
+                      </Button>
                     </Tooltip>
-                  </Row>
-                </Table.Cell>
-              </Table.Row>
+                  </div>
+                </TableCell>
+              </TableRow>
             );
           })}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 };

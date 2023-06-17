@@ -32,7 +32,7 @@ import {
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
 // import { IconButton } from "components/buttons/IconButton";
-import { ArrowUpRight } from "react-feather";
+import { ArrowDown, ArrowUpRight, ChevronDown } from "react-feather";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
@@ -234,19 +234,18 @@ export default function TextPage({ params }: { params: { id: string } }) {
           />
         )}
       </div>
-      <div
-        className="flex "
-        // xs={3} direction="column"
-      >
+      <div className="flex flex-col gap-y-4">
         <h3>Translation</h3>
-        <FlexContainer>
-          <div>
+        <div className="flex flex-col">
+          <div className="flex flex-row">
             <h6>From</h6>
             <Dropdown>
               <DropdownTrigger>
-                {selectedSourceLanguage
-                  ? selectedSourceLanguage.nativeName
-                  : "Detect Language"}
+                <Button variant="bordered" color="secondary">
+                  {selectedSourceLanguage
+                    ? selectedSourceLanguage.nativeName
+                    : "Detect Language"}
+                </Button>
               </DropdownTrigger>
               <DropdownMenu
                 onAction={(key) => handleSelectSourceLanguage(key.toString())}
@@ -260,13 +259,15 @@ export default function TextPage({ params }: { params: { id: string } }) {
               </DropdownMenu>
             </Dropdown>
           </div>
-          <div>
+          <div className="flex flex-row">
             <h6>To</h6>
             <Dropdown>
               <DropdownTrigger>
-                {selectedTargetLanguage
-                  ? selectedTargetLanguage.nativeName
-                  : "Not selected"}
+                <Button variant="bordered" color="secondary">
+                  {selectedTargetLanguage
+                    ? selectedTargetLanguage.nativeName
+                    : "Not selected"}
+                </Button>
               </DropdownTrigger>
               <DropdownMenu
                 onAction={(key) => handleSelectTargetLanguage(key.toString())}
@@ -280,14 +281,16 @@ export default function TextPage({ params }: { params: { id: string } }) {
               </DropdownMenu>
             </Dropdown>
           </div>
-        </FlexContainer>
+        </div>
         {flashcardLists && (
           <FlexRowDiv>
             <Dropdown>
               <DropdownTrigger>
-                {flashcardLists.find(
-                  (flashcardList) => flashcardList.id === selectedList
-                )?.name || "Select list"}
+                <Button variant="bordered" endIcon={<ChevronDown />}>
+                  {flashcardLists.find(
+                    (flashcardList) => flashcardList.id === selectedList
+                  )?.name || "Select list"}
+                </Button>
               </DropdownTrigger>
               <DropdownMenu
                 onAction={(key) => handleSetSelectedList(key.toString())}
@@ -313,8 +316,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
             )}
           </FlexRowDiv>
         )}
-        <div style={{ maxWidth: "300px" }}>
-          <form action="">
+        <div className="flex gap-y-8">
+          <form action="" className="flex flex-col gap-y-4">
             <Input
               label="Front of card"
               name="front"
@@ -331,7 +334,6 @@ export default function TextPage({ params }: { params: { id: string } }) {
               onValueChange={setBackOfCardValue}
               fullWidth
             ></Input>
-            <Spacer y={1} />
             <Button
               disabled={savingCardIsLoading}
               color={"secondary"}
