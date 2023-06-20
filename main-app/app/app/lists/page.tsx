@@ -1,10 +1,8 @@
 "use client";
 import { Button, Spacer, useDisclosure } from "@nextui-org/react";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { NextApiRequest, NextApiResponse } from "next";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
 import { FullTable } from "components/table/FullTable";
 import { useConfirm } from "hooks/useConfirm";
@@ -16,13 +14,11 @@ import {
   getRouteForFlashcardList,
 } from "utils";
 import { NameModal } from "components/modals/NameModal";
+import { RowType, SimpleTable } from "components/table/SimpleTable";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function Lists({
-  lists: listsProp,
-}: {
-  lists: FlashcardListRow[];
-}) {
-  const [lists, setLists] = useState(listsProp);
+export default function Lists() {
+  const [lists, setLists] = useState<FlashcardListRow[]>([]);
   const router = useRouter();
   const { isConfirmed } = useConfirm();
 
@@ -32,10 +28,11 @@ export default function Lists({
     onOpenChange,
   } = useDisclosure();
 
-  // const { visible: listModalIsVisible, setVisible: setListModalIsVisible } =
-  //   useModal(false);
+  const supabaseClient = createClientComponentClient();
 
-  const supabaseClient = useSupabaseClient();
+  useEffect(() => {
+    getListsForUser(supabaseClient).then((lists) => setLists(lists));
+  }, []);
 
   const handleDeleteCallback = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
@@ -59,18 +56,28 @@ export default function Lists({
     }
   };
 
+  const simpleMappedItems = (items: FlashcardListRow[] | null) => {
+    if (!items) return [];
+    return items.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        type: RowType.list,
+      };
+    });
+  };
+
   return (
     <>
       <NameModal
         title={"Insert name of list"}
         isOpen={listModalIsVisible}
-        onCancel={setListModalIsVisible}
+        onOpenChange={onOpenChange}
         onConfirm={onNewListConfirm}
       />
-      <div className="container mx-auto">
-        <Spacer y={2}></Spacer>
+      <div className="container mx-auto mt-12">
         <div
-          className="container mx-auto"
+          className="container mx-auto flex justify-between items-center mb-6"
           // display="flex"
           // direction="row"
           // justify="space-between"
@@ -81,15 +88,18 @@ export default function Lists({
             onPress={setListModalIsVisible}
             size={"md"}
             endIcon={<Plus size={16} />}
+            variant="bordered"
+            color="secondary"
           >
-            Create New
+            New
           </Button>
         </div>
-        <FullTable
-          items={lists}
+        <SimpleTable
+          items={simpleMappedItems(lists)}
           openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
           deleteCallback={handleDeleteCallback}
-        ></FullTable>
+          editCallback={() => console.log("TODO- edit callback")}
+        ></SimpleTable>
       </div>
     </>
   );
