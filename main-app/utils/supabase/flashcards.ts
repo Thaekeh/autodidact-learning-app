@@ -11,7 +11,7 @@ export const getFlashcardsForList = async (
     .from(flashcardsTable)
     .select()
     .eq("list_id", listId);
-  return data || [];
+  return data as FlashcardRow[];
 };
 
 export const createNewFlashcard = async (
@@ -63,11 +63,12 @@ export const getFlashcardsThatRequirePracticeByListId = async (
   listId: string
 ) => {
   const date = DateTime.utc().toISO();
-  return await supabase
+  const { data } = await supabase
     .from(flashcardsTable)
     .select()
     .eq("list_id", listId)
     .lt("next_practice_date", date);
+  return data as FlashcardRow[];
 };
 
 type UpdateFlashcardWithSpacedRepetitionDataProps = Pick<

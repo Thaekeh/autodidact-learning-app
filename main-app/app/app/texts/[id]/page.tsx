@@ -32,13 +32,12 @@ import {
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
 // import { IconButton } from "components/buttons/IconButton";
-import { ArrowDown, ArrowUpRight, ChevronDown } from "react-feather";
+import { ArrowUpRight, ChevronDown } from "react-feather";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import NextLink from "next/link";
 
 export default function TextPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
-
   const supabaseClient = createClientComponentClient();
 
   const [text, setText] = useState<TextRow | null>(null);
@@ -46,9 +45,16 @@ export default function TextPage({ params }: { params: { id: string } }) {
     FlashcardListWithNameOnly[] | null
   >(null);
 
+  const [textEpubUrl, setTextEpubUrl] = useState<string | null | undefined>(
+    undefined
+  );
+
   useEffect(() => {
     const textId = params.id;
-    getTextById(supabaseClient, textId).then((newText) => setText(newText));
+    getTextById(supabaseClient, textId).then((newText) => {
+      setText(newText);
+      setTextEpubUrl(newText && newText.epub_file);
+    });
     getAllFlashcardListsNamesOnly(supabaseClient).then((lists) =>
       setFlashcardLists(lists)
     );
@@ -74,8 +80,6 @@ export default function TextPage({ params }: { params: { id: string } }) {
   };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
-
-  const [textEpubUrl] = useState<string | null | undefined>(text?.epub_file);
 
   const [textContent] = useState(text?.content || "");
 
@@ -210,16 +214,16 @@ export default function TextPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="grid grid-cols-3 w-screen gap-2 p-6">
+    <div className="grid grid-cols-2 md:grid-cols-3  w-screen gap-2 p-4 h-[calc(100vh-6.1rem)]">
       <div className="col-span-2">
-        {!!text?.epub_file ? (
+        {!!textEpubUrl ? (
           <>
-            <div className="container mx-auto">
-              <h3>{text.name}</h3>
+            <div className="container mx-auto w-full h-full">
+              <h1 className="text-lg font-bold mb-4">{text && text.name}</h1>
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
-                  lastLocation={text.last_epub_location}
+                  lastLocation={text && text.last_epub_location}
                   setLastLocation={setLastLocation}
                   processTextSelection={processTextSelection}
                 />
@@ -234,11 +238,11 @@ export default function TextPage({ params }: { params: { id: string } }) {
           />
         )}
       </div>
-      <div className="flex flex-col gap-y-4">
+      <div className="hidden md:flex flex-col w-60 gap-y-4">
         <h3>Translation</h3>
-        <div className="flex flex-col">
-          <div className="flex flex-row">
-            <h6>From</h6>
+        <div className="flex flex-col gap-y-4">
+          <div className="flex flex-row w-60 justify-between">
+            <h6>From:</h6>
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
@@ -248,6 +252,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                aria-label="Select source language"
                 onAction={(key) => handleSelectSourceLanguage(key.toString())}
                 selectionMode="single"
               >
@@ -259,8 +264,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
               </DropdownMenu>
             </Dropdown>
           </div>
-          <div className="flex flex-row">
-            <h6>To</h6>
+          <div className="flex flex-row w-60 justify-between">
+            <h6>To:</h6>
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
@@ -270,6 +275,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                aria-label="Select target language"
                 onAction={(key) => handleSelectTargetLanguage(key.toString())}
                 selectionMode="single"
               >
@@ -293,6 +299,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                aria-label="Select flashcard list"
                 onAction={(key) => handleSetSelectedList(key.toString())}
                 selectionMode="single"
               >
@@ -306,9 +313,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
             {selectedList && (
               <Button
                 color="secondary"
-                onPress={() =>
-                  router.push(getRouteForFlashcardList(selectedList))
-                }
+                as={NextLink}
+                href={getRouteForFlashcardList(selectedList)}
                 isIconOnly
               >
                 <ArrowUpRight />
@@ -349,35 +355,6 @@ export default function TextPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-// export async function getServerSideProps({
-//   req,
-//   res,
-//   params,
-// }: {
-//   req: NextApiRequest;
-//   res: NextApiResponse;
-//   params: Params;
-// }) {
-//   const supabase = await createServerSupabaseClient<Database>({
-//     req,
-//     res,
-//   });
-
-//   const textId = params.text[0];
-//   const text = await getTextById(supabase, textId);
-
-//   const flashcardLists = await getAllFlashcardListsNamesOnly(supabase);
-
-//   return { props: { text: text, flashcardLists } };
-// }
-
-const FlexContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 20px;
-`;
 
 const FlexRowDiv = styled.div`
   display: flex;

@@ -11,16 +11,15 @@ import {
 import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
 import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
-import { useSession, useUser } from "@supabase/auth-helpers-react";
-import { create } from "domain";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabase } from "components/providers/supabase-provider";
+
+const NAVBAR_HEIGHT = "4rem";
 
 export const ComposedNavbar = () => {
   const { supabase, session } = useSupabase();
 
   return (
-    <Navbar>
+    <Navbar height={NAVBAR_HEIGHT} position="sticky">
       <NavbarBrand>
         <NextLink href={supabase ? "/app" : "/"}>
           <h1>Learning Hub</h1>

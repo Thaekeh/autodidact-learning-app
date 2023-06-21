@@ -1,33 +1,24 @@
 "use client";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { TextRow } from "types/Texts";
 import { getRouteForSingleText } from "utils/routing/texts";
-import { GetServerSidePropsContext } from "next";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/supabase";
-import { getLocale } from "utils/translation/getLocale";
-import { useTranslation } from "next-i18next";
-import { FullTable } from "components/table/FullTable";
 import { useConfirm } from "hooks/useConfirm";
 import { deleteText, getTexts } from "utils/supabase/texts";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { RowType, SimpleTable } from "components/table/SimpleTable";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Texts() {
   const [texts, setTexts] = useState<TextRow[]>([]);
   const { isConfirmed } = useConfirm();
-  const router = useRouter();
 
-  const supabase = useSupabaseClient();
+  const supabaseClient = createClientComponentClient();
 
   useEffect(() => {
-    getTexts(supabase).then((texts) => {
+    getTexts(supabaseClient).then((texts) => {
       setTexts(texts);
     });
   }, []);
-
-  const supabaseClient = useSupabaseClient();
 
   const handleDeleteCallback = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
@@ -38,13 +29,25 @@ export default function Texts() {
     }
   };
 
+  const simpleMappedItems = (items: TextRow[] | null) => {
+    if (!items) return [];
+    return items.map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        type: RowType.text,
+      };
+    });
+  };
+
   return (
-    <div className="container mx-auto">
-      <FullTable
-        items={texts}
-        openCallBack={(id) => router.push(getRouteForSingleText(id))}
+    <div className="container mx-auto mt-8">
+      <SimpleTable
+        items={simpleMappedItems(texts)}
+        openHrefFunction={(id) => getRouteForSingleText(id)}
+        editCallback={(id) => console.log("edit", id)}
         deleteCallback={handleDeleteCallback}
-      ></FullTable>
+      ></SimpleTable>
     </div>
   );
 }

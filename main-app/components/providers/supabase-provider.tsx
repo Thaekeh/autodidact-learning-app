@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  createBrowserSupabaseClient,
   createPagesBrowserClient,
   Session,
 } from "@supabase/auth-helpers-nextjs";

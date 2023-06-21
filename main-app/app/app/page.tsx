@@ -180,7 +180,7 @@ export default function Dashboard() {
           <SimpleTable
             items={simpleMappedItems(texts)}
             deleteCallback={handleDeleteText}
-            openCallBack={(id) => router.push(getRouteForSingleText(id))}
+            openHrefFunction={(id) => getRouteForSingleText(id)}
             editCallback={(id) => {
               setRenameModalSettings({
                 isOpen: true,
@@ -210,7 +210,7 @@ export default function Dashboard() {
           <SimpleTable
             items={simpleMappedItems(lists)}
             deleteCallback={handleDeleteList}
-            openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
+            openHrefFunction={(id) => getRouteForFlashcardList(id)}
             editCallback={(id) =>
               setRenameModalSettings({
                 isOpen: true,

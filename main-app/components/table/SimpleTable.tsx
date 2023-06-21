@@ -11,6 +11,7 @@ import {
   useTable,
 } from "@nextui-org/react";
 import { ArrowUpRight, BookOpen, Edit, Trash2 } from "react-feather";
+import NextLink from "next/link";
 
 export enum RowType {
   flashcard = "flashcard",
@@ -24,14 +25,14 @@ interface Props {
     name: string;
     type: RowType;
   }[];
-  openCallBack: (id: string) => void;
   deleteCallback: (id: string) => void;
   editCallback: (id: string) => void;
+  openHrefFunction: (id: string) => string;
 }
 
 export const SimpleTable: React.FC<Props> = ({
   items,
-  openCallBack,
+  openHrefFunction,
   deleteCallback,
   editCallback,
 }) => {
@@ -67,7 +68,7 @@ export const SimpleTable: React.FC<Props> = ({
                 <div className="flex">
                   <OpenButton
                     rowType={item.type}
-                    openCallback={() => openCallBack(item.id)}
+                    href={openHrefFunction(item.id)}
                   />
                   <Spacer x={1} />
                   <Tooltip content="Edit name">
@@ -101,17 +102,17 @@ export const SimpleTable: React.FC<Props> = ({
   );
 };
 
-function OpenButton({
-  rowType,
-  openCallback,
-}: {
-  rowType: RowType;
-  openCallback: () => void;
-}) {
+function OpenButton({ rowType, href }: { rowType: RowType; href: string }) {
   if (rowType === RowType.list || rowType === RowType.flashcard) {
     return (
       <Tooltip content="Open">
-        <Button radius="full" variant="light" isIconOnly onPress={openCallback}>
+        <Button
+          as={NextLink}
+          href={href}
+          radius="full"
+          variant="light"
+          isIconOnly
+        >
           <ArrowUpRight />
         </Button>
       </Tooltip>
@@ -119,7 +120,13 @@ function OpenButton({
   }
   return (
     <Tooltip content="Read">
-      <Button radius="full" variant="light" isIconOnly onPress={openCallback}>
+      <Button
+        radius="full"
+        variant="light"
+        isIconOnly
+        as={NextLink}
+        href={href}
+      >
         <BookOpen />
       </Button>
     </Tooltip>

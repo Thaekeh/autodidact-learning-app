@@ -10,20 +10,21 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import { Edit, Trash2 } from "react-feather";
+import NextLink from "next/link";
 
 interface Props {
   items: {
     id: string;
     name: string;
   }[];
-  openCallBack: (id: string) => void;
   deleteCallback: (id: string) => void;
+  openHrefFunction: (id: string) => string;
 }
 
 export const FullTable: React.FC<Props> = ({
   items,
-  openCallBack,
   deleteCallback,
+  openHrefFunction,
 }) => {
   return (
     <Table>
@@ -40,7 +41,7 @@ export const FullTable: React.FC<Props> = ({
                 <TableCell>
                   <div>
                     <Tooltip content="Edit">
-                      <Button onPress={() => openCallBack(item.id)}>
+                      <Button as={NextLink} href={openHrefFunction(item.id)}>
                         <Edit />
                       </Button>
                     </Tooltip>

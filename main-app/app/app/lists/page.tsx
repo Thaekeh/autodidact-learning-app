@@ -1,12 +1,10 @@
 "use client";
-import { Button, Spacer, useDisclosure } from "@nextui-org/react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Button, useDisclosure } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
-import { FullTable } from "components/table/FullTable";
 import { useConfirm } from "hooks/useConfirm";
-import { Database, FlashcardListRow } from "types";
+import { FlashcardListRow } from "types";
 import {
   createNewFlashcardList,
   deleteList,
@@ -16,6 +14,7 @@ import {
 import { NameModal } from "components/modals/NameModal";
 import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function Lists() {
   const [lists, setLists] = useState<FlashcardListRow[]>([]);
@@ -90,7 +89,7 @@ export default function Lists() {
         </div>
         <SimpleTable
           items={simpleMappedItems(lists)}
-          openCallBack={(id) => router.push(getRouteForFlashcardList(id))}
+          openHrefFunction={(id) => getRouteForFlashcardList(id)}
           deleteCallback={handleDeleteCallback}
           editCallback={() => console.log("TODO- edit callback")}
         ></SimpleTable>

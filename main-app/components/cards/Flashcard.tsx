@@ -1,5 +1,3 @@
-import styled from "@emotion/styled";
-import { theme } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -13,30 +11,17 @@ const Flashcard: React.FC<Props> = ({ text }) => {
   const [frontIsVisible, setFrontIsVisible] = useState<boolean>(true);
 
   useEffect(() => {
-    // to always start with front visible when changing cards
     setFrontIsVisible(true);
   }, [text]);
 
   return (
-    <StyledDiv onClick={() => setFrontIsVisible(!frontIsVisible)}>
+    <div
+      className="w-80 h-40 py-12 select-none rounded-lg flex justify-center items-center hover:cursor-pointer bg-indigo-500 hover:rounded-lg hover:bg-indigo-600 text-white hover:text-white "
+      onClick={() => setFrontIsVisible(!frontIsVisible)}
+    >
       {frontIsVisible ? text.front : text.back}
-    </StyledDiv>
+    </div>
   );
 };
-
-const StyledDiv = styled.div`
-  width: 30rem;
-  height: 10rem;
-  background-color: ${theme.colors.purple600.value};
-  color: white;
-  font-size: 1.8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: ${theme.radii.sm.value};
-  :hover {
-    cursor: pointer;
-  }
-`;
 
 export default Flashcard;

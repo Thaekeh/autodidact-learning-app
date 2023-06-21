@@ -1,61 +1,62 @@
-import { Button, Spacer, useDisclosure } from "@nextui-org/react";
-import React, { useState } from "react";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/supabase";
-import { NextApiRequest, NextApiResponse } from "next";
+"use client";
+import { Button, useDisclosure } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
 import { FlashcardListRow } from "types/FlashcardLists";
 import { getListById, getRouteForPracticingFlashcardList } from "utils";
 import { Play } from "react-feather";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   createNewFlashcard,
   deleteFlashcard,
   getFlashcardsForList,
-  getFlashcardsThatRequirePracticeByListId,
   updateFlashcard,
 } from "utils/supabase/flashcards";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "types";
 import { NewFlashcardModal } from "components/modals/flashcards/NewFlashcardModal";
 import { EditFlashcardModal } from "components/modals/flashcards/EditFlashcardModal";
-import { useRouter } from "next/navigation";
 import { FlashcardsTable } from "components/table/FlashcardsTable";
 import { useConfirm } from "hooks/useConfirm";
+import filterFlashcardsThatRequirePractice from "utils/flashcards/getFlashcardsThatRequirePractice";
+import NextLink from "next/link";
 
-export default function ListPage({
-  list,
-  flashcards: flashcardsProp,
-  flashcardsToPracticeCount,
-}: {
-  list: FlashcardListRow | null;
-  flashcards: FlashcardRow[];
-  flashcardsToPracticeCount: number | null;
-}) {
+export default function ListPage({ params }: { params: { id: string } }) {
   const [selectedFlashcard, setSelectedFlashcard] = useState<
     FlashcardRow | undefined
   >(undefined);
-  const [flashcards, setFlashcards] = useState<FlashcardRow[]>(flashcardsProp);
+  const [flashcards, setFlashcards] = useState<FlashcardRow[]>([]);
 
   const { isConfirmed } = useConfirm();
 
-  // const {
-  //   visible: newFlashcardModalIsVisible,
-  //   setVisible: setNewFlashcardModalIsVisible,
-  // } = useModal(false);
+  const [list, setList] = useState<FlashcardListRow | null>();
+
+  const [flashcardsToPractice, setFlashcardsToPractice] = useState<
+    FlashcardRow[]
+  >([]);
 
   const {
     isOpen: newFlashcardModalIsOpen,
-    onOpen: setNewFlashcardModalIsOpen,
     onOpenChange: onFlashcardModalIsOpenChange,
   } = useDisclosure();
 
   const {
     isOpen: editFlashcardModalIsOpen,
-    onOpen: setEditFlashcardModalIsOpen,
     onOpenChange: onEditFlashcardModalIsOpenChange,
   } = useDisclosure();
 
-  const supabase = useSupabaseClient();
+  const supabaseClient = createClientComponentClient();
+
+  useEffect(() => {
+    getListById(supabaseClient, params.id).then((list) => {
+      setList(list);
+    });
+    getFlashcardsForList(supabaseClient, params.id).then((flashcards) => {
+      setFlashcards(flashcards);
+
+      const flashcardsToPractice =
+        filterFlashcardsThatRequirePractice(flashcards);
+      setFlashcardsToPractice(flashcardsToPractice);
+    });
+  }, [params.id]);
 
   const onEditFlashcardConfirm = async ({
     frontText,
@@ -67,7 +68,7 @@ export default function ListPage({
     if (!list || !selectedFlashcard) return;
     onEditFlashcardModalIsOpenChange();
     await updateFlashcard(
-      supabase,
+      supabaseClient,
       selectedFlashcard?.id,
       frontText,
       backText,
@@ -82,7 +83,7 @@ export default function ListPage({
 
   const onNewFlashcardConfirm = () => {
     if (!list) return;
-    createNewFlashcard(supabase, "test front", "test back", list.id);
+    createNewFlashcard(supabaseClient, "test front", "test back", list.id);
     onFlashcardModalIsOpenChange();
   };
 
@@ -90,29 +91,30 @@ export default function ListPage({
     if (!list?.id) return;
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteFlashcard(supabase, flashcardId);
-      const newFlashcards = await getFlashcardsForList(supabase, list?.id);
+      await deleteFlashcard(supabaseClient, flashcardId);
+      const newFlashcards = await getFlashcardsForList(
+        supabaseClient,
+        list?.id
+      );
       setFlashcards(newFlashcards);
     }
   };
 
-  const router = useRouter();
-
   return (
     <>
-      <div className="container mx-auto">
-        <Spacer y={2}></Spacer>
+      <div className="container mx-auto mt-6">
         {list && (
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center mb-4">
             <h3>{list?.name}</h3>
-            <p>{flashcardsToPracticeCount} card(s) to practice</p>
+            <p>{flashcardsToPractice.length} card(s) to practice</p>
             <Button
-              disabled={!flashcardsToPracticeCount}
+              as={NextLink}
+              href={getRouteForPracticingFlashcardList(list.id)}
+              disabled={!flashcardsToPractice}
               size={"md"}
+              variant={"flat"}
+              color={"secondary"}
               endIcon={<Play size={16} />}
-              onClick={() =>
-                router.push(getRouteForPracticingFlashcardList(list.id))
-              }
             >
               Practice
             </Button>
@@ -199,35 +201,4 @@ export default function ListPage({
       />
     </>
   );
-}
-
-export async function getServerSideProps({
-  req,
-  res,
-  params,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-  params: Params;
-}) {
-  const supabase = await createServerSupabaseClient<Database>({
-    req,
-    res,
-  });
-
-  const listId = params.list[0];
-  const list = await getListById(supabase, listId);
-
-  const flashcardsThatRequirePractice = await (
-    await getFlashcardsThatRequirePracticeByListId(supabase, listId)
-  ).data?.length;
-
-  const flashcards = await getFlashcardsForList(supabase, listId);
-  return {
-    props: {
-      list: list,
-      flashcards,
-      flashcardsToPracticeCount: flashcardsThatRequirePractice || 0,
-    },
-  };
 }

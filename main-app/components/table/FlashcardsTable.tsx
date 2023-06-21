@@ -1,12 +1,20 @@
-import { Row, Spacer, Table, Tooltip } from "@nextui-org/react";
+import {
+  Spacer,
+  Table,
+  Tooltip,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+} from "@nextui-org/react";
 import { Edit, Trash2 } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
 import { FlashcardRow, ProfileRow } from "types";
 import { DateTime } from "luxon";
 import {
   defaultFirstPhaseInterval,
   defaultSecondPhaseInterval,
-  FlashcardPhase,
   mapFlashcardIntervalToLearningPhase,
 } from "utils/mapping/flashcards";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
@@ -39,14 +47,14 @@ export const FlashcardsTable: React.FC<Props> = ({
 
   return (
     <Table>
-      <Table.Header>
-        <Table.Column>Front</Table.Column>
-        <Table.Column>Back</Table.Column>
-        <Table.Column>Next practice date</Table.Column>
-        <Table.Column>Learning Phase</Table.Column>
-        <Table.Column>Actions</Table.Column>
-      </Table.Header>
-      <Table.Body>
+      <TableHeader>
+        <TableColumn>Front</TableColumn>
+        <TableColumn>Back</TableColumn>
+        <TableColumn>Next practice date</TableColumn>
+        <TableColumn>Learning Phase</TableColumn>
+        <TableColumn>Actions</TableColumn>
+      </TableHeader>
+      <TableBody>
         {flashcards &&
           flashcards.map((card) => {
             const formattedNextPracticeDate =
@@ -62,30 +70,30 @@ export const FlashcardsTable: React.FC<Props> = ({
             );
 
             return (
-              <Table.Row key={card.id}>
-                <Table.Cell>{card.frontText || "Empty"}</Table.Cell>
-                <Table.Cell>{card.backText || "Empty"}</Table.Cell>
-                <Table.Cell>{formattedNextPracticeDate}</Table.Cell>
-                <Table.Cell>{learningPhaseForCard}</Table.Cell>
-                <Table.Cell>
-                  <Row>
+              <TableRow key={card.id}>
+                <TableCell>{card.frontText || "Empty"}</TableCell>
+                <TableCell>{card.backText || "Empty"}</TableCell>
+                <TableCell>{formattedNextPracticeDate}</TableCell>
+                <TableCell>{learningPhaseForCard}</TableCell>
+                <TableCell>
+                  <TableRow>
                     <Tooltip content="Edit">
-                      <IconButton onClick={() => editCallback(card)}>
+                      <Button onPress={() => editCallback(card)}>
                         <Edit />
-                      </IconButton>
+                      </Button>
                     </Tooltip>
                     <Spacer x={1} />
-                    <Tooltip color={"error"} content="Delete">
-                      <IconButton onClick={() => deleteCallback(card.id)}>
+                    <Tooltip color={"danger"} content="Delete">
+                      <Button onPress={() => deleteCallback(card.id)}>
                         <Trash2 color={"#FF0080"} />
-                      </IconButton>
+                      </Button>
                     </Tooltip>
-                  </Row>
-                </Table.Cell>
-              </Table.Row>
+                  </TableRow>
+                </TableCell>
+              </TableRow>
             );
           })}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 };
