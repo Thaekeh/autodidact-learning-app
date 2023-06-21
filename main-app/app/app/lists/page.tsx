@@ -25,7 +25,7 @@ export default function Lists() {
   const {
     isOpen: listModalIsVisible,
     onOpen: setListModalIsVisible,
-    onOpenChange,
+    onOpenChange: onListModalIsOpenChange,
   } = useDisclosure();
 
   const supabaseClient = createClientComponentClient();
@@ -51,7 +51,7 @@ export default function Lists() {
   const onNewListConfirm = async (name: string) => {
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
-      setListModalIsVisible;
+      onListModalIsOpenChange();
       refetchLists();
     }
   };
@@ -72,17 +72,11 @@ export default function Lists() {
       <NameModal
         title={"Insert name of list"}
         isOpen={listModalIsVisible}
-        onOpenChange={onOpenChange}
+        onOpenChange={onListModalIsOpenChange}
         onConfirm={onNewListConfirm}
       />
       <div className="container mx-auto mt-12">
-        <div
-          className="container mx-auto flex justify-between items-center mb-6"
-          // display="flex"
-          // direction="row"
-          // justify="space-between"
-          // alignContent="center"
-        >
+        <div className="container mx-auto flex justify-between items-center mb-6">
           <h3>Your lists</h3>
           <Button
             onPress={setListModalIsVisible}
@@ -104,20 +98,3 @@ export default function Lists() {
     </>
   );
 }
-
-// TODO: Fix
-// export async function getServerSideProps({
-//   req,
-//   res,
-// }: {
-//   req: NextApiRequest;
-//   res: NextApiResponse;
-// }) {
-//   const supabase = await createServerSupabaseClient<Database>({
-//     req,
-//     res,
-//   });
-
-//   const lists = await getListsForUser(supabase);
-//   return { props: { lists } };
-// }
