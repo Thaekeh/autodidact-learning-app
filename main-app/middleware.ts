@@ -16,6 +16,8 @@ export async function middleware(req: NextRequest) {
   if (!session?.user) {
     return NextResponse.redirect(new URL("/", req.url));
   }
+
+  return res;
 }
 
 // See "Matching Paths" below to learn more
