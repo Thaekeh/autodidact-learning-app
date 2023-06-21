@@ -1,12 +1,8 @@
-import {
-  createClientComponentClient,
-  createPagesBrowserClient,
-} from "@supabase/auth-helpers-nextjs";
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import type { AppProps } from "next/app";
 import { ReactElement, ReactNode, useState } from "react";
 import { NextPage } from "next";
-import { Layout } from "components/Layout";
 import { NextUIProvider } from "@nextui-org/react";
 import { SSRProvider } from "@react-aria/ssr";
 import ConfirmContextProvider from "providers/ConfirmContextProvider";
@@ -36,10 +32,6 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           <ConfirmContextProvider>
             <ConfirmModal />
             <NavbarLayout>
-              {/* <Head>
-                <title>Learning Hub</title>
-                <link rel="icon" href="/favicon.ico" />
-              </Head> */}
               <Component {...pageProps} />
             </NavbarLayout>
           </ConfirmContextProvider>
