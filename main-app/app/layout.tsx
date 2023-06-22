@@ -7,6 +7,8 @@ import {
 import { cookies } from "next/headers";
 import { Database } from "types";
 import SupabaseProvider from "components/providers/supabase-provider";
+import ConfirmContextProvider from "providers/ConfirmContextProvider";
+import { ConfirmModal } from "components/modals/ConfirmModal";
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -26,7 +28,12 @@ export default async function RootLayout({
       <head />
       <body>
         <SupabaseProvider session={session}>
-          <Providers>{children}</Providers>
+          <Providers>
+            <ConfirmContextProvider>
+              <ConfirmModal />
+              {children}
+            </ConfirmContextProvider>
+          </Providers>
         </SupabaseProvider>
       </body>
     </html>

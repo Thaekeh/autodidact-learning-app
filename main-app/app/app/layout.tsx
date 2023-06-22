@@ -1,3 +1,4 @@
+import { ConfirmModal } from "components/modals/ConfirmModal";
 import { ComposedNavbar } from "components/navbar/Navbar";
 import React from "react";
 

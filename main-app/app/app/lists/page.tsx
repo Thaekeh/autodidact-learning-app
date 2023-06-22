@@ -18,7 +18,6 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function Lists() {
   const [lists, setLists] = useState<FlashcardListRow[]>([]);
-  const router = useRouter();
   const { isConfirmed } = useConfirm();
 
   const {
