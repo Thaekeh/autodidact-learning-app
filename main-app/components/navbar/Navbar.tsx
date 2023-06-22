@@ -12,6 +12,7 @@ import NextLink from "next/link";
 import { NavbarAvatar } from "./NavbarAvatar";
 import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
 import { useSupabase } from "components/providers/supabase-provider";
+import { LearningHubLogo } from "components/logo/LearningHubLogo";
 
 const NAVBAR_HEIGHT = "4rem";
 
@@ -20,7 +21,10 @@ export const ComposedNavbar = () => {
 
   return (
     <Navbar height={NAVBAR_HEIGHT} position="sticky">
-      <NavbarBrand>
+      <NavbarBrand className="h-12">
+        <div className="w-12 h-12 mr-2">
+          <LearningHubLogo />
+        </div>
         <NextLink href={supabase ? "/app" : "/"}>
           <h1>Learning Hub</h1>
         </NextLink>
