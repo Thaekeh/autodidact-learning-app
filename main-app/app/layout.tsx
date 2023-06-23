@@ -1,4 +1,3 @@
-import { Providers } from "./providers";
 import "./globals.css";
 import {
   createServerComponentClient,
@@ -9,6 +8,8 @@ import { Database } from "types";
 import SupabaseProvider from "components/providers/supabase-provider";
 import ConfirmContextProvider from "providers/ConfirmContextProvider";
 import { ConfirmModal } from "components/modals/ConfirmModal";
+import { ComposedNavbar } from "components/navbar/Navbar";
+import { Providers } from "./providers";
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -27,14 +28,17 @@ export default async function RootLayout({
     <html lang="en">
       <head />
       <body>
-        <SupabaseProvider session={session}>
-          <Providers>
+        <Providers>
+          <SupabaseProvider session={session}>
             <ConfirmContextProvider>
               <ConfirmModal />
-              {children}
+              <main className="mt-16 p-4 mx-auto max-w-screen-lg">
+                <ComposedNavbar />
+                {children}
+              </main>
             </ConfirmContextProvider>
-          </Providers>
-        </SupabaseProvider>
+          </SupabaseProvider>
+        </Providers>
       </body>
     </html>
   );
