@@ -2,11 +2,11 @@
 import { TextRow } from "types/Texts";
 import { getRouteForSingleText } from "utils/routing/texts";
 import { useConfirm } from "hooks/useConfirm";
-import { deleteText, getTexts } from "utils/supabase/texts";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { deleteText, getTexts, setTextName } from "utils/supabase/texts";
 import { useEffect, useState } from "react";
 import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { NameModal } from "components/modals/NameModal";
 
 export default function Texts() {
   const [texts, setTexts] = useState<TextRow[]>([]);
@@ -29,6 +29,11 @@ export default function Texts() {
     }
   };
 
+  const refetchTexts = async () => {
+    const newTexts = await getTexts(supabaseClient);
+    setTexts(newTexts);
+  };
+
   const simpleMappedItems = (items: TextRow[] | null) => {
     if (!items) return [];
     return items.map((item) => {
@@ -40,14 +45,57 @@ export default function Texts() {
     });
   };
 
+  const [renameModalSettings, setRenameModalSettings] = useState<{
+    isOpen: boolean;
+    callback: (name: string) => void;
+    name?: string;
+  }>({
+    isOpen: false,
+    callback: () => {},
+    name: "",
+  });
+
   return (
-    <div className="container mx-auto mt-12 max-w-screen-lg">
-      <SimpleTable
-        items={simpleMappedItems(texts)}
-        openHrefFunction={(id) => getRouteForSingleText(id)}
-        editCallback={(id) => console.log("edit", id)}
-        deleteCallback={handleDeleteCallback}
-      ></SimpleTable>
-    </div>
+    <>
+      {renameModalSettings.isOpen && (
+        <NameModal
+          title={"Rename"}
+          isOpen={renameModalSettings.isOpen}
+          initalName={renameModalSettings.name}
+          onOpenChange={() =>
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            })
+          }
+          onConfirm={(name) => {
+            renameModalSettings.callback(name);
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            });
+          }}
+        />
+      )}
+      <div className="container mx-auto mt-12 max-w-screen-lg">
+        <SimpleTable
+          items={simpleMappedItems(texts)}
+          openHrefFunction={(id) => getRouteForSingleText(id)}
+          editCallback={(id) => {
+            setRenameModalSettings({
+              isOpen: true,
+              name: texts.find((text) => text.id === id)?.name,
+              callback: async (name) => {
+                await setTextName(supabaseClient, id, name);
+                refetchTexts();
+              },
+            });
+          }}
+          deleteCallback={handleDeleteCallback}
+        ></SimpleTable>
+      </div>
+    </>
   );
 }

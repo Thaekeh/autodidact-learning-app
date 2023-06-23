@@ -1,6 +1,5 @@
 "use client";
 import { Button, useDisclosure } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
 import { useConfirm } from "hooks/useConfirm";
@@ -10,11 +9,11 @@ import {
   deleteList,
   getListsForUser,
   getRouteForFlashcardList,
+  setListName,
 } from "utils";
 import { NameModal } from "components/modals/NameModal";
 import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export default function Lists() {
   const [lists, setLists] = useState<FlashcardListRow[]>([]);
@@ -54,6 +53,16 @@ export default function Lists() {
     }
   };
 
+  const [renameModalSettings, setRenameModalSettings] = useState<{
+    isOpen: boolean;
+    callback: (name: string) => void;
+    name?: string;
+  }>({
+    isOpen: false,
+    callback: () => {},
+    name: "",
+  });
+
   const simpleMappedItems = (items: FlashcardListRow[] | null) => {
     if (!items) return [];
     return items.map((item) => {
@@ -73,6 +82,28 @@ export default function Lists() {
         onOpenChange={onListModalIsOpenChange}
         onConfirm={onNewListConfirm}
       />
+      {renameModalSettings.isOpen && (
+        <NameModal
+          title={"Rename"}
+          isOpen={renameModalSettings.isOpen}
+          initalName={renameModalSettings.name}
+          onOpenChange={() =>
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            })
+          }
+          onConfirm={(name) => {
+            renameModalSettings.callback(name);
+            setRenameModalSettings({
+              isOpen: false,
+              name: "",
+              callback: () => {},
+            });
+          }}
+        />
+      )}
       <div className="container mx-auto mt-12 max-w-screen-lg">
         <div className="container mx-auto flex justify-between items-center mb-6">
           <h3>Your lists</h3>
@@ -90,7 +121,16 @@ export default function Lists() {
           items={simpleMappedItems(lists)}
           openHrefFunction={(id) => getRouteForFlashcardList(id)}
           deleteCallback={handleDeleteCallback}
-          editCallback={() => console.log("TODO- edit callback")}
+          editCallback={(id) => {
+            setRenameModalSettings({
+              isOpen: true,
+              name: lists.find((text) => text.id === id)?.name,
+              callback: async (name) => {
+                await setListName(supabaseClient, id, name);
+                refetchLists();
+              },
+            });
+          }}
         ></SimpleTable>
       </div>
     </>
