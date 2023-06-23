@@ -97,12 +97,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   };
 
   return (
-    <Modal
-      showCloseButton
-      isOpen={isOpen}
-      onClose={onOpenChange}
-      onOpenChange={onOpenChange}
-    >
+    <Modal isOpen={isOpen} onClose={onOpenChange} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>

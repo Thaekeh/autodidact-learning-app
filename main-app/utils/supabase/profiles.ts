@@ -16,5 +16,5 @@ export const getProfileByUserId = async (
     throw error;
   }
 
-  return data;
+  return data as ProfileRow;
 };

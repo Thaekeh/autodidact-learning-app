@@ -9,6 +9,7 @@ import { ConfirmModal } from "components/modals/ConfirmModal";
 import ConfirmContextProvider, {
   ConfirmContext,
 } from "providers/ConfirmContextProvider";
+import { Database } from "types";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -20,7 +21,7 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
-  const [supabaseClient] = useState(() => createPagesBrowserClient());
+  const [supabaseClient] = useState(() => createPagesBrowserClient<Database>());
 
   return (
     <SessionContextProvider

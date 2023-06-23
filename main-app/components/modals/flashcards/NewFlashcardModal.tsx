@@ -29,7 +29,7 @@ export const NewFlashcardModal: React.FC<NameModalProps> = ({
   const [backTextValue, setBackTextValue] = useState("");
 
   return (
-    <Modal showCloseButton isOpen={isOpen} onClose={onCancel}>
+    <Modal isOpen={isOpen} onClose={onCancel}>
       <ModalHeader>
         <p>Change your flashcard</p>
       </ModalHeader>

@@ -33,7 +33,7 @@ export const NameModal: React.FC<NameModalProps> = ({
   };
 
   return (
-    <Modal showCloseButton isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         <ModalHeader>
           <p>{title}</p>
