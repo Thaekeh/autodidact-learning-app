@@ -28,24 +28,6 @@ import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
 
-// export async function getServerSideProps({
-//   req,
-//   res,
-// }: {
-//   req: NextApiRequest;
-//   res: NextApiResponse;
-// }) {
-//   const supabase = await createServerSupabaseClient<Database>({
-//     req,
-//     res,
-//   });
-
-//   const texts = await getTexts(supabase);
-//   const lists = await getListsForUser(supabase);
-
-//   return { props: { textsProp: texts, listsProp: lists } };
-// }
-
 export default function Dashboard() {
   const [texts, setTexts] = useState<TextRow[] | null>(null);
   const [lists, setLists] = useState<FlashcardListRow[] | null>(null);
@@ -82,7 +64,7 @@ export default function Dashboard() {
   const onNewListConfirm = async (name: string) => {
     const createdDocument = await createNewFlashcardList(supabaseClient, name);
     if (createdDocument) {
-      setListModalIsVisible;
+      onListModalIsOpenChange();
       refetchLists();
     }
   };

@@ -47,11 +47,7 @@ export const NameModal: React.FC<NameModalProps> = ({
           />
         </ModalBody>
         <ModalFooter>
-          <Button
-            isLoading={loading}
-            variant="flat"
-            onPress={() => handleConfirm()}
-          >
+          <Button isLoading={loading} variant="flat" onPress={handleConfirm}>
             Confirm
           </Button>
         </ModalFooter>

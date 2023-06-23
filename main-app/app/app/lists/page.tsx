@@ -73,13 +73,13 @@ export default function Lists() {
         onOpenChange={onListModalIsOpenChange}
         onConfirm={onNewListConfirm}
       />
-      <div className="container mx-auto mt-12">
+      <div className="container mx-auto mt-12 max-w-screen-lg">
         <div className="container mx-auto flex justify-between items-center mb-6">
           <h3>Your lists</h3>
           <Button
             onPress={setListModalIsVisible}
             size={"md"}
-            endIcon={<Plus size={16} />}
+            endContent={<Plus size={16} />}
             variant="bordered"
             color="secondary"
           >

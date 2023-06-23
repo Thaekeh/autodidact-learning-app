@@ -15,9 +15,16 @@ export const ConfirmModal: React.FC = () => {
   if (!proceed || !cancel) {
     return <></>;
   }
+
+  const handleCancel = () => {
+    cancel("cancel");
+  };
+
   return (
     <Modal
-      showCloseButton={false}
+      hideCloseButton
+      isDismissable
+      onClose={handleCancel}
       aria-labelledby="Confirm modal"
       isOpen={isOpen}
     >

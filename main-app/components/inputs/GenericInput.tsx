@@ -14,6 +14,8 @@ export const GenericInput = ({
 
   return (
     <Input
+      variant="flat"
+      color="secondary"
       label={label}
       value={inputValue}
       onValueChange={setInputValue}

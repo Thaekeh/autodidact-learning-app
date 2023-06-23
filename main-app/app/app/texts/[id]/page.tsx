@@ -3,7 +3,6 @@ import {
   Input,
   Dropdown,
   Button,
-  Spacer,
   DropdownMenu,
   DropdownItem,
   DropdownTrigger,
@@ -31,9 +30,7 @@ import {
   SupportedLanguage,
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
-// import { IconButton } from "components/buttons/IconButton";
 import { ArrowUpRight, ChevronDown } from "react-feather";
-import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import NextLink from "next/link";
 
@@ -240,10 +237,10 @@ export default function TextPage({ params }: { params: { id: string } }) {
       </div>
       <div className="hidden md:flex flex-col w-60 gap-y-4">
         <h3>Translation</h3>
-        <div className="flex flex-col gap-y-4">
-          <div className="flex flex-row w-60 justify-between">
+        <div className="flex flex-col gap-y-4 ">
+          <div className="flex flex-row justify-between">
             <h6>From:</h6>
-            <Dropdown>
+            {/* <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
                   {selectedSourceLanguage
@@ -262,11 +259,11 @@ export default function TextPage({ params }: { params: { id: string } }) {
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
           </div>
           <div className="flex flex-row w-60 justify-between">
             <h6>To:</h6>
-            <Dropdown>
+            {/* <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
                   {selectedTargetLanguage
@@ -285,14 +282,14 @@ export default function TextPage({ params }: { params: { id: string } }) {
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
           </div>
         </div>
         {flashcardLists && (
-          <FlexRowDiv>
+          <div className="flex flex-row w-60 justify-between">
             <Dropdown>
               <DropdownTrigger>
-                <Button variant="bordered" endIcon={<ChevronDown />}>
+                <Button variant="bordered" endContent={<ChevronDown />}>
                   {flashcardLists.find(
                     (flashcardList) => flashcardList.id === selectedList
                   )?.name || "Select list"}
@@ -300,11 +297,14 @@ export default function TextPage({ params }: { params: { id: string } }) {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Select flashcard list"
-                onAction={(key) => handleSetSelectedList(key.toString())}
+                onAction={() => console.log("action")}
                 selectionMode="single"
               >
-                {flashcardLists.map((flashcardList) => (
-                  <DropdownItem key={flashcardList.id}>
+                {flashcardLists.map((flashcardList, index) => (
+                  <DropdownItem
+                    description={flashcardList.name}
+                    key={flashcardList.name}
+                  >
                     {flashcardList.name}
                   </DropdownItem>
                 ))}
@@ -320,9 +320,9 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 <ArrowUpRight />
               </Button>
             )}
-          </FlexRowDiv>
+          </div>
         )}
-        <div className="flex gap-y-8">
+        <div className="flex gap-y-8 w-60">
           <form action="" className="flex flex-col gap-y-4">
             <Input
               label="Front of card"

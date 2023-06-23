@@ -41,7 +41,7 @@ export default function Texts() {
   };
 
   return (
-    <div className="container mx-auto mt-8">
+    <div className="container mx-auto mt-12 max-w-screen-lg">
       <SimpleTable
         items={simpleMappedItems(texts)}
         openHrefFunction={(id) => getRouteForSingleText(id)}

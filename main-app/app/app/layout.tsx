@@ -10,7 +10,7 @@ export default function NavbarLayout({
   return (
     <>
       <ComposedNavbar />
-      <main>{children}</main>
+      <main className="mt-16 p-4">{children}</main>
     </>
   );
 }

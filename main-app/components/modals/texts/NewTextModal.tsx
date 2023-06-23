@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalContent,
 } from "@nextui-org/react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -35,7 +36,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
 
-  const supabaseClient = useSupabaseClient();
+  const supabaseClient = createClientComponentClient();
   const router = useRouter();
 
   const user = useUser();
@@ -60,11 +61,10 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     if (createdText) {
       const textUrl = getRouteForSingleText(createdText.id);
       router.push(textUrl);
-      setCreatingTextOrFlashcardList(false);
     }
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = () => {
     hiddenFileInput.current?.click();
   };
 

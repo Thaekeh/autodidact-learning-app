@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Navbar,
   Button,
@@ -13,14 +12,24 @@ import { NavbarAvatar } from "./NavbarAvatar";
 import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
 import { useSupabase } from "components/providers/supabase-provider";
 import { LearningHubLogo } from "components/logo/LearningHubLogo";
+import { useRouter } from "next/navigation";
 
 const NAVBAR_HEIGHT = "4rem";
 
 export const ComposedNavbar = () => {
   const { supabase, session } = useSupabase();
 
+  // const isActiveRoute = (href: string) => {
+  //   console.log(
+  //     window.location.pathname,
+  //     href,
+  //     window.location.pathname === href
+  //   );
+  //   return window.location.href === href;
+  // };
+
   return (
-    <Navbar height={NAVBAR_HEIGHT} position="sticky">
+    <Navbar height={NAVBAR_HEIGHT} position="fixed">
       <NavbarBrand className="h-12">
         <div className="w-12 h-12 mr-2">
           <LearningHubLogo />
@@ -33,16 +42,26 @@ export const ComposedNavbar = () => {
         <NavbarContent>
           {supabase ? (
             <>
-              <NavbarItem as={"span"}>
-                <NextLink href="/app">Dashboard</NextLink>
+              <NavbarItem
+                as={NextLink}
+                href="/app"
+                // isActive={isActiveRoute("/app")}
+              >
+                Dashboard
               </NavbarItem>
-              <NavbarItem as={"span"}>
-                <NextLink href={getRouteForAllFlashcardLists()}>
-                  Flashcards
-                </NextLink>
+              <NavbarItem
+                as={NextLink}
+                href={getRouteForAllFlashcardLists()}
+                // isActive={isActiveRoute(getRouteForAllFlashcardLists())}
+              >
+                Flashcards
               </NavbarItem>
-              <NavbarItem as={"span"}>
-                <NextLink href={getRouteForAllTexts()}>Texts</NextLink>
+              <NavbarItem
+                as={NextLink}
+                href={getRouteForAllTexts()}
+                // isActive={isActiveRoute(getRouteForAllTexts())}
+              >
+                Texts
               </NavbarItem>
             </>
           ) : (
