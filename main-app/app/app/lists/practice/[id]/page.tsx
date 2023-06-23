@@ -61,7 +61,7 @@ export default function PracticePage({ params }: { params: { id: string } }) {
             <Button
               as={NextLink}
               href={getRouteForFlashcardList(params.id)}
-              startIcon={<ArrowLeft />}
+              startContent={<ArrowLeft />}
               variant="light"
               color={"secondary"}
             >
