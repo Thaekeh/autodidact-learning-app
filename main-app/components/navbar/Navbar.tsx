@@ -19,15 +19,6 @@ const NAVBAR_HEIGHT = "4rem";
 export const ComposedNavbar = () => {
   const { supabase, session } = useSupabase();
 
-  // const isActiveRoute = (href: string) => {
-  //   console.log(
-  //     window.location.pathname,
-  //     href,
-  //     window.location.pathname === href
-  //   );
-  //   return window.location.href === href;
-  // };
-
   return (
     <Navbar height={NAVBAR_HEIGHT} position="fixed">
       <NavbarBrand className="h-12">
@@ -40,7 +31,7 @@ export const ComposedNavbar = () => {
       </NavbarBrand>
       <NavbarContent>
         <NavbarContent>
-          {supabase ? (
+          {session?.user ? (
             <>
               <NavbarItem
                 as={NextLink}
@@ -63,14 +54,22 @@ export const ComposedNavbar = () => {
               >
                 Texts
               </NavbarItem>
+              <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
             </>
           ) : (
-            <NextLink href={"/login"}>
-              <Button size={"sm"}>Login</Button>
-            </NextLink>
+            <NavbarContent justify="end">
+              <Button
+                as={NextLink}
+                href={"/login"}
+                size={"sm"}
+                variant="flat"
+                color="secondary"
+              >
+                Login
+              </Button>
+            </NavbarContent>
           )}
         </NavbarContent>
-        <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
       </NavbarContent>
     </Navbar>
   );
