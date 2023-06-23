@@ -114,7 +114,7 @@ export default function ListPage({ params }: { params: { id: string } }) {
               size={"md"}
               variant={"flat"}
               color={"secondary"}
-              endIcon={<Play size={16} />}
+              endContent={<Play size={16} />}
             >
               Practice
             </Button>
