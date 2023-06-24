@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState } from "react";
 
 interface ConfirmContextData {
@@ -19,7 +20,9 @@ export const ConfirmContext = createContext<
   () => null,
 ]);
 
-const ConfirmContextProvider: React.FC = ({ children }) => {
+const ConfirmContextProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [confirm, setConfirm] = useState<ConfirmContextData>({
     prompt: "",
     isOpen: false,

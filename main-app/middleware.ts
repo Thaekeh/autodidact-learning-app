@@ -1,24 +1,17 @@
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { createMiddlewareSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "./types";
 
-// This function can be marked `async` if using `await` inside
+import type { NextRequest } from "next/server";
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  const supabase = createMiddlewareSupabaseClient({ req, res });
+  // Create a Supabase client configured to use cookies
+  const supabase = createMiddlewareClient({ req, res });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // Refresh session if expired - required for Server Components
+  // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
+  await supabase.auth.getSession();
 
-  if (!session?.user) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+  return res;
 }
-
-// See "Matching Paths" below to learn more
-export const config = {
-  matcher: "/app/:path*",
-};

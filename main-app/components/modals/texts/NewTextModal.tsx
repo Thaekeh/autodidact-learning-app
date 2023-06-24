@@ -3,27 +3,29 @@ import {
   Button,
   Input,
   Modal,
-  useInput,
-  Text,
   Switch,
-  Loading,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
 } from "@nextui-org/react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useSupabase } from "components/supabase-provider";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { createNewFlashcardList, getRouteForSingleText } from "utils";
 import { createNewText } from "utils/supabase/texts";
 
 interface NameModalProps {
   isOpen: boolean;
-  onCancel: () => void;
+  onOpenChange: () => void;
 }
 
 export const NewTextModal: React.FC<NameModalProps> = ({
   isOpen,
-  onCancel,
+  onOpenChange,
 }) => {
-  const { value: textName, bindings: textNameBindings } = useInput("");
+  const [textNameValue, setTextNameValue] = useState("");
   const [isEpub, setIsEpub] = useState(false);
   const [epubUrl, setEpubUrl] = useState("");
   const [epubName, setEpubName] = useState("");
@@ -34,7 +36,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
 
-  const supabaseClient = useSupabaseClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
 
   const user = useUser();
@@ -44,14 +46,14 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     setCreatingTextOrFlashcardList(true);
     if (addFlashcardList) {
       const flashcardList = await createNewFlashcardList(
-        supabaseClient,
-        textName
+        supabase,
+        textNameValue
       );
       flashcardListId = flashcardList?.id;
     }
     const createdText = await createNewText(
-      supabaseClient,
-      textName,
+      supabase,
+      textNameValue,
       isEpub ? epubUrl : undefined,
       flashcardListId
     );
@@ -59,15 +61,12 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     if (createdText) {
       const textUrl = getRouteForSingleText(createdText.id);
       router.push(textUrl);
-      setCreatingTextOrFlashcardList(false);
     }
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = () => {
     hiddenFileInput.current?.click();
   };
-
-  const supabase = useSupabaseClient();
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -96,68 +95,78 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   };
 
   return (
-    <Modal closeButton open={isOpen} onClose={onCancel}>
-      <Modal.Header>
-        <Text size={20} weight={"bold"}>
-          Create new text
-        </Text>
-      </Modal.Header>
-      <Modal.Body>
-        <StyledDiv>
-          <Input
-            value={textName}
-            onChange={textNameBindings.onChange}
-            placeholder="Text name"
-            label="Text name"
-          />
+    <Modal isOpen={isOpen} onClose={onOpenChange} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader>
+              <p>Create new text</p>
+            </ModalHeader>
+            <ModalBody>
+              <StyledDiv>
+                <Input
+                  value={textNameValue}
+                  onValueChange={setTextNameValue}
+                  placeholder="Text name"
+                  label="Text name"
+                />
 
-          <div>
-            <Text>Epub</Text>
-            <FlexDiv>
-              <Text size={"$sm"}>Use epub</Text>
-              <Switch checked={isEpub} onChange={() => setIsEpub(!isEpub)} />
-            </FlexDiv>
-          </div>
-          {isEpub && (
-            <>
-              <input
-                type="file"
-                ref={hiddenFileInput}
-                onChange={handleChange}
-                accept="epub/*"
-                style={{ display: "none" }}
-              />
-              {epubName && <Text>Epub: {epubName}</Text>}
-              <Button color={"secondary"} flat onClick={handleClick}>
-                {uploadingEpub ? (
-                  <Loading type="points" color={"secondary"} />
-                ) : (
-                  "Upload Epub"
-                )}{" "}
+                <div>
+                  <p>Epub</p>
+                  <FlexDiv>
+                    <p>Use epub</p>
+                    <Switch
+                      isSelected={isEpub}
+                      onValueChange={() => setIsEpub(!isEpub)}
+                    />
+                  </FlexDiv>
+                </div>
+                {isEpub && (
+                  <>
+                    <Input
+                      type="file"
+                      ref={hiddenFileInput}
+                      onChange={handleChange}
+                      accept="epub/*"
+                      style={{ display: "none" }}
+                    />
+                    {epubName && <p>Epub: {epubName}</p>}
+                    <Button
+                      color={"secondary"}
+                      variant="flat"
+                      onPress={handleClick}
+                      isLoading={uploadingEpub}
+                    >
+                      Upload Epub
+                    </Button>
+                  </>
+                )}
+                <div>
+                  <p>Flashcard</p>
+                  <FlexDiv>
+                    <p>Add flashcard list</p>
+                    <Switch
+                      isSelected={addFlashcardList}
+                      onValueChange={() =>
+                        setAddFlashcardList(!addFlashcardList)
+                      }
+                    ></Switch>
+                  </FlexDiv>
+                </div>
+              </StyledDiv>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                isLoading={creatingTextOrFlashcardList}
+                color={"secondary"}
+                onPress={handleNewText}
+              >
+                Create Text
               </Button>
-            </>
-          )}
-          <div>
-            <Text>Flashcard</Text>
-            <FlexDiv>
-              <Text size={"$sm"}>Add flashcard list</Text>
-              <Switch
-                checked={addFlashcardList}
-                onChange={() => setAddFlashcardList(!addFlashcardList)}
-              ></Switch>
-            </FlexDiv>
-          </div>
-        </StyledDiv>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button color={"secondary"} auto onPress={handleNewText}>
-          {creatingTextOrFlashcardList ? (
-            <Loading type="points" color={"secondary"} />
-          ) : (
-            "Create Text"
-          )}
-        </Button>
-      </Modal.Footer>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
     </Modal>
   );
 };

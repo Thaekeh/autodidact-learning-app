@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { Rendition } from "epubjs";
-import React, { useEffect, useRef, useState } from "react";
+import Rendition from "epubjs/types/rendition";
+import React, { use, useEffect, useRef, useState } from "react";
 import { ReactReader } from "react-reader";
 import { snapSelectionToWord } from "./selectWholeWord";
+import { useSupabase } from "components/supabase-provider";
 
 export const ReactReaderWrapper = ({
   processTextSelection,
@@ -18,8 +18,8 @@ export const ReactReaderWrapper = ({
 }) => {
   const renditionRef = useRef<Rendition | null>(null);
 
-  const supabase = useSupabaseClient();
-  const user = useUser();
+  const { session, supabase } = useSupabase();
+  const user = session?.user;
 
   const [selections, setSelections] = useState<string>();
 
@@ -40,7 +40,10 @@ export const ReactReaderWrapper = ({
   }
 
   useEffect(() => {
-    if (!renditionRef.current) return;
+    if (!renditionRef.current) {
+      console.log("no renditionRef");
+      return;
+    }
 
     renditionRef.current.on("selected", setRenderSelection);
     renditionRef.current.on("mouseup", handleTextSelection);
@@ -49,28 +52,36 @@ export const ReactReaderWrapper = ({
       renditionRef.current?.off("selected", setRenderSelection);
       renditionRef.current?.off("mouseup", handleTextSelection);
     };
-  }, [setSelections, selections]);
+  }, [renditionRef, setSelections, selections]);
 
-  if (!url || !user?.id) return null;
-
+  if (!url || !user?.id) {
+    console.log("no url or user", url, user?.id);
+    return null;
+  }
   const fileUrl = supabase.storage
     .from("text-files")
     .getPublicUrl(`${user?.id}/${url}`).data.publicUrl;
 
+  console.log("fileUrl", fileUrl);
+
   return (
-    <ReactReaderContainer>
-      <ReactReader
-        url={fileUrl}
-        getRendition={(rendition) => {
-          renditionRef.current = rendition;
-          setSelections("");
-        }}
-        location={lastLocation || undefined}
-        locationChanged={(epubcifi) => {
-          setLastLocation(epubcifi.toString());
-        }}
-      />
-    </ReactReaderContainer>
+    <div className="w-full h-full">
+      {fileUrl && (
+        <ReactReader
+          showToc={false}
+          url={fileUrl}
+          getRendition={(rendition) => {
+            renditionRef.current = rendition;
+            setSelections("");
+            console.log("rendition", rendition);
+          }}
+          location={lastLocation || undefined}
+          locationChanged={(epubcifi) => {
+            setLastLocation(epubcifi.toString());
+          }}
+        />
+      )}
+    </div>
   );
 };
 

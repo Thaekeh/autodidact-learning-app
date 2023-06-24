@@ -1,53 +1,78 @@
+"use client";
 import React from "react";
-import { Navbar, Button } from "@nextui-org/react";
+import {
+  Navbar,
+  Button,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+} from "@nextui-org/react";
+import { LearningHubLogo } from "components/logo/LearningHubLogo";
+import { useSupabase } from "components/supabase-provider";
 import NextLink from "next/link";
+import {
+  getRouteForAllFlashcardLists,
+  getRouteForAllTexts,
+} from "@/utils/routing";
 import { NavbarAvatar } from "./NavbarAvatar";
-import { useUser } from "@supabase/auth-helpers-react";
-import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
 
-export const ComposedNavbar = () => {
-  const user = useUser();
+const NAVBAR_HEIGHT = "4rem";
+
+export function ComposedNavbar() {
+  const { supabase, session } = useSupabase();
+  // const user = use(supabase.auth.getUser());
+
+  // const [user, setUser] = useState<User | null>(null);
 
   return (
-    <Navbar variant={"sticky"}>
-      <Navbar.Brand>
-        <NextLink href={user ? "/app" : "/"}>
-          <h1>Learning Hub</h1>
-        </NextLink>
-      </Navbar.Brand>
-      <Navbar.Content>
-        <Navbar.Content>
-          {user ? (
+    <Navbar height={NAVBAR_HEIGHT} position="fixed">
+      <NavbarBrand className="h-12">
+        <div className="w-12 h-12 mr-2">
+          <LearningHubLogo />
+        </div>
+      </NavbarBrand>
+      <NavbarContent>
+        <NavbarContent>
+          {session?.user ? (
             <>
-              <Navbar.Link as={"span"}>
-                <NextLink href="/app">Dashboard</NextLink>
-              </Navbar.Link>
-              <Navbar.Link as={"span"}>
-                <NextLink href={getRouteForAllFlashcardLists()}>
-                  Flashcards
-                </NextLink>
-              </Navbar.Link>
-              <Navbar.Link as={"span"}>
-                <NextLink href={getRouteForAllTexts()}>Texts</NextLink>
-              </Navbar.Link>
+              <NavbarItem
+                as={NextLink}
+                href="/main"
+                // isActive={isActiveRoute("/app")}
+              >
+                Dashboard
+              </NavbarItem>
+              <NavbarItem
+                as={NextLink}
+                href={getRouteForAllFlashcardLists()}
+                // isActive={isActiveRoute(getRouteForAllFlashcardLists())}
+              >
+                Flashcards
+              </NavbarItem>
+              <NavbarItem
+                as={NextLink}
+                href={getRouteForAllTexts()}
+                // isActive={isActiveRoute(getRouteForAllTexts())}
+              >
+                Texts
+              </NavbarItem>
+              {/* <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent> */}
             </>
           ) : (
-            <NextLink href={"/login"}>
-              <Button size={"sm"}>Login</Button>
-            </NextLink>
+            <NavbarContent justify="end">
+              <Button
+                as={NextLink}
+                href={"/login"}
+                size={"sm"}
+                variant="flat"
+                color="secondary"
+              >
+                Login
+              </Button>
+            </NavbarContent>
           )}
-        </Navbar.Content>
-        <Navbar.Content
-          css={{
-            "@xs": {
-              w: "12%",
-              jc: "flex-end",
-            },
-          }}
-        >
-          {user && <NavbarAvatar />}
-        </Navbar.Content>
-      </Navbar.Content>
+        </NavbarContent>
+      </NavbarContent>
     </Navbar>
   );
-};
+}

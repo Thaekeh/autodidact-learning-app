@@ -2,9 +2,10 @@ import {
   Button,
   Input,
   Modal,
-  useInput,
-  Text,
-  Loading,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 
@@ -12,7 +13,7 @@ interface NameModalProps {
   title: string;
   isOpen: boolean;
   onConfirm: (name: string) => void;
-  onCancel: () => void;
+  onOpenChange: () => void;
   initalName?: string;
 }
 
@@ -21,40 +22,36 @@ export const NameModal: React.FC<NameModalProps> = ({
   initalName,
   isOpen,
   onConfirm,
-  onCancel,
+  onOpenChange,
 }) => {
-  const { value, bindings } = useInput(initalName || "");
+  const [inputValue, setInputValue] = useState(initalName || "");
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = () => {
     setLoading(true);
-    onConfirm(value);
+    onConfirm(inputValue);
   };
 
   return (
-    <Modal closeButton open={isOpen} onClose={onCancel}>
-      <Modal.Header>
-        <Text size={20} weight={"bold"}>
-          {title}
-        </Text>
-      </Modal.Header>
-      <Modal.Body>
-        <Input
-          value={value}
-          label="Name"
-          onChange={bindings.onChange}
-          placeholder="Name"
-        />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button flat auto onPress={() => handleConfirm()}>
-          {loading ? (
-            <Loading color="secondary" type="points-opacity" />
-          ) : (
-            "Confirm"
-          )}
-        </Button>
-      </Modal.Footer>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        <ModalHeader>
+          <p>{title}</p>
+        </ModalHeader>
+        <ModalBody>
+          <Input
+            value={inputValue}
+            label="Name"
+            onValueChange={setInputValue}
+            placeholder="Name"
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button isLoading={loading} variant="flat" onPress={handleConfirm}>
+            Confirm
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

@@ -1,6 +1,9 @@
 {
-    "exportall.config.folderListener": [
-        "/types",
-        "/util/routing"
-    ]
+  "exportall.config.folderListener": [
+    "/types",
+    "/util/routing",
+    "/utils/supabase"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

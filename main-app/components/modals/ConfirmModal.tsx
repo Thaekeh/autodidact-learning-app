@@ -1,5 +1,12 @@
-import { Button, Input, Modal, useInput, Text } from "@nextui-org/react";
-import React, { useEffect } from "react";
+"use client";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
+import React from "react";
 import { useConfirm } from "hooks/useConfirm";
 
 export const ConfirmModal: React.FC = () => {
@@ -8,25 +15,32 @@ export const ConfirmModal: React.FC = () => {
   if (!proceed || !cancel) {
     return <></>;
   }
+
+  const handleCancel = () => {
+    cancel("cancel");
+  };
+
   return (
     <Modal
+      hideCloseButton
+      isDismissable
+      onClose={handleCancel}
       aria-labelledby="Confirm modal"
-      open={isOpen}
-      onClose={() => {
-        cancel("close");
-      }}
+      isOpen={isOpen}
     >
-      <Modal.Header>
-        <Text h3>{prompt}</Text>
-      </Modal.Header>
-      <Modal.Footer justify="center">
-        <Button color={"secondary"} flat auto onPress={cancel}>
-          Cancel
-        </Button>
-        <Button color={"error"} flat auto onPress={proceed}>
-          Yes
-        </Button>
-      </Modal.Footer>
+      <ModalContent>
+        <ModalHeader className="justify-center">
+          <h3>{prompt}</h3>
+        </ModalHeader>
+        <ModalFooter className="justify-center">
+          <Button color={"secondary"} variant="light" onPress={cancel}>
+            Cancel
+          </Button>
+          <Button color={"danger"} variant="flat" onPress={proceed}>
+            Yes
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 };

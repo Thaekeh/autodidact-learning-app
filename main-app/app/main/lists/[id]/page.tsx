@@ -1,62 +1,62 @@
-import {
-  Button,
-  Container,
-  Spacer,
-  Table,
-  Text,
-  theme,
-  useModal,
-} from "@nextui-org/react";
-import React, { useState } from "react";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/supabase";
-import { NextApiRequest, NextApiResponse } from "next";
+"use client";
+import { Button, useDisclosure } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
 import { FlashcardListRow } from "types/FlashcardLists";
 import { getListById, getRouteForPracticingFlashcardList } from "utils";
-import { Check, Edit2, Play, Plus, Trash, X } from "react-feather";
-import { IconButton } from "components/buttons/IconButton";
+import { Play } from "react-feather";
 import {
   createNewFlashcard,
   deleteFlashcard,
   getFlashcardsForList,
-  getFlashcardsThatRequirePracticeByListId,
   updateFlashcard,
 } from "utils/supabase/flashcards";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FlashcardRow } from "types";
 import { NewFlashcardModal } from "components/modals/flashcards/NewFlashcardModal";
 import { EditFlashcardModal } from "components/modals/flashcards/EditFlashcardModal";
-import { useRouter } from "next/router";
 import { FlashcardsTable } from "components/table/FlashcardsTable";
 import { useConfirm } from "hooks/useConfirm";
+import filterFlashcardsThatRequirePractice from "utils/flashcards/getFlashcardsThatRequirePractice";
+import NextLink from "next/link";
+import { useSupabase } from "components/supabase-provider";
 
-export default function ListPage({
-  list,
-  flashcards: flashcardsProp,
-  flashcardsToPracticeCount,
-}: {
-  list: FlashcardListRow | null;
-  flashcards: FlashcardRow[];
-  flashcardsToPracticeCount: number | null;
-}) {
+export default function ListPage({ params }: { params: { id: string } }) {
   const [selectedFlashcard, setSelectedFlashcard] = useState<
     FlashcardRow | undefined
   >(undefined);
-  const [flashcards, setFlashcards] = useState<FlashcardRow[]>(flashcardsProp);
+  const [flashcards, setFlashcards] = useState<FlashcardRow[]>([]);
 
   const { isConfirmed } = useConfirm();
 
-  const {
-    visible: newFlashcardModalIsVisible,
-    setVisible: setNewFlashcardModalIsVisible,
-  } = useModal(false);
+  const [list, setList] = useState<FlashcardListRow | null>();
+
+  const [flashcardsToPractice, setFlashcardsToPractice] = useState<
+    FlashcardRow[]
+  >([]);
 
   const {
-    visible: editFlashcardModalIsVisible,
-    setVisible: setEditFlashcardModalIsVisible,
-  } = useModal(false);
-  const supabase = useSupabaseClient();
+    isOpen: newFlashcardModalIsOpen,
+    onOpenChange: onFlashcardModalIsOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: editFlashcardModalIsOpen,
+    onOpenChange: onEditFlashcardModalIsOpenChange,
+  } = useDisclosure();
+
+  const { supabase } = useSupabase();
+
+  useEffect(() => {
+    getListById(supabase, params.id).then((list) => {
+      setList(list);
+    });
+    getFlashcardsForList(supabase, params.id).then((flashcards) => {
+      setFlashcards(flashcards);
+
+      const flashcardsToPractice =
+        filterFlashcardsThatRequirePractice(flashcards);
+      setFlashcardsToPractice(flashcardsToPractice);
+    });
+  }, [params.id]);
 
   const onEditFlashcardConfirm = async ({
     frontText,
@@ -66,7 +66,7 @@ export default function ListPage({
     backText: string;
   }) => {
     if (!list || !selectedFlashcard) return;
-    setEditFlashcardModalIsVisible(false);
+    onEditFlashcardModalIsOpenChange();
     await updateFlashcard(
       supabase,
       selectedFlashcard?.id,
@@ -78,13 +78,13 @@ export default function ListPage({
 
   const editFlashcardButtonHandler = (flashcard: FlashcardRow) => {
     setSelectedFlashcard(flashcard);
-    setEditFlashcardModalIsVisible(true);
+    onEditFlashcardModalIsOpenChange();
   };
 
   const onNewFlashcardConfirm = () => {
     if (!list) return;
     createNewFlashcard(supabase, "test front", "test back", list.id);
-    setNewFlashcardModalIsVisible(false);
+    onFlashcardModalIsOpenChange();
   };
 
   const handleDeleteFlashcard = async (flashcardId: string) => {
@@ -97,32 +97,25 @@ export default function ListPage({
     }
   };
 
-  const router = useRouter();
-
   return (
     <>
-      <Container>
-        <Spacer y={2}></Spacer>
+      <div className="container mx-auto mt-6">
         {list && (
-          <Container
-            display="flex"
-            direction="row"
-            justify="space-between"
-            alignContent="center"
-          >
-            <Text h3>{list?.name}</Text>
-            <Text>{flashcardsToPracticeCount} card(s) to practice</Text>
+          <div className="flex flex-row justify-between items-center mb-4">
+            <h3>{list?.name}</h3>
+            <p>{flashcardsToPractice.length} card(s) to practice</p>
             <Button
-              disabled={!flashcardsToPracticeCount}
+              as={NextLink}
+              href={getRouteForPracticingFlashcardList(list.id)}
+              disabled={!flashcardsToPractice}
               size={"md"}
-              icon={<Play size={16} />}
-              onClick={() =>
-                router.push(getRouteForPracticingFlashcardList(list.id))
-              }
+              variant={"flat"}
+              color={"secondary"}
+              endContent={<Play size={16} />}
             >
               Practice
             </Button>
-          </Container>
+          </div>
         )}
         <FlashcardsTable
           flashcards={flashcards}
@@ -187,54 +180,22 @@ export default function ListPage({
             )}
           </Table.Body>
         </Table> */}
-      </Container>
+      </div>
       <NewFlashcardModal
-        isOpen={newFlashcardModalIsVisible}
-        onCancel={() => setNewFlashcardModalIsVisible(false)}
+        isOpen={newFlashcardModalIsOpen}
+        onCancel={onFlashcardModalIsOpenChange}
         onConfirm={onNewFlashcardConfirm}
       />
-      {editFlashcardModalIsVisible && (
-        <EditFlashcardModal
-          isOpen={editFlashcardModalIsVisible}
-          initialContent={{
-            frontText: selectedFlashcard?.frontText || "",
-            backText: selectedFlashcard?.backText || "",
-          }}
-          onCancel={() => setEditFlashcardModalIsVisible(false)}
-          onConfirm={onEditFlashcardConfirm}
-        />
-      )}
+
+      <EditFlashcardModal
+        isOpen={editFlashcardModalIsOpen}
+        initialContent={{
+          frontText: selectedFlashcard?.frontText || "",
+          backText: selectedFlashcard?.backText || "",
+        }}
+        onCancel={onEditFlashcardModalIsOpenChange}
+        onConfirm={onEditFlashcardConfirm}
+      />
     </>
   );
-}
-
-export async function getServerSideProps({
-  req,
-  res,
-  params,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-  params: Params;
-}) {
-  const supabase = await createServerSupabaseClient<Database>({
-    req,
-    res,
-  });
-
-  const listId = params.list[0];
-  const list = await getListById(supabase, listId);
-
-  const flashcardsThatRequirePractice = await (
-    await getFlashcardsThatRequirePracticeByListId(supabase, listId)
-  ).data?.length;
-
-  const flashcards = await getFlashcardsForList(supabase, listId);
-  return {
-    props: {
-      list: list,
-      flashcards,
-      flashcardsToPracticeCount: flashcardsThatRequirePractice || 0,
-    },
-  };
 }

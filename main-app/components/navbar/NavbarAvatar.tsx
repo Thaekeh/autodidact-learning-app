@@ -1,59 +1,71 @@
-import { Avatar, Dropdown, Text, Navbar } from "@nextui-org/react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
-import { Key } from "react";
-import { User } from "react-feather";
+"use client";
+import {
+  Avatar,
+  Dropdown,
+  NavbarItem,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/react";
+import { User } from "@supabase/auth-helpers-nextjs";
+import { useSupabase } from "components/supabase-provider";
+import { useRouter } from "next/navigation";
+import { Key, useEffect, useState } from "react";
+import { User as UserIcon } from "react-feather";
+import { getRouteForProfilePage } from "utils/routing/profile";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
-  const supabase = useSupabaseClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
-  const user = useUser();
+  const [user, setUser] = useState<User | null>(null);
 
-  const onDropdownAction = (actionKey: Key) => {
+  useEffect(() => {
+    supabase.auth.getUser().then((user) => {
+      setUser(user.data.user);
+    });
+  }, [supabase]);
+
+  const onDropdownAction = async (actionKey: Key) => {
     switch (actionKey) {
       case "logout":
-        supabase.auth.signOut();
-        router.push("/");
+        await supabase.auth.signOut();
+        router.refresh();
+        break;
       case "settings":
-        router.push("/profile");
+        router.push(getRouteForProfilePage());
     }
   };
 
   return (
-    <Dropdown placement="bottom-right">
-      <Navbar.Item>
-        <Dropdown.Trigger>
+    <Dropdown placement="bottom-end">
+      <NavbarItem>
+        <DropdownTrigger>
           <Avatar
-            bordered
             as="button"
             size="md"
-            icon={<User color="white" />}
+            icon={<UserIcon color="white" />}
             color={"secondary"}
           />
-        </Dropdown.Trigger>
-      </Navbar.Item>
-      <Dropdown.Menu
+        </DropdownTrigger>
+      </NavbarItem>
+      <DropdownMenu
         aria-label="User menu actions"
         color="secondary"
         onAction={(actionKey) => onDropdownAction(actionKey)}
         disabledKeys={["profile"]}
       >
-        <Dropdown.Item key="profile" css={{ height: "$18" }}>
-          <Text b css={{ d: "flex" }}>
-            Signed in as
-          </Text>
-          <Text b css={{ d: "flex" }}>
-            {user?.email}
-          </Text>
-        </Dropdown.Item>
-        <Dropdown.Item key="settings" withDivider>
+        <DropdownItem key="profile" style={{ height: "$18" }}>
+          <p>Signed in as</p>
+          <p>{user?.email}</p>
+        </DropdownItem>
+        <DropdownItem key="settings" showDivider>
           My Settings
-        </Dropdown.Item>
-        <Dropdown.Item key="logout" withDivider color="error">
+        </DropdownItem>
+        <DropdownItem key="logout" showDivider color="danger">
           Log Out
-        </Dropdown.Item>
-      </Dropdown.Menu>
+        </DropdownItem>
+      </DropdownMenu>
     </Dropdown>
   );
 };

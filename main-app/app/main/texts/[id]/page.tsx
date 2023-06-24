@@ -1,18 +1,13 @@
+"use client";
 import {
-  Container,
-  Grid,
-  Text,
   Input,
   Dropdown,
   Button,
-  Spacer,
-  Loading,
+  DropdownMenu,
+  DropdownItem,
+  DropdownTrigger,
 } from "@nextui-org/react";
-import React, { useState } from "react";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/supabase";
-import { NextApiRequest, NextApiResponse } from "next";
+import React, { useEffect, useState } from "react";
 import { TextRow } from "types/Texts";
 import {
   createNewFlashcard,
@@ -20,7 +15,6 @@ import {
   getAllFlashcardListsNamesOnly,
   getRouteForFlashcardList,
 } from "utils";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   getTextById,
   setLastEpubLocation,
@@ -36,47 +30,55 @@ import {
   SupportedLanguage,
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
-import { IconButton } from "components/buttons/IconButton";
-import { ArrowUpRight } from "react-feather";
-import router from "next/router";
+import { ArrowUpRight, ChevronDown } from "react-feather";
+import NextLink from "next/link";
+import { useSupabase } from "components/supabase-provider";
 
-export default function TextPage({
-  text,
-  flashcardLists,
-}: {
-  text: TextRow | null;
-  flashcardLists: FlashcardListWithNameOnly[] | null;
-}) {
-  if (!text) {
-    return <Loading />;
-  }
+export default function TextPage({ params }: { params: { id: string } }) {
+  const { supabase } = useSupabase();
+
+  const [text, setText] = useState<TextRow | null>(null);
+  const [flashcardLists, setFlashcardLists] = useState<
+    FlashcardListWithNameOnly[] | null
+  >(null);
+
+  const [textEpubUrl, setTextEpubUrl] = useState<string | null | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const textId = params.id;
+    getTextById(supabase, textId).then((newText) => {
+      setText(newText);
+      setTextEpubUrl(newText && newText.epub_file);
+    });
+    getAllFlashcardListsNamesOnly(supabase).then((lists) =>
+      setFlashcardLists(lists)
+    );
+  }, [params, supabase]);
 
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
 
-  const getDefaultFlashcardList = () => {
+  const [selectedList, setSelectedList] = useState<string | undefined>("");
+
+  useEffect(() => {
     if (!flashcardLists) return;
     const defaultFlashcardList = flashcardLists.find(
-      (flashcardList) => text.last_flashcard_list === flashcardList.id
+      (flashcardList) => text?.last_flashcard_list === flashcardList.id
     );
-    return defaultFlashcardList?.id || flashcardLists[0].id;
-  };
-
-  const [selectedList, setSelectedList] = useState(getDefaultFlashcardList());
+    setSelectedList(defaultFlashcardList?.id || flashcardLists[0]?.id);
+  }, [flashcardLists, text?.last_flashcard_list]);
 
   const handleSetSelectedList = (listId: string) => {
-    if (!text.id) return;
+    if (!text?.id) return;
     setSelectedList(listId);
     setLastFlashcardList(supabase, text.id, listId);
   };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
-  const supabase = useSupabaseClient();
-
-  const [textEpubUrl] = useState<string | null | undefined>(text.epub_file);
-
-  const [textContent] = useState(text.content || "");
+  const [textContent] = useState(text?.content || "");
 
   const [savingCardIsLoading, setSavingCardIsLoading] = useState(false);
 
@@ -171,21 +173,22 @@ export default function TextPage({
   const [selectedSourceLanguage, setSelectedSourceLanguage] = useState<
     SupportedLanguage | undefined
   >(
-    text.last_source_language
-      ? getSupportedLanguageByKey(text.last_source_language)
+    text?.last_source_language
+      ? getSupportedLanguageByKey(text?.last_source_language)
       : undefined
   );
 
   const [selectedTargetLanguage, setSelectedTargetLanguage] = useState<
     SupportedLanguage | undefined
-  >(getSupportedLanguageByKey(text.last_target_language || "en"));
+  >(getSupportedLanguageByKey(text?.last_target_language || "en"));
 
   const handleSelectTargetLanguage = async (key: string) => {
     if (key === selectedTargetLanguage?.key) return;
     setSelectedTargetLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
-    setLastTargetLanguage(supabase, text.id, key);
+    if (!text?.id) return;
+    setLastTargetLanguage(supabase, text?.id, key);
     if (!frontOfCardValue.length) return;
     translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
   };
@@ -195,6 +198,7 @@ export default function TextPage({
     setSelectedSourceLanguage(
       supportedLanguages.find((language) => language.key === key)
     );
+    if (!text?.id) return;
     setLastSourceLanguage(supabase, text.id, key);
     if (!frontOfCardValue.length) return;
 
@@ -202,36 +206,26 @@ export default function TextPage({
   };
 
   const setLastLocation = async (location: string) => {
-    if (!text.id) return;
+    if (!text?.id) return;
     setLastEpubLocation(supabase, text.id, location);
   };
 
   return (
-    <Grid.Container
-      gap={2}
-      justify="center"
-      css={{ marginTop: `2rem`, width: `100vw`, margin: 0 }}
-    >
-      <Grid
-        xs={6}
-        css={{
-          maxHeight: `80vh`,
-          height: `80vh`,
-        }}
-      >
-        {!!text.epub_file ? (
+    <div className="grid grid-cols-2 max-w-full md:grid-cols-3  w-screen gap-2 p-4 h-[calc(100vh-6.1rem)]">
+      <div className="col-span-2 ">
+        {!!textEpubUrl ? (
           <>
-            <Container direction="column" wrap="wrap">
-              <Text h3>{text.name}</Text>
+            <div className="container mx-auto w-full h-full">
+              <h1 className="text-lg font-bold mb-4">{text && text.name}</h1>
               {textEpubUrl && (
                 <ReactReaderWrapper
                   url={textEpubUrl}
-                  lastLocation={text.last_epub_location}
+                  lastLocation={text && text.last_epub_location}
                   setLastLocation={setLastLocation}
                   processTextSelection={processTextSelection}
                 />
               )}
-            </Container>
+            </div>
           </>
         ) : (
           <TextReader
@@ -240,92 +234,102 @@ export default function TextPage({
             textContent={textContent}
           />
         )}
-      </Grid>
-      <Grid xs={3} direction="column">
-        <Text h3>Translation</Text>
-        <FlexContainer>
-          <div>
-            <Text h6>From</Text>
+      </div>
+      <div className="hidden md:flex flex-col w-60 gap-y-4">
+        <h3>Translation</h3>
+        <div className="flex flex-col gap-y-4 ">
+          <div className="flex flex-row justify-between">
+            <h6>From:</h6>
             <Dropdown>
-              <Dropdown.Button size={"xs"} flat>
-                {selectedSourceLanguage
-                  ? selectedSourceLanguage.nativeName
-                  : "Detect Language"}
-              </Dropdown.Button>
-              <Dropdown.Menu
+              <DropdownTrigger>
+                <Button variant="bordered" color="secondary">
+                  {selectedSourceLanguage
+                    ? selectedSourceLanguage.nativeName
+                    : "Detect Language"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Select source language"
                 onAction={(key) => handleSelectSourceLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
-                  <Dropdown.Item key={language.key}>
+                  <DropdownItem key={language.key}>
                     {language.nativeName}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
           </div>
-          <div>
-            <Text h6>To</Text>
+          <div className="flex flex-row w-60 justify-between">
+            <h6>To:</h6>
             <Dropdown>
-              <Dropdown.Button size={"xs"} flat>
-                {selectedTargetLanguage
-                  ? selectedTargetLanguage.nativeName
-                  : "Not selected"}
-              </Dropdown.Button>
-              <Dropdown.Menu
+              <DropdownTrigger>
+                <Button variant="bordered" color="secondary">
+                  {selectedTargetLanguage
+                    ? selectedTargetLanguage.nativeName
+                    : "Not selected"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Select target language"
                 onAction={(key) => handleSelectTargetLanguage(key.toString())}
                 selectionMode="single"
               >
                 {supportedLanguages.map((language) => (
-                  <Dropdown.Item key={language.key}>
+                  <DropdownItem key={language.key}>
                     {language.nativeName}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
           </div>
-        </FlexContainer>
+        </div>
         {flashcardLists && (
-          <FlexRowDiv>
+          <div className="flex flex-row w-60 justify-between">
             <Dropdown>
-              <Dropdown.Button flat>
-                {
-                  flashcardLists.find(
+              <DropdownTrigger>
+                <Button variant="bordered" endContent={<ChevronDown />}>
+                  {flashcardLists.find(
                     (flashcardList) => flashcardList.id === selectedList
-                  )?.name
-                }
-              </Dropdown.Button>
-              <Dropdown.Menu
-                onAction={(key) => handleSetSelectedList(key.toString())}
+                  )?.name || "Select list"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Select flashcard list"
+                onAction={() => console.log("action")}
                 selectionMode="single"
               >
-                {flashcardLists.map((flashcardList) => (
-                  <Dropdown.Item key={flashcardList.id}>
+                {flashcardLists.map((flashcardList, index) => (
+                  <DropdownItem
+                    description={flashcardList.name}
+                    key={flashcardList.name}
+                  >
                     {flashcardList.name}
-                  </Dropdown.Item>
+                  </DropdownItem>
                 ))}
-              </Dropdown.Menu>
+              </DropdownMenu>
             </Dropdown>
             {selectedList && (
-              <IconButton
+              <Button
                 color="secondary"
-                onClick={() =>
-                  router.push(getRouteForFlashcardList(selectedList))
-                }
+                as={NextLink}
+                href={getRouteForFlashcardList(selectedList)}
+                isIconOnly
               >
                 <ArrowUpRight />
-              </IconButton>
+              </Button>
             )}
-          </FlexRowDiv>
+          </div>
         )}
-        <div style={{ maxWidth: "300px" }}>
-          <form action="">
+        <div className="flex gap-y-8 w-60">
+          <form action="" className="flex flex-col gap-y-4">
             <Input
               label="Front of card"
               name="front"
               required={true}
               value={frontOfCardValue}
-              onChange={(e) => setFrontOfCardValue(e.target.value)}
+              onValueChange={setFrontOfCardValue}
               fullWidth
             ></Input>
             <Input
@@ -333,58 +337,24 @@ export default function TextPage({
               name="back"
               required={true}
               value={backOfCardValue}
-              onChange={(e) => setBackOfCardValue(e.target.value)}
+              onValueChange={setBackOfCardValue}
               fullWidth
-              contentRight={waitingForTranslation && <Loading size="xs" />}
             ></Input>
-            <Spacer y={1} />
             <Button
               disabled={savingCardIsLoading}
               color={"secondary"}
-              flat
+              variant="flat"
               onPress={handleSaveCard}
+              isLoading={savingCardIsLoading}
             >
-              {savingCardIsLoading ? (
-                <Loading color={"secondary"} type="points-opacity" />
-              ) : (
-                "Save Card"
-              )}
+              Save Card
             </Button>
           </form>
         </div>
-      </Grid>
-    </Grid.Container>
+      </div>
+    </div>
   );
 }
-
-export async function getServerSideProps({
-  req,
-  res,
-  params,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-  params: Params;
-}) {
-  const supabase = await createServerSupabaseClient<Database>({
-    req,
-    res,
-  });
-
-  const textId = params.text[0];
-  const text = await getTextById(supabase, textId);
-
-  const flashcardLists = await getAllFlashcardListsNamesOnly(supabase);
-
-  return { props: { text: text, flashcardLists } };
-}
-
-const FlexContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 20px;
-`;
 
 const FlexRowDiv = styled.div`
   display: flex;

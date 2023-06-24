@@ -1,3 +1,6 @@
+import { RowType } from "components/table/SimpleTable";
+import { FlashcardListRow } from "types";
+
 export type FlashcardResponseDifficulty = "difficult" | "okay" | "easy";
 export type FlashcardPhase = "new" | "learning" | "learned";
 

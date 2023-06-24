@@ -6,7 +6,7 @@ export const getListsForUser = async (
   supabase: SupabaseClient
 ): Promise<FlashcardListRow[]> => {
   const { data } = await supabase.from(flashcardListsTable).select();
-  return data || [];
+  return (data || []) as FlashcardListRow[];
 };
 
 export const createNewFlashcardList = async (
@@ -23,7 +23,7 @@ export const createNewFlashcardList = async (
     .insert(newFlashcardList)
     .select()
     .single();
-  return data;
+  return data as FlashcardListRow;
 };
 
 export const setListName = async (
@@ -46,7 +46,7 @@ export const getListById = async (
     .select()
     .eq("id", listId)
     .single();
-  return data;
+  return data as FlashcardListRow | null;
 };
 
 export type FlashcardListWithNameOnly = Pick<FlashcardListRow, "name" | "id">;
