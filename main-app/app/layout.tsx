@@ -38,7 +38,7 @@ export default async function RootLayout({
           <SupabaseProvider session={session}>
             <SupabaseListener serverAccessToken={session?.access_token} />
             <ComposedNavbar />
-            <main className="min-h-screen bg-neutral-900 flex flex-col items-center">
+            <main className="mt-20 min-h-screen bg-neutral-900 flex flex-col items-center">
               {children}
             </main>
           </SupabaseProvider>

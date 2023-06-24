@@ -139,7 +139,7 @@ export default function Dashboard() {
         />
       )}
 
-      <div className="grid grid-cols-2 max-md:grid-cols-1 m-auto gap-4 max-w-screen-lg w-screen p-4">
+      <div className="grid grid-cols-2 max-md:grid-cols-1 mx-auto gap-4 max-w-screen-lg w-screen p-4">
         <div>
           <div className="flex flex-row items-center justify-between">
             <h3>Recent texts</h3>

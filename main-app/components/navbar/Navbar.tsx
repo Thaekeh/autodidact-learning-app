@@ -42,21 +42,21 @@ export function ComposedNavbar() {
               <NavbarItem
                 as={NextLink}
                 href={getRouteForDashboard()}
-                // isActive={isActiveRoute("/app")}
+                className="text-white"
               >
                 Dashboard
               </NavbarItem>
               <NavbarItem
                 as={NextLink}
                 href={getRouteForAllFlashcardLists()}
-                // isActive={isActiveRoute(getRouteForAllFlashcardLists())}
+                className="text-white"
               >
                 Flashcards
               </NavbarItem>
               <NavbarItem
                 as={NextLink}
                 href={getRouteForAllTexts()}
-                // isActive={isActiveRoute(getRouteForAllTexts())}
+                className="text-white"
               >
                 Texts
               </NavbarItem>
