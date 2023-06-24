@@ -5,17 +5,17 @@ import { useConfirm } from "hooks/useConfirm";
 import { deleteText, getTexts, setTextName } from "utils/supabase/texts";
 import { useEffect, useState } from "react";
 import { RowType, SimpleTable } from "components/table/SimpleTable";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { NameModal } from "components/modals/NameModal";
+import { useSupabase } from "components/supabase-provider";
 
 export default function Texts() {
   const [texts, setTexts] = useState<TextRow[]>([]);
   const { isConfirmed } = useConfirm();
 
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
-    getTexts(supabaseClient).then((texts) => {
+    getTexts(supabase).then((texts) => {
       setTexts(texts);
     });
   }, []);
@@ -23,14 +23,14 @@ export default function Texts() {
   const handleDeleteCallback = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteText(supabaseClient, id);
-      const newTexts = await getTexts(supabaseClient);
+      await deleteText(supabase, id);
+      const newTexts = await getTexts(supabase);
       setTexts(newTexts);
     }
   };
 
   const refetchTexts = async () => {
-    const newTexts = await getTexts(supabaseClient);
+    const newTexts = await getTexts(supabase);
     setTexts(newTexts);
   };
 
@@ -88,7 +88,7 @@ export default function Texts() {
               isOpen: true,
               name: texts.find((text) => text.id === id)?.name,
               callback: async (name) => {
-                await setTextName(supabaseClient, id, name);
+                await setTextName(supabase, id, name);
                 refetchTexts();
               },
             });

@@ -1,8 +1,7 @@
 "use client";
 import { Card, Divider } from "@nextui-org/react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { GenericInput } from "components/inputs/GenericInput";
-import { useSupabase } from "components/providers/supabase-provider";
+import { useSupabase } from "components/supabase-provider";
 import React, { useEffect, useState } from "react";
 import { ProfileRow } from "types";
 import { getProfileByUserId } from "utils/supabase/profiles";
@@ -10,11 +9,9 @@ import { getProfileByUserId } from "utils/supabase/profiles";
 type FieldName = keyof ProfileRow;
 
 export default function Profile() {
-  const supabase = createClientComponentClient();
-
   const [profile, setProfile] = useState<ProfileRow | null>(null);
 
-  const { session } = useSupabase();
+  const { supabase, session } = useSupabase();
 
   useEffect(() => {
     if (!session?.user.id) return;

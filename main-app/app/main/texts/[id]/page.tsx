@@ -31,11 +31,11 @@ import {
   getSupportedLanguages,
 } from "utils/translation/getSupportedLanguages";
 import { ArrowUpRight, ChevronDown } from "react-feather";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import NextLink from "next/link";
+import { useSupabase } from "components/supabase-provider";
 
 export default function TextPage({ params }: { params: { id: string } }) {
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   const [text, setText] = useState<TextRow | null>(null);
   const [flashcardLists, setFlashcardLists] = useState<
@@ -48,14 +48,14 @@ export default function TextPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const textId = params.id;
-    getTextById(supabaseClient, textId).then((newText) => {
+    getTextById(supabase, textId).then((newText) => {
       setText(newText);
       setTextEpubUrl(newText && newText.epub_file);
     });
-    getAllFlashcardListsNamesOnly(supabaseClient).then((lists) =>
+    getAllFlashcardListsNamesOnly(supabase).then((lists) =>
       setFlashcardLists(lists)
     );
-  }, [params, supabaseClient]);
+  }, [params, supabase]);
 
   const [frontOfCardValue, setFrontOfCardValue] = useState("");
   const [backOfCardValue, setBackOfCardValue] = useState("");
@@ -68,12 +68,12 @@ export default function TextPage({ params }: { params: { id: string } }) {
       (flashcardList) => text?.last_flashcard_list === flashcardList.id
     );
     setSelectedList(defaultFlashcardList?.id || flashcardLists[0]?.id);
-  }, [flashcardLists]);
+  }, [flashcardLists, text?.last_flashcard_list]);
 
   const handleSetSelectedList = (listId: string) => {
     if (!text?.id) return;
     setSelectedList(listId);
-    setLastFlashcardList(supabaseClient, text.id, listId);
+    setLastFlashcardList(supabase, text.id, listId);
   };
 
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
@@ -133,7 +133,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
 
   const handleSaveText = (newTextContent: string) => {
     if (!text || !newTextContent) return;
-    setTextContent(supabaseClient, text.id, newTextContent);
+    setTextContent(supabase, text.id, newTextContent);
   };
 
   const handleSaveCard = async () => {
@@ -142,7 +142,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
     }
     setSavingCardIsLoading(true);
     await createNewFlashcard(
-      supabaseClient,
+      supabase,
       frontOfCardValue,
       backOfCardValue,
       selectedList
@@ -188,7 +188,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
       supportedLanguages.find((language) => language.key === key)
     );
     if (!text?.id) return;
-    setLastTargetLanguage(supabaseClient, text?.id, key);
+    setLastTargetLanguage(supabase, text?.id, key);
     if (!frontOfCardValue.length) return;
     translateText(frontOfCardValue, selectedSourceLanguage?.key, key);
   };
@@ -199,7 +199,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
       supportedLanguages.find((language) => language.key === key)
     );
     if (!text?.id) return;
-    setLastSourceLanguage(supabaseClient, text.id, key);
+    setLastSourceLanguage(supabase, text.id, key);
     if (!frontOfCardValue.length) return;
 
     translateText(frontOfCardValue, key, selectedTargetLanguage?.key);
@@ -207,7 +207,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
 
   const setLastLocation = async (location: string) => {
     if (!text?.id) return;
-    setLastEpubLocation(supabaseClient, text.id, location);
+    setLastEpubLocation(supabase, text.id, location);
   };
 
   return (

@@ -9,8 +9,8 @@ import {
   ModalFooter,
   ModalContent,
 } from "@nextui-org/react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSupabase } from "components/supabase-provider";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { createNewFlashcardList, getRouteForSingleText } from "utils";
@@ -36,7 +36,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
 
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
 
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
 
   const user = useUser();
@@ -46,13 +46,13 @@ export const NewTextModal: React.FC<NameModalProps> = ({
     setCreatingTextOrFlashcardList(true);
     if (addFlashcardList) {
       const flashcardList = await createNewFlashcardList(
-        supabaseClient,
+        supabase,
         textNameValue
       );
       flashcardListId = flashcardList?.id;
     }
     const createdText = await createNewText(
-      supabaseClient,
+      supabase,
       textNameValue,
       isEpub ? epubUrl : undefined,
       flashcardListId
@@ -67,8 +67,6 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   const handleClick = () => {
     hiddenFileInput.current?.click();
   };
-
-  const supabase = useSupabaseClient();
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

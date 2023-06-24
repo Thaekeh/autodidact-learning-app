@@ -4,7 +4,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "update-types": "npx supabase gen types typescript --project-id \"jefhagqiosajljxcnjie\" > types/supabase.ts"
+    "update-types": "npx supabase gen types typescript --project-id \"jefhagqiosajljxcnjie\" > types/supabase.ts",
+    "lint": "next lint"
   },
   "engines": {
     "node": ">=14.0.0",
@@ -51,6 +52,7 @@
     "@types/react": "^18.2.14",
     "autoprefixer": "^10.4.14",
     "encoding": "^0.1.13",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^29.4.3",
     "postcss": "^8.4.24",
     "supabase": "^1.38.6",

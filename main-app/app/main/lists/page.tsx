@@ -13,7 +13,7 @@ import {
 } from "utils";
 import { NameModal } from "components/modals/NameModal";
 import { RowType, SimpleTable } from "components/table/SimpleTable";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabase } from "components/supabase-provider";
 
 export default function Lists() {
   const [lists, setLists] = useState<FlashcardListRow[]>([]);
@@ -25,28 +25,28 @@ export default function Lists() {
     onOpenChange: onListModalIsOpenChange,
   } = useDisclosure();
 
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
-    getListsForUser(supabaseClient).then((lists) => setLists(lists));
+    getListsForUser(supabase).then((lists) => setLists(lists));
   }, []);
 
   const handleDeleteCallback = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteList(supabaseClient, id);
-      const newLists = await getListsForUser(supabaseClient);
+      await deleteList(supabase, id);
+      const newLists = await getListsForUser(supabase);
       setLists(newLists);
     }
   };
 
   const refetchLists = async () => {
-    const newLists = await getListsForUser(supabaseClient);
+    const newLists = await getListsForUser(supabase);
     setLists(newLists);
   };
 
   const onNewListConfirm = async (name: string) => {
-    const createdDocument = await createNewFlashcardList(supabaseClient, name);
+    const createdDocument = await createNewFlashcardList(supabase, name);
     if (createdDocument) {
       onListModalIsOpenChange();
       refetchLists();
@@ -126,7 +126,7 @@ export default function Lists() {
               isOpen: true,
               name: lists.find((text) => text.id === id)?.name,
               callback: async (name) => {
-                await setListName(supabaseClient, id, name);
+                await setListName(supabase, id, name);
                 refetchLists();
               },
             });

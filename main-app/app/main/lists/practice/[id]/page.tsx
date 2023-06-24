@@ -1,7 +1,7 @@
 "use client";
 import { Button, Spacer } from "@nextui-org/react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Flashcard from "components/cards/Flashcard";
+import { useSupabase } from "components/supabase-provider";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "react-feather";
@@ -17,7 +17,7 @@ export default function PracticePage({ params }: { params: { id: string } }) {
   const [flashcardIndex, setFlashcardIndex] = useState<number>(0);
   const [flashcards, setFlashcards] = useState<FlashcardRow[] | null>(null);
 
-  const supabase = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
     getFlashcardsThatRequirePracticeByListId(supabase, params.id).then(

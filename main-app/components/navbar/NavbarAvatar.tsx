@@ -7,10 +7,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-import {
-  createClientComponentClient,
-  User,
-} from "@supabase/auth-helpers-nextjs";
+import { User } from "@supabase/auth-helpers-nextjs";
+import { useSupabase } from "components/supabase-provider";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { User as UserIcon } from "react-feather";
@@ -18,7 +16,7 @@ import { getRouteForProfilePage } from "utils/routing/profile";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
-  const supabase = createClientComponentClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 

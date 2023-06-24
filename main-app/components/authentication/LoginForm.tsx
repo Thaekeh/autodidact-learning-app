@@ -1,14 +1,12 @@
 "use client";
 import React, { FormEvent, useEffect, useState } from "react";
 import { Button, Input } from "@nextui-org/react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import styled from "@emotion/styled";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useSupabase } from "components/providers/supabase-provider";
+import { useSupabase } from "components/supabase-provider";
 
 export const LoginForm = () => {
-  const supabase = createClientComponentClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
 
   // const { session } = useSupabase();

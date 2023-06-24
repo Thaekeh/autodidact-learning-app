@@ -1,16 +1,11 @@
 "use client";
-import { Button, Spacer, Tooltip, useDisclosure } from "@nextui-org/react";
+import { Button, Tooltip, useDisclosure } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import { Plus } from "react-feather";
-import { useRouter } from "next/navigation";
 import { NameModal } from "components/modals/NameModal";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-import { NextApiRequest, NextApiResponse } from "next";
-import { Database } from "types/supabase";
 import { TextRow } from "types/Texts";
 import { FlashcardListRow } from "types/FlashcardLists";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
   createNewFlashcardList,
   deleteListWithMatchingFlashcards,
@@ -27,16 +22,17 @@ import {
 import { RowType, SimpleTable } from "components/table/SimpleTable";
 import { useConfirm } from "hooks/useConfirm";
 import { NewTextModal } from "components/modals/texts/NewTextModal";
+import { useSupabase } from "components/supabase-provider";
 
 export default function Dashboard() {
   const [texts, setTexts] = useState<TextRow[] | null>(null);
   const [lists, setLists] = useState<FlashcardListRow[] | null>(null);
 
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
-    getTexts(supabaseClient).then((texts) => setTexts(texts));
-    getListsForUser(supabaseClient).then((lists) => setLists(lists));
+    getTexts(supabase).then((texts) => setTexts(texts));
+    getListsForUser(supabase).then((lists) => setLists(lists));
   }, []);
 
   const {
@@ -51,17 +47,17 @@ export default function Dashboard() {
   } = useDisclosure();
 
   const refetchTexts = async () => {
-    const newTexts = await getTexts(supabaseClient);
+    const newTexts = await getTexts(supabase);
     setTexts(newTexts);
   };
 
   const refetchLists = async () => {
-    const newLists = await getListsForUser(supabaseClient);
+    const newLists = await getListsForUser(supabase);
     setLists(newLists);
   };
 
   const onNewListConfirm = async (name: string) => {
-    const createdDocument = await createNewFlashcardList(supabaseClient, name);
+    const createdDocument = await createNewFlashcardList(supabase, name);
     if (createdDocument) {
       onListModalIsOpenChange();
       refetchLists();
@@ -85,7 +81,7 @@ export default function Dashboard() {
   const handleDeleteText = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteTextAndAttachedFiles(supabaseClient, id);
+      await deleteTextAndAttachedFiles(supabase, id);
       refetchTexts();
     }
   };
@@ -93,7 +89,7 @@ export default function Dashboard() {
   const handleDeleteList = async (id: string) => {
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteListWithMatchingFlashcards(supabaseClient, id);
+      await deleteListWithMatchingFlashcards(supabase, id);
       refetchLists();
     }
   };
@@ -167,7 +163,7 @@ export default function Dashboard() {
                 isOpen: true,
                 name: texts?.find((text) => text.id === id)?.name,
                 callback: async (name) => {
-                  await setTextName(supabaseClient, id, name);
+                  await setTextName(supabase, id, name);
                   refetchTexts();
                 },
               });
@@ -197,7 +193,7 @@ export default function Dashboard() {
                 isOpen: true,
                 name: lists?.find((list) => list.id === id)?.name,
                 callback: async (name) => {
-                  await setListName(supabaseClient, id, name);
+                  await setListName(supabase, id, name);
                   refetchLists();
                 },
               })

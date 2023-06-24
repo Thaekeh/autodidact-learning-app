@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { FlashcardListRow } from "types/FlashcardLists";
 import { getListById, getRouteForPracticingFlashcardList } from "utils";
 import { Play } from "react-feather";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   createNewFlashcard,
   deleteFlashcard,
@@ -18,6 +17,7 @@ import { FlashcardsTable } from "components/table/FlashcardsTable";
 import { useConfirm } from "hooks/useConfirm";
 import filterFlashcardsThatRequirePractice from "utils/flashcards/getFlashcardsThatRequirePractice";
 import NextLink from "next/link";
+import { useSupabase } from "components/supabase-provider";
 
 export default function ListPage({ params }: { params: { id: string } }) {
   const [selectedFlashcard, setSelectedFlashcard] = useState<
@@ -43,13 +43,13 @@ export default function ListPage({ params }: { params: { id: string } }) {
     onOpenChange: onEditFlashcardModalIsOpenChange,
   } = useDisclosure();
 
-  const supabaseClient = createClientComponentClient();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
-    getListById(supabaseClient, params.id).then((list) => {
+    getListById(supabase, params.id).then((list) => {
       setList(list);
     });
-    getFlashcardsForList(supabaseClient, params.id).then((flashcards) => {
+    getFlashcardsForList(supabase, params.id).then((flashcards) => {
       setFlashcards(flashcards);
 
       const flashcardsToPractice =
@@ -68,7 +68,7 @@ export default function ListPage({ params }: { params: { id: string } }) {
     if (!list || !selectedFlashcard) return;
     onEditFlashcardModalIsOpenChange();
     await updateFlashcard(
-      supabaseClient,
+      supabase,
       selectedFlashcard?.id,
       frontText,
       backText,
@@ -83,7 +83,7 @@ export default function ListPage({ params }: { params: { id: string } }) {
 
   const onNewFlashcardConfirm = () => {
     if (!list) return;
-    createNewFlashcard(supabaseClient, "test front", "test back", list.id);
+    createNewFlashcard(supabase, "test front", "test back", list.id);
     onFlashcardModalIsOpenChange();
   };
 
@@ -91,11 +91,8 @@ export default function ListPage({ params }: { params: { id: string } }) {
     if (!list?.id) return;
     const confirmed = await isConfirmed("Are you sure?");
     if (confirmed) {
-      await deleteFlashcard(supabaseClient, flashcardId);
-      const newFlashcards = await getFlashcardsForList(
-        supabaseClient,
-        list?.id
-      );
+      await deleteFlashcard(supabase, flashcardId);
+      const newFlashcards = await getFlashcardsForList(supabase, list?.id);
       setFlashcards(newFlashcards);
     }
   };
