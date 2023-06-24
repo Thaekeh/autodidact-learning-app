@@ -33,7 +33,7 @@ export default function Dashboard() {
   useEffect(() => {
     getTexts(supabase).then((texts) => setTexts(texts));
     getListsForUser(supabase).then((lists) => setLists(lists));
-  }, []);
+  }, [supabase]);
 
   const {
     isOpen: textModalIsVisible,

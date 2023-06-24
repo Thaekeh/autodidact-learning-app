@@ -26,11 +26,14 @@ export function ComposedNavbar() {
   // const [user, setUser] = useState<User | null>(null);
 
   return (
-    <Navbar height={NAVBAR_HEIGHT} position="fixed">
+    <Navbar height={NAVBAR_HEIGHT} position="fixed" className="bg-ore-400">
       <NavbarBrand className="h-12">
         <div className="w-12 h-12 mr-2">
           <LearningHubLogo />
         </div>
+        <NextLink href={getRouteForDashboard()}>
+          <h1 className="text-xl text-white">Learning Hub</h1>
+        </NextLink>
       </NavbarBrand>
       <NavbarContent>
         <NavbarContent>
@@ -57,7 +60,7 @@ export function ComposedNavbar() {
               >
                 Texts
               </NavbarItem>
-              {/* <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent> */}
+              <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
             </>
           ) : (
             <NavbarContent justify="end">
@@ -66,7 +69,7 @@ export function ComposedNavbar() {
                 href={"/login"}
                 size={"sm"}
                 variant="flat"
-                color="secondary"
+                className="bg-ore-200"
               >
                 Login
               </Button>

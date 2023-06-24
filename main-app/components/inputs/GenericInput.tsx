@@ -17,6 +17,7 @@ export const GenericInput = ({
       variant="flat"
       color="secondary"
       label={label}
+      labelPlacement="outside"
       value={inputValue}
       onValueChange={setInputValue}
       onBlur={() => onInputFieldBlur(inputValue)}

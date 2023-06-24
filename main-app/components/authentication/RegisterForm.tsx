@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Button, Input } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import styled from "@emotion/styled";
@@ -19,7 +19,6 @@ export const LoginForm = () => {
     setFormSubmitIsLoading(true);
     event.preventDefault();
 
-    // TODO: implement signup with auth/callback: https://supabase.com/docs/guides/auth/auth-helpers/nextjs#client-side
     try {
       supabase.auth.signUp({
         email: formValues.email,
@@ -43,7 +42,7 @@ export const LoginForm = () => {
 
   return (
     <StyledDiv>
-      <h3>Login</h3>
+      <h3>Register</h3>
       {/* {session && <p>Logged in as {session.user.email}</p>} */}
       <StyledForm onSubmit={onSubmit}>
         <Input
@@ -72,7 +71,7 @@ export const LoginForm = () => {
           // isLoading={formSubmitIsLoading}
           type="submit"
         >
-          Login
+          Register
         </Button>
       </StyledForm>
     </StyledDiv>

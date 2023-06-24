@@ -30,8 +30,6 @@ export default async function RootLayout({
     data: { session },
   } = await supabase.auth.getSession();
 
-  console.log("rerender");
-
   return (
     <html lang="en">
       <head />

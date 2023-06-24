@@ -8,7 +8,7 @@ export default function Login() {
   );
 
   return (
-    <div>
+    <div className="w-full h-screen flex justify-center">
       {currentView === "login" ? (
         <LoginForm />
       ) : (

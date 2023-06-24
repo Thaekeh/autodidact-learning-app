@@ -1,99 +1,104 @@
 "use client";
-import React, { FormEvent, useEffect, useState } from "react";
-import { Button, Input } from "@nextui-org/react";
+import React, { useState } from "react";
+import { Button, Input, Spacer } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import styled from "@emotion/styled";
 import { useSupabase } from "components/supabase-provider";
-import { getRouteForDashboard } from "@/utils/routing/general";
 
 export const LoginForm = () => {
   const { supabase } = useSupabase();
   const router = useRouter();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   // const { session } = useSupabase();
 
-  const [formValues, setFormValues] = useState({ email: "", password: "" });
-  const [formSubmitIsLoading, setFormSubmitIsLoading] = useState(false);
+  // const [formValues, setFormValues] = useState({ email: "", password: "" });
+  // const [formSubmitIsLoading, setFormSubmitIsLoading] = useState(false);
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    if (!event) return;
-    setFormSubmitIsLoading(true);
-    event.preventDefault();
+  // const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   if (!event) {
+  //     console.log("no event");
+  //     return;
+  //   }
 
-    // TODO: implement signup with auth/callback: https://supabase.com/docs/guides/auth/auth-helpers/nextjs#client-side
-    try {
-      supabase.auth
-        .signInWithPassword({
-          email: formValues.email,
-          password: formValues.password,
-        })
-        .then(() => {
-          router.push(getRouteForDashboard());
-          // setFormSubmitIsLoading(false);
-        });
-    } catch (error) {
-      console.log("error", error);
-      setFormSubmitIsLoading(false);
-    }
-  };
+  //   setFormSubmitIsLoading(true);
 
-  const handleInputChange = (value: string, field: string) => {
-    setFormValues({
-      ...formValues,
-      [field]: value,
+  //   try {
+  //     console.log("formaValues", formValues);
+  //     await supabase.auth.signInWithPassword({
+  //       email: formValues.email,
+  //       password: formValues.password,
+  //     });
+  //     router.push(getRouteForDashboard());
+  //     // supabase.auth
+  //     //   .signInWithPassword({
+  //     //     email: formValues.email,
+  //     //     password: formValues.password,
+  //     //   })
+  //     //   .then(() => {
+  //     //     router.push(getRouteForDashboard());
+  //     //     // setFormSubmitIsLoading(false);
+  //     //   });
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     setFormSubmitIsLoading(false);
+  //   }
+  const handleSignIn = async () => {
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
+    router.refresh();
   };
+
+  // const handleInputChange = (value: string, field: string) => {
+  //   setFormValues({
+  //     ...formValues,
+  //     [field]: value,
+  //   });
+  // };
 
   return (
-    <StyledDiv>
-      <h3>Login</h3>
+    <div className="w-80 m-auto align-middle gap-y-4 flex flex-col">
+      <div className="flex justify-center">
+        <h1 className="text-xl">Login</h1>
+      </div>
+      <Spacer y={8} />
       {/* {session && <p>Logged in as {session.user.email}</p>} */}
-      <StyledForm onSubmit={onSubmit}>
-        <Input
-          label="Email"
-          name="email"
-          required={true}
-          value={formValues.email || ""}
-          onChange={(event) => handleInputChange(event.target.value, "email")}
-          // onValueChange={(value) => handleInputChange(value, "email")}
-        ></Input>
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          value={formValues.password || ""}
-          onChange={(event) =>
-            handleInputChange(event.target.value, "password")
-          }
-
-          // onValueChange={(value) => handleInputChange(value, "password")}
-        ></Input>
-        <Button
-          variant="flat"
-          color={"secondary"}
-          // loading={formSubmitIsLoading}
-          // isLoading={formSubmitIsLoading}
-          type="submit"
-        >
-          Login
-        </Button>
-      </StyledForm>
-    </StyledDiv>
+      {/* <form onSubmit={handleSignIn}> */}
+      <Input
+        label="Email"
+        color="secondary"
+        name="email"
+        variant="bordered"
+        labelPlacement="outside"
+        required={true}
+        value={email || ""}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="Email"
+      />
+      <Input
+        label="Password"
+        color="secondary"
+        name="password"
+        labelPlacement="outside"
+        variant="bordered"
+        type="password"
+        value={password || ""}
+        onChange={(event) => setPassword(event.target.value)}
+        placeholder="Password"
+      ></Input>
+      <Button
+        variant="flat"
+        color={"secondary"}
+        type="submit"
+        onPress={handleSignIn}
+      >
+        Login
+      </Button>
+      {/* </form> */}
+    </div>
   );
 };
-
-const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const StyledDiv = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 300px;
-  margin: 0 auto;
-  height: 90vh;
-  justify-content: center;
-`;
