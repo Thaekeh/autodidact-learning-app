@@ -1,23 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@nextui-org/react";
-import { SupabaseAuthClient } from "@supabase/supabase-js/dist/module/lib/SupabaseAuthClient";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useSupabase } from "components/providers/supabase-provider";
 
 export default function Logout() {
-  const { supabase } = useSupabase();
+  // const { supabase } = useSupabase();
 
   const onLogout = () => {
-    supabase.auth.signOut();
+    //   supabase.auth.signOut();
   };
 
-  const user = useUser();
+  // const user = useUser();
 
   return (
     <div>
-      {user ? "logged in" : "logged out"}
-      <Button onClick={onLogout}>Logout</Button>
+      {/* {user ? "logged in" : "logged out"} */}
+      <Button onPress={onLogout}>Logout</Button>
     </div>
   );
 }

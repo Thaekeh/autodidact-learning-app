@@ -1,3 +1,3 @@
 export const getRouteForProfilePage = () => {
-  return `/app/profile`;
+  return `/main/profile`;
 };

@@ -20,7 +20,9 @@ export const ConfirmContext = createContext<
   () => null,
 ]);
 
-const ConfirmContextProvider: React.FC = ({ children }) => {
+const ConfirmContextProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [confirm, setConfirm] = useState<ConfirmContextData>({
     prompt: "",
     isOpen: false,

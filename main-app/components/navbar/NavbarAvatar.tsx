@@ -1,3 +1,4 @@
+"use client";
 import {
   Avatar,
   Dropdown,
@@ -10,16 +11,13 @@ import {
   createClientComponentClient,
   User,
 } from "@supabase/auth-helpers-nextjs";
-import { useSupabase } from "components/providers/supabase-provider";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { User as UserIcon } from "react-feather";
-import NextLink from "next/link";
 import { getRouteForProfilePage } from "utils/routing/profile";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
-  // const { supabase } = useSupabase();
   const supabase = createClientComponentClient();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -30,12 +28,12 @@ export const NavbarAvatar: React.FC<Props> = () => {
     });
   }, [supabase]);
 
-  const onDropdownAction = (actionKey: Key) => {
+  const onDropdownAction = async (actionKey: Key) => {
     switch (actionKey) {
       case "logout":
-        supabase.auth.signOut().then(() => {
-          router.push("/");
-        });
+        await supabase.auth.signOut();
+        router.refresh();
+        break;
       case "settings":
         router.push(getRouteForProfilePage());
     }

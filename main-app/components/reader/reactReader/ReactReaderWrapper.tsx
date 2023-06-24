@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useSupabase } from "components/providers/supabase-provider";
-import { Rendition } from "epubjs";
+// import { Rendition } from "epubjs";
+import Rendition from "epubjs/types/rendition";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactReader } from "react-reader";
 import { snapSelectionToWord } from "./selectWholeWord";
+import { useSupabase } from "components/supabase-provider";
 
 export const ReactReaderWrapper = ({
   processTextSelection,
@@ -20,7 +21,10 @@ export const ReactReaderWrapper = ({
   const renditionRef = useRef<Rendition | null>(null);
 
   const supabase = createClientComponentClient();
-  const user = useSupabase().session?.user;
+  // const user = useSupabase().session?.user;
+
+  const { session } = useSupabase();
+  const user = session?.user;
 
   const [selections, setSelections] = useState<string>();
 

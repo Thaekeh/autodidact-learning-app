@@ -67,7 +67,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
     const defaultFlashcardList = flashcardLists.find(
       (flashcardList) => text?.last_flashcard_list === flashcardList.id
     );
-    setSelectedList(defaultFlashcardList?.id || flashcardLists[0].id);
+    setSelectedList(defaultFlashcardList?.id || flashcardLists[0]?.id);
   }, [flashcardLists]);
 
   const handleSetSelectedList = (listId: string) => {
@@ -211,8 +211,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3  w-screen gap-2 p-4 h-[calc(100vh-6.1rem)]">
-      <div className="col-span-2">
+    <div className="grid grid-cols-2 max-w-full md:grid-cols-3  w-screen gap-2 p-4 h-[calc(100vh-6.1rem)]">
+      <div className="col-span-2 ">
         {!!textEpubUrl ? (
           <>
             <div className="container mx-auto w-full h-full">
@@ -240,7 +240,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
         <div className="flex flex-col gap-y-4 ">
           <div className="flex flex-row justify-between">
             <h6>From:</h6>
-            {/* <Dropdown>
+            <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
                   {selectedSourceLanguage
@@ -259,11 +259,11 @@ export default function TextPage({ params }: { params: { id: string } }) {
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown> */}
+            </Dropdown>
           </div>
           <div className="flex flex-row w-60 justify-between">
             <h6>To:</h6>
-            {/* <Dropdown>
+            <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" color="secondary">
                   {selectedTargetLanguage
@@ -282,7 +282,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown> */}
+            </Dropdown>
           </div>
         </div>
         {flashcardLists && (

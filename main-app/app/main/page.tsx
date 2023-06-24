@@ -31,7 +31,6 @@ import { NewTextModal } from "components/modals/texts/NewTextModal";
 export default function Dashboard() {
   const [texts, setTexts] = useState<TextRow[] | null>(null);
   const [lists, setLists] = useState<FlashcardListRow[] | null>(null);
-  const router = useRouter();
 
   const supabaseClient = createClientComponentClient();
 

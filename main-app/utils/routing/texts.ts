@@ -1,7 +1,7 @@
 export const getRouteForAllTexts = () => {
-  return `/app/texts`;
+  return `/main/texts`;
 };
 
 export const getRouteForSingleText = (id: string) => {
-  return `/app/texts/${id}`;
+  return `/main/texts/${id}`;
 };

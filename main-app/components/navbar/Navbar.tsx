@@ -7,17 +7,22 @@ import {
   NavbarContent,
   NavbarItem,
 } from "@nextui-org/react";
-import NextLink from "next/link";
-import { NavbarAvatar } from "./NavbarAvatar";
-import { getRouteForAllFlashcardLists, getRouteForAllTexts } from "utils";
-import { useSupabase } from "components/providers/supabase-provider";
 import { LearningHubLogo } from "components/logo/LearningHubLogo";
-import { useRouter } from "next/navigation";
+import { useSupabase } from "components/supabase-provider";
+import NextLink from "next/link";
+import {
+  getRouteForAllFlashcardLists,
+  getRouteForAllTexts,
+} from "@/utils/routing";
+import { NavbarAvatar } from "./NavbarAvatar";
 
 const NAVBAR_HEIGHT = "4rem";
 
-export const ComposedNavbar = () => {
+export function ComposedNavbar() {
   const { supabase, session } = useSupabase();
+  // const user = use(supabase.auth.getUser());
+
+  // const [user, setUser] = useState<User | null>(null);
 
   return (
     <Navbar height={NAVBAR_HEIGHT} position="fixed">
@@ -25,9 +30,6 @@ export const ComposedNavbar = () => {
         <div className="w-12 h-12 mr-2">
           <LearningHubLogo />
         </div>
-        <NextLink href={supabase ? "/app" : "/"}>
-          <h1>Learning Hub</h1>
-        </NextLink>
       </NavbarBrand>
       <NavbarContent>
         <NavbarContent>
@@ -35,7 +37,7 @@ export const ComposedNavbar = () => {
             <>
               <NavbarItem
                 as={NextLink}
-                href="/app"
+                href="/main"
                 // isActive={isActiveRoute("/app")}
               >
                 Dashboard
@@ -54,7 +56,7 @@ export const ComposedNavbar = () => {
               >
                 Texts
               </NavbarItem>
-              <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
+              {/* <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent> */}
             </>
           ) : (
             <NavbarContent justify="end">
@@ -73,4 +75,4 @@ export const ComposedNavbar = () => {
       </NavbarContent>
     </Navbar>
   );
-};
+}

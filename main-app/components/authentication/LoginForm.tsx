@@ -5,10 +5,13 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import styled from "@emotion/styled";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useSupabase } from "components/providers/supabase-provider";
 
 export const LoginForm = () => {
   const supabase = createClientComponentClient();
   const router = useRouter();
+
+  // const { session } = useSupabase();
 
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [formSubmitIsLoading, setFormSubmitIsLoading] = useState(false);
@@ -20,14 +23,25 @@ export const LoginForm = () => {
 
     // TODO: implement signup with auth/callback: https://supabase.com/docs/guides/auth/auth-helpers/nextjs#client-side
     try {
+      // supabase.auth
+      //   .signInWithPassword({
+      //     email: formValues.email,
+      //     password: formValues.password,
+      //   })
+      //   .then(() => {
+      //     router.push("/app");
+      //     // setFormSubmitIsLoading(false);
+      //   });
       supabase.auth
-        .signInWithPassword({
+        .signUp({
           email: formValues.email,
           password: formValues.password,
+          options: {
+            emailRedirectTo: `${location.origin}/auth/callback`,
+          },
         })
         .then(() => {
           router.push("/app");
-          setFormSubmitIsLoading(false);
         });
     } catch (error) {
       console.log("error", error);
@@ -45,25 +59,32 @@ export const LoginForm = () => {
   return (
     <StyledDiv>
       <h3>Login</h3>
+      {/* {session && <p>Logged in as {session.user.email}</p>} */}
       <StyledForm onSubmit={onSubmit}>
         <Input
           label="Email"
           name="email"
           required={true}
           value={formValues.email || ""}
-          onValueChange={(value) => handleInputChange(value, "email")}
+          onChange={(event) => handleInputChange(event.target.value, "email")}
+          // onValueChange={(value) => handleInputChange(value, "email")}
         ></Input>
         <Input
           label="Password"
           name="password"
           type="password"
           value={formValues.password || ""}
-          onValueChange={(value) => handleInputChange(value, "password")}
+          onChange={(event) =>
+            handleInputChange(event.target.value, "password")
+          }
+
+          // onValueChange={(value) => handleInputChange(value, "password")}
         ></Input>
         <Button
           variant="flat"
           color={"secondary"}
-          isLoading={formSubmitIsLoading}
+          // loading={formSubmitIsLoading}
+          // isLoading={formSubmitIsLoading}
           type="submit"
         >
           Login

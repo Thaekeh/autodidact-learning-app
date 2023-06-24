@@ -1,11 +1,11 @@
 export const getRouteForAllFlashcardLists = () => {
-  return `/app/lists`;
+  return `/main/lists`;
 };
 
 export const getRouteForFlashcardList = (id: string) => {
-  return `/app/lists/${id}`;
+  return `/main/lists/${id}`;
 };
 
 export const getRouteForPracticingFlashcardList = (id: string) => {
-  return `/app/lists/practice/${id}`;
+  return `/main/lists/practice/${id}`;
 };
