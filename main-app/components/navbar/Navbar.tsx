@@ -15,6 +15,7 @@ import {
   getRouteForAllTexts,
 } from "@/utils/routing";
 import { NavbarAvatar } from "./NavbarAvatar";
+import { getRouteForDashboard } from "@/utils/routing/general";
 
 const NAVBAR_HEIGHT = "4rem";
 
@@ -37,7 +38,7 @@ export function ComposedNavbar() {
             <>
               <NavbarItem
                 as={NextLink}
-                href="/main"
+                href={getRouteForDashboard()}
                 // isActive={isActiveRoute("/app")}
               >
                 Dashboard

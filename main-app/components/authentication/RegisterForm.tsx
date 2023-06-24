@@ -4,7 +4,6 @@ import { Button, Input } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import styled from "@emotion/styled";
 import { useSupabase } from "components/supabase-provider";
-import { getRouteForDashboard } from "@/utils/routing/general";
 
 export const LoginForm = () => {
   const { supabase } = useSupabase();
@@ -22,15 +21,13 @@ export const LoginForm = () => {
 
     // TODO: implement signup with auth/callback: https://supabase.com/docs/guides/auth/auth-helpers/nextjs#client-side
     try {
-      supabase.auth
-        .signInWithPassword({
-          email: formValues.email,
-          password: formValues.password,
-        })
-        .then(() => {
-          router.push(getRouteForDashboard());
-          // setFormSubmitIsLoading(false);
-        });
+      supabase.auth.signUp({
+        email: formValues.email,
+        password: formValues.password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
+        },
+      });
     } catch (error) {
       console.log("error", error);
       setFormSubmitIsLoading(false);
