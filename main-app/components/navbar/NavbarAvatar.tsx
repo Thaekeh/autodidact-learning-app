@@ -12,7 +12,10 @@ import { useSupabase } from "components/supabase-provider";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { User as UserIcon } from "react-feather";
-import { getRouteForProfilePage } from "utils/routing/profile";
+import {
+  getRouteForAdminPage,
+  getRouteForProfilePage,
+} from "utils/routing/profile";
 
 interface Props {}
 export const NavbarAvatar: React.FC<Props> = () => {
@@ -34,6 +37,10 @@ export const NavbarAvatar: React.FC<Props> = () => {
         break;
       case "settings":
         router.push(getRouteForProfilePage());
+        break;
+      case "admin":
+        router.push(getRouteForAdminPage());
+        break;
     }
   };
 
@@ -61,6 +68,9 @@ export const NavbarAvatar: React.FC<Props> = () => {
         </DropdownItem>
         <DropdownItem key="settings" showDivider>
           My Settings
+        </DropdownItem>
+        <DropdownItem key="admin" showDivider>
+          Admin Panel
         </DropdownItem>
         <DropdownItem key="logout" showDivider color="danger">
           Log Out
