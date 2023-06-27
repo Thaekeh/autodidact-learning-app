@@ -249,6 +249,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                className="max-h-60 overflow-y-auto"
                 aria-label="Select source language"
                 onAction={(key) => handleSelectSourceLanguage(key.toString())}
                 selectionMode="single"
@@ -272,6 +273,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                className="max-h-60 overflow-y-auto"
                 aria-label="Select target language"
                 onAction={(key) => handleSelectTargetLanguage(key.toString())}
                 selectionMode="single"
@@ -296,6 +298,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
+                className="max-h-20"
                 aria-label="Select flashcard list"
                 onAction={() => console.log("action")}
                 selectionMode="single"
@@ -327,6 +330,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
             <Input
               label="Front of card"
               name="front"
+              variant="bordered"
+              color="secondary"
               required={true}
               value={frontOfCardValue}
               onValueChange={setFrontOfCardValue}
@@ -335,6 +340,8 @@ export default function TextPage({ params }: { params: { id: string } }) {
             <Input
               label="Back of card"
               name="back"
+              variant="bordered"
+              color="secondary"
               required={true}
               value={backOfCardValue}
               onValueChange={setBackOfCardValue}

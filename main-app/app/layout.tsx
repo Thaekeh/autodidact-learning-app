@@ -8,6 +8,8 @@ import { createServerClient } from "components/supabase-server";
 import SupabaseProvider from "components/supabase-provider";
 import SupabaseListener from "components/supabase-listener";
 import { ComposedNavbar } from "components/navbar/Navbar";
+import { ConfirmModal } from "components/modals/ConfirmModal";
+import ConfirmContextProvider from "providers/ConfirmContextProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -30,20 +32,21 @@ export default async function RootLayout({
     data: { session },
   } = await supabase.auth.getSession();
 
-  console.log("rerender");
-
   return (
     <html lang="en">
       <head />
       <body className="light">
         <Providers>
-          <SupabaseProvider session={session}>
-            <SupabaseListener serverAccessToken={session?.access_token} />
-            <ComposedNavbar />
-            <main className="min-h-screen bg-neutral-900 flex flex-col items-center">
-              {children}
-            </main>
-          </SupabaseProvider>
+          <ConfirmContextProvider>
+            <SupabaseProvider session={session}>
+              <SupabaseListener serverAccessToken={session?.access_token} />
+              <ComposedNavbar />
+              <ConfirmModal />
+              <main className="mt-20 min-h-screen bg-neutral-900 flex flex-col items-center">
+                {children}
+              </main>
+            </SupabaseProvider>
+          </ConfirmContextProvider>
         </Providers>
       </body>
     </html>

@@ -8,8 +8,9 @@ import {
   ModalBody,
   ModalFooter,
   ModalContent,
+  Spinner,
 } from "@nextui-org/react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useSupabase } from "components/supabase-provider";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -109,6 +110,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
                   onValueChange={setTextNameValue}
                   placeholder="Text name"
                   label="Text name"
+                  variant="bordered"
                 />
 
                 <div>
@@ -136,6 +138,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
                       variant="flat"
                       onPress={handleClick}
                       isLoading={uploadingEpub}
+                      spinner={<Spinner size="sm" />}
                     >
                       Upload Epub
                     </Button>
@@ -160,6 +163,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
                 isLoading={creatingTextOrFlashcardList}
                 color={"secondary"}
                 onPress={handleNewText}
+                spinner={<Spinner size="sm" />}
               >
                 Create Text
               </Button>

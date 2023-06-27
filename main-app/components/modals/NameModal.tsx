@@ -42,6 +42,7 @@ export const NameModal: React.FC<NameModalProps> = ({
           <Input
             value={inputValue}
             label="Name"
+            variant="bordered"
             onValueChange={setInputValue}
             placeholder="Name"
           />

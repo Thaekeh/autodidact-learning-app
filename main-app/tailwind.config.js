@@ -12,7 +12,27 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    colors: {
+      primary: "#0070f3",
+      secondary: "#ff0080",
+      success: "#00ff00",
+      error: "#ff0000",
+      warning: "#ff9900",
+      dark: "#000000",
+      light: "#ffffff",
+
+      ore: {
+        100: "#F8F2FF",
+        200: "#D7BCFE",
+        300: "#AE85FA",
+        400: "#7C4CEF",
+        500: "#4518D9",
+        600: "#2508AC",
+        700: "#100280",
+        800: "#050053",
+        900: "#000026",
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

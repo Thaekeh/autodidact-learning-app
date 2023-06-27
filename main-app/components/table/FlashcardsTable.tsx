@@ -43,7 +43,7 @@ export const FlashcardsTable: React.FC<Props> = ({
       setProfile(profile);
     };
     fetchProfile();
-  }, []);
+  }, [supabase, user]);
 
   return (
     <Table>

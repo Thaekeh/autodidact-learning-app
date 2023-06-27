@@ -15,6 +15,7 @@ import {
   getRouteForAllTexts,
 } from "@/utils/routing";
 import { NavbarAvatar } from "./NavbarAvatar";
+import { getRouteForDashboard } from "@/utils/routing/general";
 
 const NAVBAR_HEIGHT = "4rem";
 
@@ -25,11 +26,14 @@ export function ComposedNavbar() {
   // const [user, setUser] = useState<User | null>(null);
 
   return (
-    <Navbar height={NAVBAR_HEIGHT} position="fixed">
+    <Navbar height={NAVBAR_HEIGHT} position="fixed" className="bg-ore-400">
       <NavbarBrand className="h-12">
         <div className="w-12 h-12 mr-2">
           <LearningHubLogo />
         </div>
+        <NextLink href={getRouteForDashboard()}>
+          <h1 className="text-xl text-white">Learning Hub</h1>
+        </NextLink>
       </NavbarBrand>
       <NavbarContent>
         <NavbarContent>
@@ -37,26 +41,26 @@ export function ComposedNavbar() {
             <>
               <NavbarItem
                 as={NextLink}
-                href="/main"
-                // isActive={isActiveRoute("/app")}
+                href={getRouteForDashboard()}
+                className="text-white"
               >
                 Dashboard
               </NavbarItem>
               <NavbarItem
                 as={NextLink}
                 href={getRouteForAllFlashcardLists()}
-                // isActive={isActiveRoute(getRouteForAllFlashcardLists())}
+                className="text-white"
               >
                 Flashcards
               </NavbarItem>
               <NavbarItem
                 as={NextLink}
                 href={getRouteForAllTexts()}
-                // isActive={isActiveRoute(getRouteForAllTexts())}
+                className="text-white"
               >
                 Texts
               </NavbarItem>
-              {/* <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent> */}
+              <NavbarContent>{supabase && <NavbarAvatar />}</NavbarContent>
             </>
           ) : (
             <NavbarContent justify="end">
@@ -65,7 +69,7 @@ export function ComposedNavbar() {
                 href={"/login"}
                 size={"sm"}
                 variant="flat"
-                color="secondary"
+                className="bg-ore-200"
               >
                 Login
               </Button>
