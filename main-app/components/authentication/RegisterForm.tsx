@@ -48,6 +48,7 @@ export const LoginForm = () => {
         <Input
           label="Email"
           name="email"
+          variant="bordered"
           required={true}
           value={formValues.email || ""}
           onChange={(event) => handleInputChange(event.target.value, "email")}
@@ -57,6 +58,7 @@ export const LoginForm = () => {
           label="Password"
           name="password"
           type="password"
+          variant="bordered"
           value={formValues.password || ""}
           onChange={(event) =>
             handleInputChange(event.target.value, "password")

@@ -109,6 +109,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
                   onValueChange={setTextNameValue}
                   placeholder="Text name"
                   label="Text name"
+                  variant="bordered"
                 />
 
                 <div>
