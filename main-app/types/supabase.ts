@@ -31,6 +31,7 @@ export interface Database {
           name?: string
           user_id?: string | null
         }
+        Relationships: []
       }
       flashcards: {
         Row: {
@@ -69,12 +70,14 @@ export interface Database {
           repetitions?: number
           user_id?: string
         }
+        Relationships: []
       }
       profiles: {
         Row: {
           created_at: string | null
           first_learning_phase_interval: number | null
           id: string
+          isAdmin: boolean | null
           last_updated: string | null
           name: string | null
           second_learning_phase_interval: number | null
@@ -84,6 +87,7 @@ export interface Database {
           created_at?: string | null
           first_learning_phase_interval?: number | null
           id?: string
+          isAdmin?: boolean | null
           last_updated?: string | null
           name?: string | null
           second_learning_phase_interval?: number | null
@@ -93,11 +97,13 @@ export interface Database {
           created_at?: string | null
           first_learning_phase_interval?: number | null
           id?: string
+          isAdmin?: boolean | null
           last_updated?: string | null
           name?: string | null
           second_learning_phase_interval?: number | null
           user_id?: string | null
         }
+        Relationships: []
       }
       texts: {
         Row: {
@@ -139,6 +145,7 @@ export interface Database {
           name?: string
           user_id?: string | null
         }
+        Relationships: []
       }
     }
     Views: {
