@@ -4,8 +4,9 @@ import { ProfileRow } from "types";
 
 export const getProfileByUserId = async (
   supabase: SupabaseClient,
-  userId: string
-): Promise<ProfileRow> => {
+  userId?: string
+): Promise<ProfileRow | null> => {
+  if (!userId) return null;
   const { data, error } = await supabase
     .from(profilesTable)
     .select("*")
