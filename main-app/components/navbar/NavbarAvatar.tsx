@@ -1,4 +1,5 @@
 "use client";
+import { getProfileByUserId } from "@/utils/supabase";
 import {
   Avatar,
   Dropdown,
@@ -12,6 +13,7 @@ import { useSupabase } from "components/supabase-provider";
 import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 import { User as UserIcon } from "react-feather";
+import { ProfileRow } from "types";
 import {
   getRouteForAdminPage,
   getRouteForProfilePage,
@@ -22,12 +24,16 @@ export const NavbarAvatar: React.FC<Props> = () => {
   const { supabase } = useSupabase();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Partial<ProfileRow> | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then((user) => {
       setUser(user.data.user);
     });
-  }, [supabase]);
+    getProfileByUserId(supabase, user?.id).then((profile) => {
+      setProfile(profile);
+    });
+  }, [supabase, user?.id]);
 
   const onDropdownAction = async (actionKey: Key) => {
     switch (actionKey) {
@@ -69,9 +75,13 @@ export const NavbarAvatar: React.FC<Props> = () => {
         <DropdownItem key="settings" showDivider>
           My Settings
         </DropdownItem>
-        <DropdownItem key="admin" showDivider>
-          Admin Panel
-        </DropdownItem>
+        {profile?.isAdmin ? (
+          <DropdownItem key="admin" showDivider>
+            Admin Panel
+          </DropdownItem>
+        ) : (
+          <></>
+        )}
         <DropdownItem key="logout" showDivider color="danger">
           Log Out
         </DropdownItem>
