@@ -40,11 +40,13 @@ export const NewTextModal: React.FC<NameModalProps> = ({
   const { supabase } = useSupabase();
   const router = useRouter();
 
-  const user = useUser();
+  const { session } = useSupabase();
+  const user = session?.user;
 
   const handleNewText = async () => {
     let flashcardListId: string | undefined;
     setCreatingTextOrFlashcardList(true);
+
     if (addFlashcardList) {
       const flashcardList = await createNewFlashcardList(
         supabase,
@@ -52,6 +54,7 @@ export const NewTextModal: React.FC<NameModalProps> = ({
       );
       flashcardListId = flashcardList?.id;
     }
+
     const createdText = await createNewText(
       supabase,
       textNameValue,
