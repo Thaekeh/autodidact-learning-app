@@ -300,7 +300,7 @@ export default function TextPage({ params }: { params: { id: string } }) {
               <DropdownMenu
                 className="max-h-20"
                 aria-label="Select flashcard list"
-                onAction={() => console.log("action")}
+                onAction={(value) => handleSetSelectedList(value.toString())}
                 selectionMode="single"
               >
                 {flashcardLists.map((flashcardList, index) => (
